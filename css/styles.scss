@@ -109,4 +109,41 @@
     100% { background-position: 0 0; }
   }
   
+
+/* 1. Mobile Phones (Portrait) */
+@media screen and (max-width: 480px) {
+    /* Your CSS rules for mobile phones in portrait orientation go here */
+    #text {
+        padding: 26px;
+    }
+  }
   
+  /* 2. Mobile Phones (Landscape) */
+  @media screen and (max-width: 767px) and (orientation: landscape) {
+    /* Your CSS rules for mobile phones in landscape orientation go here */
+  }
+  
+  /* 3. Tablets (Portrait) */
+  @media screen and (min-width: 768px) and (max-width: 959px) {
+    /* Your CSS rules for tablets in portrait orientation go here */
+  }
+  
+  /* 4. Tablets (Landscape) */
+  @media screen and (min-width: 960px) and (max-width: 1023px) and (orientation: landscape) {
+    /* Your CSS rules for tablets in landscape orientation go here */
+  }
+  
+  /* 5. Small Desktops/Laptops */
+  @media screen and (min-width: 1024px) and (max-width: 1279px) {
+    /* Your CSS rules for small desktops and laptops go here */
+  }
+  
+  /* 6. Medium Desktops */
+  @media screen and (min-width: 1280px) and (max-width: 1439px) {
+    /* Your CSS rules for medium-sized desktop screens go here */
+  }
+  
+  /* 7. Large Desktops */
+  @media screen and (min-width: 1440px) {
+    /* Your CSS rules for large desktop monitors and high-resolution screens go here */
+  }

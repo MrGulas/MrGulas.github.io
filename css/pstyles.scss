@@ -111,7 +111,6 @@
         flex-direction: column;
         justify-content: center;
         align-content: center;
-        border-radius: 20px;
 
         h3 {
             color: white;
@@ -122,7 +121,7 @@
         margin-left: 10px;
         padding: 10px;
         img {
-            border-radius: 200px;
+            border-radius: 30px;
             object-fit:cover;
             display: block;
             margin: 0 auto;
@@ -150,3 +149,142 @@ video {
     width: 100vw;
   }
 
+/* 1. Mobile Phones (Portrait) */
+@media screen and (max-width: 480px) {
+    /* Your CSS rules for mobile phones in portrait orientation go here */
+    .container {
+        .project {
+            width: 85%;
+            margin-bottom: 10vh;
+            img {
+                width: 79%;
+            }
+            h3 {
+                margin-top: 20px;
+            }
+            
+        }
+    }
+    h1 {
+        font-size: 45px;
+        font-weight: bolder;
+    }
+
+  }
+  
+  /* 2. Mobile Phones (Landscape) */
+  @media screen and (max-width: 767px) {
+    /* Your CSS rules for mobile phones in landscape orientation go here */
+    .container {
+        .project {
+            width: 85%;
+            margin-bottom: 10vh;
+            img {
+                width: 54%;
+            }
+            h3 {
+                margin-top: 20px;
+            }
+            
+        }
+    }
+    h1 {
+        font-size: 45px;
+        font-weight: bolder;
+    }
+
+  }
+  
+  /* 3. Tablets (Portrait) */
+  @media screen and (min-width: 768px) and (max-width: 959px) {
+    /* Your CSS rules for tablets in portrait orientation go here */
+    .container {
+        .project {
+            width: 85%;
+            margin-bottom: 10vh;
+            img {
+                width: 54%;
+            }
+            h3 {
+                margin-top: 20px;
+            }
+            
+        }
+    }
+    h1 {
+        font-size: 45px;
+        font-weight: bolder;
+    }
+
+  }
+  
+  /* 4. Tablets (Landscape) */
+  @media screen and (min-width: 960px) and (max-width: 1023px) {
+    /* Your CSS rules for tablets in landscape orientation go here */
+    .container {
+        .project {
+            width: 85%;
+            margin-bottom: 10vh;
+            img {
+                width: 54%;
+            }
+            h3 {
+                margin-top: 20px;
+            }
+            
+        }
+    }
+    h1 {
+        font-size: 45px;
+        font-weight: bolder;
+    }
+  }
+  
+  /* 5. Small Desktops/Laptops */
+  @media screen and (min-width: 1024px) and (max-width: 1279px) {
+    /* Your CSS rules for small desktops and laptops go here */
+    .container {
+        .project {
+            width: 85%;
+            margin-bottom: 10vh;
+            img {
+                width: 54%;
+            }
+            h3 {
+                margin-top: 20px;
+            }
+            
+        }
+    }
+    h1 {
+        font-size: 45px;
+        font-weight: bolder;
+    }
+  }
+  
+  /* 6. Medium Desktops */
+  @media screen and (min-width: 1280px) and (max-width: 1439px) {
+    /* Your CSS rules for medium-sized desktop screens go here */
+    .container .project img {
+        height: 31vh;
+    }
+    h1 {
+        font-size: 45px;
+        font-weight: bolder;
+    }
+  }
+  
+  /* 7. Large Desktops */
+  @media screen and (min-width: 1440px) {
+    /* Your CSS rules for large desktop monitors and high-resolution screens go here */
+    .container .project img {
+        height: 31vh;
+    }
+    h3 {
+     margin-top: 20px;
+    }
+    h1 {
+       font-size: 45px;
+       font-weight: bolder;
+     }
+        }

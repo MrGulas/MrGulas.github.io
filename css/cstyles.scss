@@ -98,7 +98,7 @@ video {
   
   .message {
     p {
-        margin-top: 55vh;    
+        margin-top: 69vh;    
         text-align: center;
         position: relative;
         color: white;
@@ -116,9 +116,9 @@ video {
         color: white;
     }
     img {
-        background-color: white;
         border-radius: 5px;
         display: block;
+        filter: invert(300%);
     }
     position: relative;
     display: flex;
@@ -132,5 +132,82 @@ video {
         flex-direction: column;
         justify-content: center;
         align-items: center;
+    }
+  }
+
+/* 1. Mobile Phones (Portrait) */
+@media screen and (max-width: 480px) {
+    /* Your CSS rules for mobile phones in portrait orientation go here */
+    .social_icons {
+        padding-top: 4vh;
+    }
+    video {
+        width: 204vw;
+    }
+  }
+  
+  /* 2. Mobile Phones (Landscape) */
+  @media screen and (max-width: 767px) {
+    /* Your CSS rules for mobile phones in landscape orientation go here */
+    .social_icons {
+        padding-top: 4vh;
+    }
+    video {
+        width: 204vw;
+    }
+  }
+  
+  /* 3. Tablets (Portrait) */
+  @media screen and (min-width: 768px) and (max-width: 959px) {
+    /* Your CSS rules for tablets in portrait orientation go here */
+    .social_icons {
+        padding-top: 4vh;
+    }
+    video {
+        width: 204vw;
+    }
+  }
+  
+  /* 4. Tablets (Landscape) */
+  @media screen and (min-width: 960px) and (max-width: 1023px) {
+    /* Your CSS rules for tablets in landscape orientation go here */
+    .social_icons {
+        padding-top: 4vh;
+    }
+    video {
+        width: 125vw;
+    }
+  }
+  
+  /* 5. Small Desktops/Laptops */
+  @media screen and (min-width: 1024px) and (max-width: 1279px) {
+    /* Your CSS rules for small desktops and laptops go here */
+    .social_icons {
+        padding-top: 4vh;
+    }
+    video {
+        width: 125vw;
+    }
+  }
+  
+  /* 6. Medium Desktops */
+  @media screen and (min-width: 1280px) and (max-width: 1439px) {
+    /* Your CSS rules for medium-sized desktop screens go here */
+    .social_icons {
+        padding-top: 4vh;
+    }
+    video {
+        width: 100vw;
+    }
+  }
+  
+  /* 7. Large Desktops */
+  @media screen and (min-width: 1440px) {
+    /* Your CSS rules for large desktop monitors and high-resolution screens go here */
+    .social_icons {
+        padding-top: 4vh;
+    }
+    video {
+        width: 100vw;
     }
   }
