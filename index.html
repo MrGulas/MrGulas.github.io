@@ -27,4 +27,11 @@
             <p>I am a Web Developer</p>
         </div>
     </section>
+    <script>
+        document.getElementById('playButton').addEventListener('click', function() {
+          var video = document.querySelector('video');
+          video.play();
+          this.style.display = 'none'; // Hide the button after playback starts
+        });
+      </script>
 </html>

@@ -80,6 +80,12 @@
             <div class="project_desc">
         </div>
     </div>
-    
+    <script>
+        document.getElementById('playButton').addEventListener('click', function() {
+          var video = document.querySelector('video');
+          video.play();
+          this.style.display = 'none'; // Hide the button after playback starts
+        });
+      </script>
 </body>
 </html>
