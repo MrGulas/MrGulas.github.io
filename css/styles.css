@@ -1,1 +1,147 @@
-*{margin:0px;font-family:"Kanit",sans-serif}#navbar{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;position:relative;top:0;left:0;padding:30px}#navbar a{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center;text-decoration:none;color:#fff;font-size:18px;margin-left:15px}#navbar a:first-child{margin-left:0px}#welcome-section{display:-webkit-box;display:-ms-flexbox;display:flex;position:relative;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-transform:translateY(32vh);transform:translateY(32vh)}#text{background-color:silver;padding:40px;border-radius:15vh}video{-o-object-fit:cover;object-fit:cover;position:fixed;top:0;left:0;height:100vh;width:100vw}.glow-on-hover{width:14vh;height:5vh;border:none;outline:none;color:#fff;background:#111;cursor:pointer;position:relative;z-index:0;border-radius:10px}.glow-on-hover:before{content:"";background:linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);position:absolute;top:-2px;left:-2px;background-size:400%;z-index:-1;-webkit-filter:blur(5px);filter:blur(5px);width:calc(100% + 4px);height:calc(100% + 4px);-webkit-animation:glowing 20s linear infinite;animation:glowing 20s linear infinite;opacity:0;-webkit-transition:opacity .3s ease-in-out;transition:opacity .3s ease-in-out;border-radius:10px}.glow-on-hover:active{color:#000}.glow-on-hover:active:after{background:rgba(0,0,0,0)}.glow-on-hover:hover:before{opacity:1}.glow-on-hover:after{z-index:-1;content:"";position:absolute;width:100%;height:100%;background:#111;left:0;top:0;border-radius:10px}@-webkit-keyframes glowing{0%{background-position:0 0}50%{background-position:400% 0}100%{background-position:0 0}}@keyframes glowing{0%{background-position:0 0}50%{background-position:400% 0}100%{background-position:0 0}}@media screen and (max-width: 480px){#text{text-align:center;padding:20px}}/*# sourceMappingURL=styles.css.map */
+* {
+  margin: 0px;
+  font-family: "Kanit", sans-serif;
+}
+
+#navbar {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  top: 0;
+  left: 0;
+  padding: 30px;
+}
+#navbar a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  color: white;
+  font-size: 18px;
+  margin-left: 15px;
+}
+#navbar a:first-child {
+  margin-left: 0px;
+}
+
+#welcome-section {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+  transform: translateY(32vh);
+}
+
+#text {
+  background-color: silver;
+  padding: 40px;
+  border-radius: 15vh;
+}
+
+video {
+  -o-object-fit: cover;
+     object-fit: cover;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+}
+
+.glow-on-hover {
+  width: 14vh;
+  height: 5vh;
+  border: none;
+  outline: none;
+  color: #fff;
+  background: #111;
+  cursor: pointer;
+  position: relative;
+  z-index: 0;
+  border-radius: 10px;
+}
+
+.glow-on-hover:before {
+  content: "";
+  background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  background-size: 400%;
+  z-index: -1;
+  filter: blur(5px);
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  animation: glowing 20s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  border-radius: 10px;
+}
+
+.glow-on-hover:active {
+  color: #000;
+}
+
+.glow-on-hover:active:after {
+  background: transparent;
+}
+
+.glow-on-hover:hover:before {
+  opacity: 1;
+}
+
+.glow-on-hover:after {
+  z-index: -1;
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #111;
+  left: 0;
+  top: 0;
+  border-radius: 10px;
+}
+
+@keyframes glowing {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+/* 1. Mobile Phones (Portrait) */
+@media screen and (max-width: 480px) {
+  /* Your CSS rules for mobile phones in portrait orientation go here */
+  #text {
+    text-align: center;
+    padding: 20px;
+  }
+}
+/* 2. Mobile Phones (Landscape) */
+@media screen and (max-width: 767px) and (orientation: landscape) {
+  /* Your CSS rules for mobile phones in landscape orientation go here */
+}
+/* 3. Tablets (Portrait) */
+@media screen and (min-width: 768px) and (max-width: 959px) {
+  /* Your CSS rules for tablets in portrait orientation go here */
+}
+/* 4. Tablets (Landscape) */
+@media screen and (min-width: 960px) and (max-width: 1023px) and (orientation: landscape) {
+  /* Your CSS rules for tablets in landscape orientation go here */
+}
+/* 5. Small Desktops/Laptops */
+@media screen and (min-width: 1024px) and (max-width: 1279px) {
+  /* Your CSS rules for small desktops and laptops go here */
+}
+/* 6. Medium Desktops */
+@media screen and (min-width: 1280px) and (max-width: 1439px) {
+  /* Your CSS rules for medium-sized desktop screens go here */
+}
+/* 7. Large Desktops */
+@media screen and (min-width: 1440px) {
+  /* Your CSS rules for large desktop monitors and high-resolution screens go here */
+}/*# sourceMappingURL=styles.css.map */
