@@ -117,6 +117,14 @@
         text-align: center;
         padding: 20px;
     }
+    #navbar {
+      padding: 10px;
+      a {
+          margin-left: none;
+          margin: 0 auto;
+          justify-content: space-around;
+      }
+    }
   }
   
   /* 2. Mobile Phones (Landscape) */

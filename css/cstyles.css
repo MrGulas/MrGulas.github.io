@@ -150,6 +150,14 @@ video {
   .message p {
     margin-top: 67vh;
   }
+  #navbar {
+    padding: 10px;
+  }
+  #navbar a {
+    margin-left: none;
+    margin: 0 auto;
+    justify-content: space-around;
+  }
 }
 @media screen and (max-width: 767px) {
   .social_icons {

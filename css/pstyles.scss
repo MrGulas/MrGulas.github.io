@@ -159,41 +159,49 @@ video {
     width: 100vw;
   }
 
-/* 1. Mobile Phones (Portrait) */
 @media screen and (max-width: 480px) {
-    /* Your CSS rules for mobile phones in portrait orientation go here */
     .container {
         .project {
-            width: 85%;
-            margin-bottom: 10vh;
+            flex-wrap: wrap;
             img {
-                width: 79%;
+                width: 95%;
             }
             h3 {
                 margin-top: 20px;
             }
-            
         }
     }
     h1 {
         font-size: 45px;
         font-weight: bolder;
     }
-
+    .certificates img {
+        max-width: 100%;
+    }
+    #navbar {
+        padding: 10px;
+        a {
+            margin-left: none;
+            margin: 0 auto;
+            justify-content: space-around;
+        }
+    }
   }
   
-  /* 2. Mobile Phones (Landscape) */
   @media screen and (max-width: 767px) {
-    /* Your CSS rules for mobile phones in landscape orientation go here */
     .container {
         .project {
             width: 100%;
-            margin-bottom: 10vh;
             img {
-                width: 100%;
+                width: 95%;
             }
             h3 {
                 margin-top: 20px;
+            }
+            &_descr {
+                margin: 5px;
+                text-align: center;
+                max-width: 100%;
             }
             
         }
@@ -210,13 +218,10 @@ video {
     /* Your CSS rules for tablets in portrait orientation go here */
     .container {
         .project {
-            width: 85%;
+            width: 97%;
             margin-bottom: 10vh;
             img {
-                width: 54%;
-            }
-            h3 {
-                margin-top: 20px;
+                width: 100%;
             }
             
         }
