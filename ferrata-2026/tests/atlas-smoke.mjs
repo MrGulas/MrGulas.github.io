@@ -171,5 +171,41 @@ await check("Comparison weather date updates mobile and desktop rows",async()=>{
  assert.equal(errors.length,0,JSON.stringify(errors));
  await context.close();
 });
+
+await check("All 70 public route links load and fit on 390px",async()=>{
+ const {context,page,errors}=await pageAt(390,"/index.html");
+ const routes=await page.evaluate(()=>window.FERRATA_DB.routes.map(x=>({id:x.id,name:x.name,slug:x.slug})));
+ assert.equal(routes.length,70);
+ assert.equal(new Set(routes.map(x=>x.slug)).size,70);
+ for(const route of routes){
+  await page.goto(site+"/route.html?route="+encodeURIComponent(route.slug),{waitUntil:"domcontentloaded"});
+  await page.waitForSelector("#routePage:not([hidden])");
+  const data=await page.evaluate(()=>({
+   label:document.getElementById("crumbRoute")?.textContent?.trim(),
+   description:document.getElementById("routeDescription")?.textContent?.trim(),
+   width:document.documentElement.scrollWidth,
+   viewport:innerWidth
+  }));
+  assert.equal(data.label,route.name,"Incorrect deep-link route "+route.slug);
+  assert.ok(data.description?.length>=20,"Missing full route description "+route.slug);
+  assert.ok(data.width<=data.viewport+3,"Overflow on "+route.slug+" "+JSON.stringify(data));
+ }
+ assert.equal(errors.length,0,JSON.stringify(errors));
+ await context.close();
+});
+await check("Officially closed Attersee route is marked closed and has no lift",async()=>{
+ const {context,page,errors}=await pageAt(390,"/index.html");
+ await page.locator('input[name="showStatus"][value="closed"]').check();
+ await page.locator("#maxDifficulty").selectOption("4");
+ const card=page.locator('#cards>.card[data-orig="69"]');
+ assert.ok(await card.isVisible(),"Closed route should be discoverable with explicit filters");
+ assert.match(await card.innerText(),/обрыв троса|закрыта/i);
+ await page.goto(site+"/route.html?route=70-attersee-klettersteig-mahdlgupf",{waitUntil:"domcontentloaded"});
+ await page.waitForSelector("#routePage:not([hidden])");
+ assert.equal(await page.locator("#transportPlan").count(),0);
+ assert.match(await page.locator("#routeDescription").innerText(),/закрыта|обрыв троса/i);
+ assert.equal(errors.length,0,JSON.stringify(errors));
+ await context.close();
+});
 await browser.close();
 if(failures.length){console.error(JSON.stringify(failures,null,2));process.exitCode=1}else console.log("All Ferrata Atlas smoke checks passed");
