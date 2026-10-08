@@ -1,0 +1,74 @@
+
+/* Ferrata WOW Explorer v2 | 2026-10-08 */
+:root { --accent:#69e3b6; --accent2:#8bc7ff; }
+html { scroll-behavior:smooth; }
+body { background:radial-gradient(ellipse at 50% -15%,#16364a 0%,#080e19 45%); }
+header{padding-bottom:20px}
+header .disclaimer{max-width:1100px}
+.toolbar{display:none!important}
+#routeFinder{max-width:1240px;margin:0 auto 26px;padding:0 14px;}
+.finderShell{border:1px solid #385269;border-radius:23px;background:linear-gradient(145deg,#172537,#0d1928);padding:24px;box-shadow:0 16px 45px #0008}
+.finderTitle{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.finderTitle h2{margin:0;font-size:clamp(20px,3vw,28px)}
+.finderTitle p{margin:4px 0 0;color:var(--soft);font-size:14px}
+.finderBlock{min-width:0;border-top:1px solid #334456;padding:16px 0 4px}
+.finderBlock>h3{font-size:14px;color:#c7dbed;margin:0 0 10px;letter-spacing:.3px}
+.finderCols{display:grid;grid-template-columns:1fr 1fr;gap:0 26px}
+.finderWide{grid-column:span 2}
+.chiprow,.presetbar{display:flex;gap:8px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:7px;background:#233349;border:1px solid #43566e;border-radius:999px;padding:8px 12px;font-size:13px;cursor:pointer;user-select:none}
+.chip:has(input:checked){border-color:#61d5b1;background:#1d514c;color:#e4fff7;box-shadow:0 0 0 1px #2c927d55}
+.chip input,.checkboxline input{accent-color:#65dcb7;min-width:auto;width:15px;height:15px;flex:none;margin:0}
+.finderLine{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:14px;margin:8px 0}
+.finderLine strong{color:#8cead0;font-variant-numeric:tabular-nums}
+.rangeInput{width:100%;min-width:0;padding:0;height:27px;background:transparent;border:0;accent-color:#68e5bc;cursor:pointer}
+.checkboxline{display:flex;align-items:center;gap:9px;color:#d3e1f3;cursor:pointer;font-size:14px;margin:7px 0}
+#sortOrder,#difficultyCeiling{width:100%;min-width:0;padding:10px;background:#233349;border:1px solid #465970}
+.btnLite,.presetbar button,.weatherOpen,.compareAdd,.cardMap{background:#25374d;color:#e5f8ff;border:1px solid #536880;border-radius:10px;padding:8px 11px;font:inherit;font-size:13px;cursor:pointer}
+.btnLite:hover,.presetbar button:hover,.weatherOpen:hover,.compareAdd:hover{background:#275c64}
+.presetbar button{font-weight:700}
+.presetbar button.isActive{background:#15584c;border-color:#65dfbe}
+#finderStats{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;margin:0 auto 14px;max-width:1200px;padding:0 14px;color:#bcd6e6}
+#finderCount{font-weight:800;font-size:18px;color:#f0fff8}
+#finderHint{font-size:13px;color:#96b3c8}
+#finderSummary{color:#d0dfea;font-size:13px}
+#cards{align-items:start}
+.card{display:flex;flex-direction:column;box-shadow:0 7px 26px #0003;transition:border-color .2s,transform .2s;content-visibility:auto;contain-intrinsic-size:600px}
+.card:hover{border-color:#648597}
+.card .gallery{grid-template-columns:repeat(5,minmax(74px,1fr));min-height:125px}
+.card .gallery a{display:block;min-width:0}
+.card .gallery img{height:112px;background:#263246}
+.card .empty{grid-column:1/-1;min-height:90px;display:flex;align-items:center}
+.card .actions{margin-top:auto}
+.card .actions a{font-weight:600}
+.card .meta{font-size:13px}
+.card p{font-size:14px}
+.cardTools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}
+.scoreBadge{border-radius:100px;background:#13594b;color:#bcffeb;padding:5px 10px;font-size:12px;font-weight:800}
+.compareAdd[data-active="1"]{background:#1b6d52;border-color:#8ce0bb}
+.wx-details{border:1px solid #455972;border-radius:12px;background:#111f2f;padding:8px 11px;margin:12px 0;color:#d4e8fa}
+.wx-details summary{font-size:14px;font-weight:700;cursor:pointer}
+.wx-details summary::marker{color:#8be2c3}
+.wx-details p{margin:8px 0;font-size:13px}
+.wx-details .wx-official{display:inline-block;margin:5px 4px 5px 0;border:1px solid #496f84;padding:7px 8px;border-radius:8px;text-decoration:none;font-size:12px}
+.wx-details .wx-official:hover{background:#244556}
+.wx-details .wxGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0}
+.wxHour{background:#26394a;border-radius:9px;padding:7px 6px;text-align:center;font-size:12px}
+.wxHour b{display:block;color:#86f5d6;margin:2px 0;font-size:14px}
+.wxHour span{display:block;color:#bdd4e7}
+.wxNote{color:#97aec1;font-size:12px;margin:7px 0}
+.pgallerySource{font-size:11px;color:#95b0c6;display:block;margin-top:-8px;margin-bottom:12px}
+.imageLoading{background:#24384d;border:1px dashed #4f6881;border-radius:9px;padding:10px;text-align:center;font-size:12px;color:#acc5d7;grid-column:1/-1}
+.modalBackdrop{position:fixed;inset:0;background:#02060fe8;z-index:100;display:flex;align-items:center;justify-content:center;padding:22px}
+.modalBox{max-width:980px;width:100%;max-height:90vh;overflow:auto;background:#142337;border-radius:19px;padding:22px;border:1px solid #507288}
+.modalHead{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.compTable{border-collapse:collapse;width:100%;min-width:640px;margin-top:12px;font-size:13px}
+.compTable td,.compTable th{border-bottom:1px solid #3a546a;padding:10px;text-align:left}
+.compScroll{overflow-x:auto}
+.mapWrap{margin:14px 0;border-radius:14px;overflow:hidden;border:1px solid #537084}
+#explorerMap{height:390px;background:#1c3043}
+.mapLinks{display:flex;gap:9px;flex-wrap:wrap;margin:11px 0}
+.mapLinks a{background:#21354b;color:#d8eaf8;padding:6px 9px;border-radius:8px;font-size:12px;text-decoration:none;border:1px solid #48627b}
+.visuallyHidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:860px){.finderCols{grid-template-columns:1fr}.finderWide{grid-column:span 1}}
+@media(max-width:600px){.finderShell{padding:14px}.card .gallery{display:flex;overflow-x:auto;min-height:95px;gap:6px;scroll-snap-type:x mandatory}.card .gallery a{flex:0 0 29%;scroll-snap-align:start}.card .gallery img{height:100px}.card .empty{min-width:100%}.wx-details .wxGrid{grid-template-columns:repeat(2,1fr)}#explorerMap{height:320px}#cards{padding:0 11px 60px}.card{padding:15px}.chip{padding:7px 9px} }
