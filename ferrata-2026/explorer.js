@@ -46,6 +46,9 @@ const rules=[
 [/krippenstein/i,47.53,13.694,"Krippenstein"],
 [/alpspitz/i,47.429,11.052,"Alpspitze"],
 [/pidinger/i,47.743,12.924,"Piding"],
+[/marokka|himmel.*henne|wildseeloder|fieberbrunn/i,47.450,12.538,"Fieberbrunn / Wildseeloder"],
+[/falkert/i,46.858,13.807,"Falkertsee / Falkertspitz"],
+[/steinplatte|schuastagangl/i,47.614,12.565,"Steinplatte / Waidring"],
 [/königsjodler/i,47.422,13.057,"Hochkönig"]];
 const country=t=>/dve veže|skalka pri|liptov|кремниц/i.test(t)?"SK":/mojstrana|словени/i.test(t)?"SI":/jenner|grünstein|häntzschel|kampenwand|tegelberg|mittenwalder|friedberger|pidinger|alpspitz/i.test(t)?"DE":"AT";
 const officialInfo={AT:["GeoSphere Austria — официальный прогноз","https://portale.geosphere.at/hpAT/index.php?gl=DE","DAV / GeoSphere — горный прогноз","https://www.alpenverein.de/bergwetter/alpen/"],DE:["DWD — официальный прогноз","https://www.dwd.de/DE/wetter/wetter_node.html","DAV — горный прогноз","https://www.alpenverein.de/bergwetter/"],SK:["SHMÚ — официальный прогноз","https://w5.shmu.sk/en/?id=meteo_gpredpoved_sk&page=1","SHMÚ — метеограммы","https://w5.shmu.sk/en/?id=meteo_num_mgram10&page=1"],SI:["ARSO — официальный прогноз","https://meteo.arso.gov.si/met/en/weather/","ARSO — прогноз по Словении","https://meteo.arso.gov.si/uploads/probase/www/fproduct/text/en/fcast_SLOVENIA_latest.html"]};
