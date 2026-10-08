@@ -1,7 +1,7 @@
 <!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0a1820">
 <title>Сравнение маршрутов · Ferrata Atlas</title><meta name="description" content="Подробное сравнение via ferrata по сложности, продолжительности, видам, подходам, озёрам и погоде.">
-<link rel="stylesheet" href="./explorer.css?v=3"><link rel="stylesheet" href="./premium.css?v=4"><link rel="stylesheet" href="./vip.css?v=1">
-<script defer src="./routes-data.js?v=5"></script><script defer src="./compare.js?v=1"></script><script defer src="./vip.js?v=1"></script></head>
+<link rel="stylesheet" href="./explorer.css?v=3"><link rel="stylesheet" href="./premium.css?v=4"><link rel="stylesheet" href="./vip.css?v=2">
+<script defer src="./routes-data.js?v=5"></script><script defer src="./compare.js?v=2"></script><script defer src="./vip.js?v=1"></script></head>
 <body class="atlasDetail vipComparePage" data-page="compare">
 <nav class="atlasNav vipNav" aria-label="Навигация"><a class="atlasBrand" href="./index.html"><span class="mark">⌁</span>VIA FERRATA <span style="color:#9ae5c5">ATLAS</span></a><div class="atlasNavLinks">
 <a href="./index.html#routeFinder">☷ Фильтры</a><a href="./index.html#cards">Маршруты</a>
@@ -15,5 +15,6 @@
 <section id="compareEmpty" class="vipEmpty" hidden><div class="vipEmptyIcon">⚖</div><h2>Пока не с чем сравнивать</h2><p>Нажми «＋ Сравнить» в карточках маршрутов — выбранные ферраты появятся здесь. Можно выбрать до пяти.</p><a class="actionMain" href="./index.html#cards">Открыть каталог →</a></section>
 <section id="compareContent" hidden><div class="compareLegend">⇆ Таблицу можно прокручивать горизонтально на телефоне. Прогноз — модель Open-Meteo, не гарантия сухой скалы. Данные о времени приблизительные; ссылки на оригинальные топо находятся в каждой колонке.</div><div class="compareScroll" tabindex="0" aria-label="Подробная сравнительная таблица феррат"><div id="compareMatrix"></div></div>
 <div class="compareFooterTools"><button type="button" class="actionSoft" id="clearComparison">Очистить сравнение</button><a class="actionMain" href="./index.html#cards">← Назад к маршрутам</a></div></section>
-<div class="detailFooter">Ferrata Atlas · Избранное, сравнение и фильтры хранятся только в браузере этого устройства. Без аккаунта между устройствами данные автоматически не синхронизируются.</div>
+<section class="vipBackup"><div><div class="atlasEyebrow">Твоя личная подборка</div><h2>Сохранить на другом устройстве</h2><p>Выбранные маршруты, избранное и фильтры принадлежат только этому браузеру — другие посетители сайта их не увидят. Для переноса между устройствами можно выгрузить или загрузить личный файл настроек. Аккаунтов и автоматической синхронизации пока нет.</p></div><div class="vipBackupTools"><button id="exportPersonalData" type="button" class="actionMain">↓ Скачать мои данные</button><label class="actionSoft" for="importPersonalData" style="cursor:pointer">↑ Загрузить мои данные</label><input id="importPersonalData" type="file" accept="application/json,.json" hidden><span id="backupFeedback" role="status" aria-live="polite"></span></div></section>
+<div class="detailFooter">Ferrata Atlas · Избранное, сравнение и фильтры хранятся в личном хранилище браузера. Другим посетителям они не видны. Для синхронизации между устройствами нужен аккаунт и сервер.</div>
 </div></body></html>
