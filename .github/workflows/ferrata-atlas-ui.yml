@@ -1,0 +1,25 @@
+name: Ferrata Atlas UI smoke
+on:
+  push:
+    paths:
+      - "ferrata-2026/**"
+      - ".github/workflows/ferrata-atlas-ui.yml"
+  workflow_dispatch:
+jobs:
+  responsive-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Test catalog and route pages in actual Chromium
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 --directory ferrata-2026 > /tmp/atlas-http.log 2>&1 &
+          sleep 2
+          node ferrata-2026/tests/atlas-smoke.mjs
