@@ -69,6 +69,12 @@ $("officialWeatherLinks").innerHTML=linkList(meteo[r.country]||meteo.AT);
 var sourceLinks=[["Топо и подробности · "+host(r.topo),r.topo||googleMaps]];
 for(var l of r.links||[]){if(l.url&&l.url!==r.topo&&!/google\.com\/search/.test(l.url))sourceLinks.push([l.title+" · "+host(l.url),l.url])}
 $("sourcesLinks").innerHTML=linkList(sourceLinks);
+if(r.topoImage){
+ const tp=r.topoImage;
+ $("inlineTopo").innerHTML='<details class="topoInline" open><summary>🧭 Посмотреть топо — схему ферраты</summary><a target="_blank" rel="noopener noreferrer" href="'+esc(tp.source)+'"><img loading="lazy" src="'+esc(tp.src)+'" alt="'+esc(tp.alt||"Топографическая схема ферраты")+'" onerror="this.closest(&quot;.topoInline&quot;).style.display=&quot;none&quot;"></a><p class="sourceNote">Источник схемы: '+esc(host(tp.source))+'. Это справочный топо, не навигация в реальном времени.</p></details>';
+}
+if(r.topoPdf){$("inlineTopo").insertAdjacentHTML("beforeend",'<a class="detailLink" href="'+esc(r.topoPdf)+'" target="_blank" rel="noopener noreferrer" style="margin-bottom:14px">📄 Открыть официальную схему маршрута (PDF) <span>↗</span></a>')}
+
 // Accurate media only: photos already directly bound to this route, never nearby-location substitutes.
 function fallback(){return '<div class="heroFrame heroPlaceholder"><div class="mountainMark"></div><div class="heroMessage"><div class="atlasEyebrow">Точные фотографии</div><strong>Посмотри именно эту феррату</strong><p>Проверенных фото линии пока нет в базе. Вместо случайных гор — точный поиск изображений.</p><a class="actionMain" target="_blank" rel="noopener noreferrer" href="'+queryGoogle+'">🖼 Google Картинки ↗</a></div></div>'}
 var images=r.photos||[];
