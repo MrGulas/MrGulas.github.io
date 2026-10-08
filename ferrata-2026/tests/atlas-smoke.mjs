@@ -45,7 +45,10 @@ for(const width of [320,390,768,1280]){
   const d=await page.evaluate(()=>({body:document.documentElement.scrollWidth,vw:innerWidth}));
   assert.ok(d.body<=d.vw+3,JSON.stringify(d));
   assert.ok(await page.locator("#cards>.card").first().isVisible());
-  assert.equal(await page.locator(".vipPartTile:not(:has(img))").count(),0);
+  // External image requests are intentionally aborted in this smoke suite.
+  // A component tile is valid with either a loaded image element or its designed
+  // icon fallback; requiring <img> made resilient image cleanup fail the CI.
+  assert.equal(await page.locator(".vipPartTile:not(:has(img)):not(:has(.vipNoPhoto))").count(),0);
   assert.equal(errors.length,0,JSON.stringify(errors));
   await context.close();
  });
