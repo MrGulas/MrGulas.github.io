@@ -7,7 +7,7 @@ const favKey="ferrataWOW_favorites_v1",cmpKey="ferrataWOW_compare_v2";
 const getArr=k=>{try{const a=JSON.parse(localStorage.getItem(k)||"[]");return Array.isArray(a)?a.filter(Number.isInteger):[]}catch(e){return []}};
 const setArr=(k,x)=>{localStorage.setItem(k,JSON.stringify(x));window.dispatchEvent(new Event("atlas:changed"))};
 const safe=x=>String(x||"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
-const googleImages=name=>"https://www.google.com/search?tbm=isch&q="+encodeURIComponent(name+" Fotos "+(/see|озеро|lake/i.test(name)?"Austria":"Klettersteig"));
+const googleImages=(name,kind)=>"https://www.google.com/search?tbm=isch&q="+encodeURIComponent(name+" Fotos "+(kind==="lake"||/see|weiher|mara|озеро|lake/i.test(name)?"See Austria":kind==="hike"||kind==="view"?"Panorama Wanderung":"Klettersteig"));
 const routeURL=c=>{const id=c.routeId;return id&&db.routes[id-1]?"./route.html?route="+encodeURIComponent(db.routes[id-1].slug):null};
 function count(){
  let a=new Set(getArr(favKey)),b=new Set(getArr(cmpKey));
@@ -29,13 +29,13 @@ function icon(c){return c.kind==="lake"?"💧":c.kind==="hike"||c.kind==="view"?
 function componentTile(c){
  const photo=c.photo;
  const photoSrc=photo?.src||"";
- const link=googleImages(c.name);
+ const link=googleImages(c.name,c.kind);
  return '<a class="vipPartTile" target="_blank" rel="noopener noreferrer" href="'+link+'" aria-label="Посмотреть фотографии '+safe(c.name)+' в Google Картинках">'+
- (photoSrc?'<img loading="lazy" src="'+safe(photoSrc)+'" alt="'+safe(photo.alt||c.name)+'" onerror="this.remove()">':'<span class="vipNoPhoto" aria-hidden="true">'+icon(c)+'</span>')+
+ '<span class="vipNoPhoto" aria-hidden="true">'+icon(c)+'</span>'+(photoSrc?'<img loading="lazy" src="'+safe(photoSrc)+'" alt="'+safe(photo.alt||c.name)+'" onerror="this.remove()">':'')+
  '<span class="vipPartShade"></span><span class="vipPartInfo"><b>'+safe(c.name)+'</b><small>'+icon(c)+' Фотографии ↗</small></span></a>';
 }
 function componentPills(parts){
-return parts.map(p=>'<a target="_blank" rel="noopener noreferrer" href="'+googleImages(p.name)+'">'+icon(p)+' '+safe(p.name)+' ↗</a>').join("");
+return parts.map(p=>'<a target="_blank" rel="noopener noreferrer" href="'+googleImages(p.name,p.kind)+'">'+icon(p)+' '+safe(p.name)+' ↗</a>').join("");
 }
 function groupGalleryHome(){
 const cards=[...document.querySelectorAll("#cards>.card")];
@@ -80,7 +80,7 @@ if(photos){
  '<div class="vipDetailPhotoLinks">'+parts.map(c=>{
  const internal=routeURL(c);
  const from=c.photo?.source?'<a class="vipSource" href="'+safe(c.photo.source)+'" rel="noopener noreferrer" target="_blank">Открыть источник фото ↗</a>':"";
- return '<div class="vipComponentCard"><small>'+icon(c)+' '+(c.kind==="lake"?"Озеро":c.kind==="ferrata"?"Феррата":"Прогулка / смотровая")+'</small><h3>'+safe(c.name)+'</h3><a href="'+googleImages(c.name)+'" rel="noopener noreferrer" target="_blank">🖼 Фотографии '+safe(c.name)+' ↗</a>'+(internal?'<a href="'+internal+'">🗺 Открыть отдельный гид ↗</a>':"")+from+'</div>'
+ return '<div class="vipComponentCard"><small>'+icon(c)+' '+(c.kind==="lake"?"Озеро":c.kind==="ferrata"?"Феррата":"Прогулка / смотровая")+'</small><h3>'+safe(c.name)+'</h3><a href="'+googleImages(c.name,c.kind)+'" rel="noopener noreferrer" target="_blank">🖼 Фотографии '+safe(c.name)+' ↗</a>'+(internal?'<a href="'+internal+'">🗺 Открыть отдельный гид ↗</a>':"")+from+'</div>'
  }).join("")+'</div>';
 }
 }
