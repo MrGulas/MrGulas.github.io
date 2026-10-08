@@ -12,6 +12,7 @@ var countryName={AT:"Австрия",DE:"Германия",SK:"Словакия"
 var labels={green:"🟢 Реалистичный кандидат",yellow:"🟡 При хороших условиях",orange:"🟠 Нужна осторожность",red:"🔴 На эту субботу не рекомендуется",closed:"⛔ Исключено на эту дату"};
 var statusText={green:"Предварительный рейтинг благоприятен, но необходимо отдельно подтвердить сухую скалу и открытый спуск.",yellow:"Прохождение возможно только при подходящих условиях; проверяй подход, скалу, дождь и время спуска.",orange:"Существенные ограничения по погоде, сложности или времени. Без подтверждения безопасного сухого окна лучше не идти.",red:"Для выезда из Праги в 05:00 этот вариант не подходит по совокупности высоты, длины или погодного риска.",closed:"Маршрут закрыт, выше выбранного уровня или заведомо не подходит. Не планировать без пересмотра ограничения."};
 var queryGoogle="https://www.google.com/search?tbm=isch&q="+encodeURIComponent(r.name+" Klettersteig Fotos");
+var proxyImage=url=>"https://images.weserv.nl/?url="+encodeURIComponent(url)+"&w=1400&h=900&fit=cover&output=webp";
 var googleMaps="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(r.region+" "+({AT:"Austria",DE:"Germany",SK:"Slovakia",SI:"Slovenia"}[r.country]||"Austria"));
 var hasCoordinates=r.lat!=null&&r.lon!=null;
 var meteo={AT:[["GeoSphere Austria — официальный прогноз","https://www.geosphere.at/de"],["Alpenverein / GeoSphere — горная погода","https://www.alpenverein.de/bergwetter/alpen/"]],DE:[["DWD — официальный прогноз","https://www.dwd.de/DE/wetter/wetter_node.html"],["Alpenverein — горный прогноз","https://www.alpenverein.de/bergwetter/"]],SK:[["SHMÚ — официальный прогноз","https://www.shmu.sk/"]],SI:[["ARSO — официальный прогноз","https://meteo.arso.gov.si/met/en/weather/"]]}; 
@@ -78,13 +79,14 @@ if(r.topoPdf){$("inlineTopo").insertAdjacentHTML("beforeend",'<a class="detailLi
 // Accurate media only: photos already directly bound to this route, never nearby-location substitutes.
 function fallback(){return '<div class="heroFrame heroPlaceholder"><div class="mountainMark"></div><div class="heroMessage"><div class="atlasEyebrow">Точные фотографии</div><strong>Посмотри именно эту феррату</strong><p>Проверенных фото линии пока нет в базе. Вместо случайных гор — точный поиск изображений.</p><a class="actionMain" target="_blank" rel="noopener noreferrer" href="'+queryGoogle+'">🖼 Google Картинки ↗</a></div></div>'}
 var images=r.photos||[];
-$("routeGallery").innerHTML=images.length?images.slice(0,5).map((x,i)=>'<div class="heroFrame"><a href="'+esc(x.source)+'" class="openPhoto" data-index="'+i+'"><img src="'+esc(x.src)+'" loading="'+(i?"lazy":"eager")+'" alt="'+esc(x.alt||r.name)+'" onerror="this.closest(&quot;.heroFrame&quot;).style.display=&quot;none&quot;"></a><div class="heroCaption">'+esc(host(x.src))+'</div></div>').join(""):fallback();
+$("routeGallery").innerHTML=images.length?images.slice(0,5).map((x,i)=>'<div class="heroFrame"><a href="'+esc(x.source)+'" class="openPhoto" data-index="'+i+'"><img src="'+esc(x.src)+'" data-proxy-fallback="'+esc(proxyImage(x.src))+'" loading="'+(i?"lazy":"eager")+'" alt="'+esc(x.alt||r.name)+'"></a><div class="heroCaption">'+esc(host(x.src))+'</div></div>').join(""):fallback();
 $("photoDetails").innerHTML=images.length?'<p>Здесь '+images.length+' изображений из заранее привязанных к маршруту источников. Нажми на фото для просмотра и ссылки на оригинал.</p>':'<p>У этой линии пока нет проверенных встроенных фотографий. Для достоверных снимков открывай точный поиск Google Картинок по названию маршрута.</p>';
 
 $("routeGallery").querySelectorAll("img").forEach(img=>img.addEventListener("error",()=>{
+if(img.dataset.proxyFallback){var next=img.dataset.proxyFallback;delete img.dataset.proxyFallback;img.src=next;return}
 const frame=img.closest(".heroFrame");if(frame)frame.remove();
 if(!$("routeGallery").querySelector("img"))$("routeGallery").innerHTML=fallback();
-},{once:true}));
+}));
 $("routeGallery").addEventListener("click",e=>{var a=e.target.closest(".openPhoto");if(!a)return;e.preventDefault();var i=+a.dataset.index,p=images[i];if(!p)return;$("lightboxImage").src=p.src;$("lightboxImage").alt=p.alt||r.name;$("lightboxSource").href=p.source;$("lightbox").hidden=false;document.body.style.overflow="hidden"});
 function closeLightbox(){$("lightbox").hidden=true;document.body.style.overflow=""}
 $("closeLightbox").addEventListener("click",closeLightbox);

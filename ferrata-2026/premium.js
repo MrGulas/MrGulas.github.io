@@ -39,12 +39,12 @@ for(let i=0;i<original.length;i++){
   let broken=0;
   for(const img of imgs)img.addEventListener("error",()=>{
     if(img.dataset.proxyFallback){const fallback=img.dataset.proxyFallback;delete img.dataset.proxyFallback;img.src=fallback;return}
-    broken++;img.closest("a").style.display="none";
+    if(img.dataset.failed)return;img.dataset.failed="1";broken++;img.closest("a").style.display="none";
     if(broken===imgs.length && !gallery.classList.contains("vipSplitGallery")){
       const lookup="https://www.google.com/search?tbm=isch&q="+encodeURIComponent(r.name+" Klettersteig Fotos");
       gallery.innerHTML='<div class="empty" style="display:grid;place-items:center;width:100%;height:185px;text-align:center"><div class="missingPhoto"><strong>Прямые фото недоступны</strong><span>Источник ограничил загрузку изображений на этом сайте.</span><a class="photoSearch" href="'+esc(lookup)+'" target="_blank" rel="noopener noreferrer">🖼 Точные фотографии маршрута ↗</a></div></div>';
     }
-  },{once:true});
+  });
 
  }
  const link="./route.html?route="+encodeURIComponent(r.slug);
