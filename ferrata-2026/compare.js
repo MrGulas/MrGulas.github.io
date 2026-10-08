@@ -58,7 +58,7 @@ function renderMobile(routes){
  if(!matrix)return;
  let out='<div class="mobileCompareIntro"><span class="atlasEyebrow">Сравнение на телефоне</span><h2>Два маршрута — все детали</h2><p>Выбери любые две из '+routes.length+' добавленных феррат. Сравнивай по показателям, раскрывай длинные описания и меняй маршруты одним нажатием.</p></div>';
  out+='<div class="mobileCompareSelectors">'+mobileSelect("Маршрут № 1",0,pair[0],routes)+mobileSelect("Маршрут № 2",1,pair[1],routes)+'</div>';
- out+='<div class="mobileCompareHeroes'+(shown.length===1?" oneColumn":"")+'">'+shown.map((r,i)=>'<div class="mobileCompareHero"><div class="mobileHeroPhoto">'+photoCell(r)+'</div><span class="mobileRouteIndex">'+(i+1).toString().padStart(2,"0")+'</span><a href="'+hrLink(r)+'" class="mobileHeroTitle">'+esc(r.name)+'</a><div class="mobileHeroMeta">✨ '+r.wow+'/10 · '+esc(r.grade)+'</div></div>').join("")+'</div>';
+ out+='<div class="mobileCompareHeroes'+(shown.length===1?" oneColumn":"")+'">'+shown.map((r,i)=>'<div class="mobileCompareHero"><div class="mobileHeroPhoto">'+photoCell(r)+'</div><span class="mobileRouteIndex">'+(i+1).toString().padStart(2,"0")+'</span><a href="'+hrLink(r)+'" class="mobileHeroTitle">'+esc(r.name)+'</a><div class="mobileHeroMeta">✨ '+r.wow+'/10 · '+esc(r.grade)+'</div><button type="button" class="mobileRemove" data-mobile-remove-id="'+(r.id-1)+'" aria-label="Убрать маршрут из сравнения">✕ Убрать</button></div>').join("")+'</div>';
  const indexById=id=>routes.findIndex(r=>r.id===id);
  const body=matrix.tBodies[0];
  if(!body){target.innerHTML=out;return}
@@ -86,6 +86,7 @@ function renderMobile(routes){
  flush();
  out+='<p class="mobileCompareDisclaimer">* Продолжительность ориентировочная. Прогноз Open-Meteo — модель по координатам района, а не подтверждение безопасности ферраты.</p>';
  target.innerHTML=out;
+ target.querySelectorAll("[data-mobile-remove-id]").forEach(btn=>btn.addEventListener("click",()=>{const id=Number(btn.dataset.mobileRemoveId);setIds(getIds().filter(x=>x!==id));display()}));
  target.querySelectorAll("[data-mobile-slot]").forEach(select=>select.addEventListener("change",()=>{
    const sel=Number(select.dataset.mobileSlot),next=[...pair];
    next[sel]=select.value?Number(select.value):null;
