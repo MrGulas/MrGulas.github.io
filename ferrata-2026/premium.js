@@ -26,6 +26,14 @@ const original=[...list.querySelectorAll(":scope>.card")];
 for(let i=0;i<original.length;i++){
  const el=original[i],r=db.routes[Number(el.dataset.orig)];if(!r)continue;
  el.dataset.routeId=r.id;
+ // Only show images explicitly linked to this exact via ferrata in the catalog database.
+ const gallery=el.querySelector(".gallery");
+ if(gallery && r.photos?.length && gallery.querySelector(".empty")){
+  gallery.classList.remove("photoFallback");
+  gallery.dataset.photoReady="1";
+  gallery.innerHTML=r.photos.slice(0,5).map(p=>'<a href="'+esc(p.source)+'" rel="noopener noreferrer" target="_blank" title="Первоисточник фотографии"><img loading="lazy" src="'+esc(p.src)+'" alt="'+esc(p.alt||r.name)+'" onerror="this.closest(&quot;a&quot;).style.display=&quot;none&quot;"></a>').join("");
+  const prev=gallery.nextElementSibling;if(prev?.classList.contains("pgallerySource"))prev.remove();
+ }
  const link="./route.html?route="+encodeURIComponent(r.slug);
  const top=document.createElement("div");top.className="cardTopbar";
  top.innerHTML='<button type="button" class="favCard" title="Сохранить в избранном">♡ Сохранить</button><a href="'+link+'" class="cardTopGo" style="pointer-events:auto;background:#0b1a27d9;border:1px solid #ffffff44;backdrop-filter:blur(12px);color:#fff;text-decoration:none;font-size:12px;font-weight:800;padding:8px 11px;border-radius:999px">↗ Подробно</a>';
