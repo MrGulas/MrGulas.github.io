@@ -119,7 +119,9 @@ var win=rows.filter(x=>x.hour>=10&&x.hour<=16);
 var total=win.reduce((s,x)=>s+(+x.mm||0),0),pop=Math.max(...win.map(x=>+x.pop||0)),gust=Math.max(...win.map(x=>+x.gust||0));
 var cloud=Math.round(win.reduce((s,x)=>s+(+x.cloud||0),0)/win.length),snow=win.reduce((s,x)=>s+(+x.snow||0),0);
 var dec=v=>v==null?"—":Number(v).toFixed(1);
+var rain=window.FERRATA_LOGISTICS?.rainLevel(total)||{key:"unknown",label:dec(total)+" мм",text:"Оцени состояние скалы отдельно."};
 out.innerHTML='<p class="sourceNote">Open-Meteo · координаты района '+esc(r.region)+' · дата '+esc(weatherDate)+'. Сумма для периода 10:00–17:00.</p>'+
+'<div class="rainVerdict rain-'+esc(rain.key)+'"><b>'+esc(rain.label)+'</b><span>'+esc(rain.text)+'</span></div>'+
 '<div class="wxKpis"><div class="wxKpi"><label>Осадки 10–17</label><strong>'+dec(total)+' мм</strong></div><div class="wxKpi"><label>Макс. вероятность</label><strong>'+pop+'%</strong></div><div class="wxKpi"><label>Средние облака</label><strong>'+cloud+'%</strong></div><div class="wxKpi"><label>Порывы ветра</label><strong>'+gust.toFixed(0)+' км/ч</strong></div></div>'+
 (snow>0?'<div class="warning"><b>❄️ Снег в модели: '+dec(snow)+' см.</b> Горные условия могут быть значительно сложнее.</div>':"")+
 '<div class="hourlyScroll"><table class="hourlyTable"><thead><tr><th>Время</th><th>Осадки</th><th>Шанс</th><th>Облака</th><th>Темп.</th><th>Порывы</th><th>Снег</th></tr></thead><tbody>'+
