@@ -1,0 +1,19 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0a1820">
+<title>Сравнение маршрутов · Ferrata Atlas</title><meta name="description" content="Подробное сравнение via ferrata по сложности, продолжительности, видам, подходам, озёрам и погоде.">
+<link rel="stylesheet" href="./explorer.css?v=3"><link rel="stylesheet" href="./premium.css?v=4"><link rel="stylesheet" href="./vip.css?v=1">
+<script defer src="./routes-data.js?v=5"></script><script defer src="./compare.js?v=1"></script><script defer src="./vip.js?v=1"></script></head>
+<body class="atlasDetail vipComparePage" data-page="compare">
+<nav class="atlasNav vipNav" aria-label="Навигация"><a class="atlasBrand" href="./index.html"><span class="mark">⌁</span>VIA FERRATA <span style="color:#9ae5c5">ATLAS</span></a><div class="atlasNavLinks">
+<a href="./index.html#routeFinder">☷ Фильтры</a><a href="./index.html#cards">Маршруты</a>
+<a class="vipFavLink" href="./index.html?view=favorites#cards">♥ Избранное <b data-fav-count>0</b></a>
+<a class="vipCompareLink active" href="./compare.html">⚖ Сравнение <b data-compare-count>0</b></a></div></nav>
+<div class="vipWide">
+<section class="compareHero"><div class="atlasEyebrow">Сохранённая подборка · в этом браузере</div><h1>Сравнить по-настоящему.</h1>
+<p>Не только WOW: время непосредственно на тросе, дорога, техническая сложность, доступ к озеру, риски в октябре, подходы, хайк и прогноз на выбранную дату.</p>
+<div class="compareMeta"><span id="compareCount">Загрузка…</span><label class="datePick">🌤 Погода на <input type="date" id="compareDate" value="2026-10-10"></label><button id="refreshCompareWeather" class="actionSoft" type="button">↻ Обновить погоду</button><a class="actionSoft" href="./index.html#cards">＋ Добавить маршрут</a></div>
+</section>
+<section id="compareEmpty" class="vipEmpty" hidden><div class="vipEmptyIcon">⚖</div><h2>Пока не с чем сравнивать</h2><p>Нажми «＋ Сравнить» в карточках маршрутов — выбранные ферраты появятся здесь. Можно выбрать до пяти.</p><a class="actionMain" href="./index.html#cards">Открыть каталог →</a></section>
+<section id="compareContent" hidden><div class="compareLegend">⇆ Таблицу можно прокручивать горизонтально на телефоне. Прогноз — модель Open-Meteo, не гарантия сухой скалы. Данные о времени приблизительные; ссылки на оригинальные топо находятся в каждой колонке.</div><div class="compareScroll" tabindex="0" aria-label="Подробная сравнительная таблица феррат"><div id="compareMatrix"></div></div>
+<div class="compareFooterTools"><button type="button" class="actionSoft" id="clearComparison">Очистить сравнение</button><a class="actionMain" href="./index.html#cards">← Назад к маршрутам</a></div></section>
+<div class="detailFooter">Ferrata Atlas · Избранное, сравнение и фильтры хранятся только в браузере этого устройства. Без аккаунта между устройствами данные автоматически не синхронизируются.</div>
+</div></body></html>
