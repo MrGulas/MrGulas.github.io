@@ -94,6 +94,43 @@ try{
 $("compareDate").addEventListener("change",refreshWeather);
 $("refreshCompareWeather").addEventListener("click",refreshWeather);
 $("clearComparison").addEventListener("click",()=>{if(!confirm("Удалить все маршруты из сравнения? Избранное останется."))return;setIds([]);display()});
+
+function myBackup(){
+ const safely=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key)||JSON.stringify(fallback))}catch(e){return fallback}};
+ return {app:"FerrataAtlas",version:1,createdAt:new Date().toISOString(),favourites:safely("ferrataWOW_favorites_v1",[]),comparison:safely(KEY,[]),filters:safely("ferrataWOW_filters_v2",{})};
+}
+const feedback=$("backupFeedback");
+$("exportPersonalData").addEventListener("click",()=>{
+ const data=JSON.stringify(myBackup(),null,2);
+ const blob=new Blob([data],{type:"application/json;charset=utf-8"});
+ const url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download="ferrata-atlas-my-selection.json";document.body.append(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1500);
+ feedback.textContent="Файл с твоими настройками сохранён. Он остаётся на устройстве.";
+});
+$("importPersonalData").addEventListener("change",async event=>{
+ const file=event.target.files?.[0];if(!file)return;
+ try{
+  if(file.size>250000)throw Error("Файл слишком большой");
+  const data=JSON.parse(await file.text());
+  if(data.app!=="FerrataAtlas"||data.version!==1)throw Error("Это не файл Ferrata Atlas");
+  const unique=(arr,min,max)=>[...new Set((Array.isArray(arr)?arr:[]).filter(x=>Number.isInteger(x)&&x>=min&&x<=max))];
+  const favourites=unique(data.favourites,1,db.routes.length);
+  const comparison=unique(data.comparison,0,db.routes.length-1).slice(0,5);
+  localStorage.setItem("ferrataWOW_favorites_v1",JSON.stringify(favourites));
+  localStorage.setItem(KEY,JSON.stringify(comparison));
+  if(data.filters&&typeof data.filters==="object"&&!Array.isArray(data.filters)){
+   const approved=["st","countries","minWow","maxRain","maxDrive","grade","lake","combos","shortDay","onlyKnown","climbMax","lengthMax","onlyFavorites","sort","weatherWeight","wowWeight","driveWeight"];
+   const cleaned={};
+   for(const key of approved)if(Object.prototype.hasOwnProperty.call(data.filters,key))cleaned[key]=data.filters[key];
+   localStorage.setItem("ferrataWOW_filters_v2",JSON.stringify(cleaned));
+  }
+  feedback.textContent="✓ Загружено: "+favourites.length+" избранных, "+comparison.length+" для сравнения.";
+  window.dispatchEvent(new Event("atlas:changed"));
+  display();
+ }catch(err){feedback.textContent="Не получилось импортировать: "+err.message}
+ event.target.value="";
+});
 display();
 window.addEventListener("storage",e=>{if(e.key===KEY)display()});
 })();
