@@ -153,3 +153,5 @@ body.atlasDetail{min-height:100vh;background:radial-gradient(ellipse at 60% 0%,#
 .detailHero:has(>.heroFrame:only-child){display:block}
 .detailHero:has(>.heroFrame:only-child)>.heroFrame{height:360px;width:100%}
 @media(max-width:680px){.deepDive{grid-template-columns:1fr}.detailHero:has(>.heroFrame:only-child)>.heroFrame{height:270px}}
+
+.weatherDateControls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.weatherDateControls label{font-size:12px;color:#add9dd}.weatherDateInput{padding:10px 13px;min-width:142px;max-width:175px;border:1px solid #577684;background:#193440;color:#e9faff;border-radius:10px;font:inherit;color-scheme:dark}
