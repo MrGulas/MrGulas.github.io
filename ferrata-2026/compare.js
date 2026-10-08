@@ -198,8 +198,8 @@ async function refreshWeather(){
 const ids=getIds(),routes=ids.map(id=>db.routes[id]);const day=$("compareDate").value||"2026-10-10";
 await Promise.all(routes.map(async r=>{
 const el=$("cmpWX-"+r.id);if(!el)return;
-if(r.lat==null||r.lon==null){el.textContent="Нет уточнённых координат";return}
-el.innerHTML='<span class="matrixMuted">Загружаю почасовую модель…</span>';
+if(r.lat==null||r.lon==null){el.textContent="Нет уточнённых координат";const mobile=$("cmpMobileWX-"+r.id);if(mobile)mobile.textContent=el.textContent;return}
+el.innerHTML='<span class="matrixMuted">Загружаю почасовую модель…</span>';const loadingMobile=$("cmpMobileWX-"+r.id);if(loadingMobile)loadingMobile.innerHTML=el.innerHTML;
 const p=new URLSearchParams({latitude:r.lat,longitude:r.lon,hourly:"precipitation,precipitation_probability,cloud_cover,temperature_2m,wind_gusts_10m,snowfall",timezone:"Europe/Vienna",start_date:day,end_date:day});
 try{
  const res=await fetch("https://api.open-meteo.com/v1/forecast?"+p);
@@ -216,8 +216,8 @@ try{
  const temp=sel.map(i=>t.temperature_2m?.[i]).filter(x=>x!=null);
  const lo=temp.length?Math.round(Math.min(...temp))+"°":"—";
  const hi=temp.length?Math.round(Math.max(...temp))+"°":"—";
- el.innerHTML='<div class="cmpWeatherStrong">'+sum.toFixed(1)+' мм / 10–17</div><div>🌧 Макс. '+pop+'% · ☁️ '+cloud+'%</div><div>🌡 '+lo+'…'+hi+' · 💨 '+gust+' км/ч</div>'+(snow>0?'<div class="cmpWeatherAlert">❄ Снег '+snow.toFixed(1)+' см</div>':"")+'<small>Open-Meteo · прогноз района, не скалы</small>';
-}catch(e){el.innerHTML='<span class="matrixMuted">Недоступно: '+esc(e.message)+'. См. официальный прогноз.</span>'}
+ el.innerHTML='<div class="cmpWeatherStrong">'+sum.toFixed(1)+' мм / 10–17</div><div>🌧 Макс. '+pop+'% · ☁️ '+cloud+'%</div><div>🌡 '+lo+'…'+hi+' · 💨 '+gust+' км/ч</div>'+(snow>0?'<div class="cmpWeatherAlert">❄ Снег '+snow.toFixed(1)+' см</div>':"")+'<small>Open-Meteo · прогноз района, не скалы</small>';const mobile=$("cmpMobileWX-"+r.id);if(mobile)mobile.innerHTML=el.innerHTML;
+}catch(e){el.innerHTML='<span class="matrixMuted">Недоступно: '+esc(e.message)+'. См. официальный прогноз.</span>';const mobile=$("cmpMobileWX-"+r.id);if(mobile)mobile.innerHTML=el.innerHTML}
 }));
 }
 $("compareDate").addEventListener("change",refreshWeather);
