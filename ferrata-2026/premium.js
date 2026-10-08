@@ -50,6 +50,7 @@ for(let i=0;i<original.length;i++){
  })
 }
 updateFavCards();
+window.addEventListener("storage",event=>{if(event.key===favKey){updateFavCards();if(document.getElementById("onlyFavorites")?.checked&&window.FERRATA_REDRAW)window.FERRATA_REDRAW()}});
 document.querySelector("#resetFilters")?.addEventListener("click",()=>{const chk=document.getElementById("onlyFavorites");if(chk)chk.checked=false;});
 const helper=document.querySelector("#finderHint");
 if(helper)helper.title="Указанные интервалы лазания ориентировочные. Для подтверждённой длины и времени всегда сверяйся с топо.";
