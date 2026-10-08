@@ -1,0 +1,128 @@
+
+/* Ferrata Atlas / VIP polish & user-specific collections */
+html{scroll-padding-top:86px}
+body{background:radial-gradient(ellipse at 35% -18%,#1b5050 0%,#091722 34%,#080f17 78%)!important}
+.atlasNav.vipNav{max-width:none;padding:13px max(18px,calc((100vw - 1250px)/2));background:rgba(8,21,28,.90);backdrop-filter:blur(16px);border-bottom:1px solid #ffffff1e;position:sticky;top:0;z-index:81}
+.vipNav .atlasBrand{font-size:clamp(15px,2vw,21px);white-space:nowrap;letter-spacing:-.035em}
+.vipNav .atlasNavLinks{gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.vipNav .atlasNavLinks>a{font-size:13px;font-weight:750;display:inline-flex;align-items:center;gap:7px;padding:9px 12px;border:1px solid transparent;border-radius:10px;white-space:nowrap}
+.vipNav .atlasNavLinks>a b{display:inline-grid;place-items:center;min-width:22px;height:21px;background:#244b4c;color:#caffea;border:1px solid #4a7771;border-radius:20px;font:800 11px "DM Sans",sans-serif;padding:0 5px}
+.vipNav .atlasNavLinks>a.active,.vipNav .atlasNavLinks>a:hover{background:#19423f;border-color:#437a6d;color:#edfff5}
+.vipHeader{max-width:1270px;margin:auto;padding:34px 22px 23px}
+.vipHeader .vipKicker{color:#84dabe;text-transform:uppercase;font-size:11px;letter-spacing:.17em;font-weight:800;display:block;margin-bottom:14px}
+.vipHeader>p:first-of-type{font-size:12px;color:#bdd1d9;letter-spacing:.04em}
+.vipHeader h1{font-size:clamp(32px,5vw,59px);font-weight:800;line-height:1.1;max-width:950px;margin:9px 0 14px;letter-spacing:-.065em}
+.vipHeader .vipSubtitle{color:#adcbd4;max-width:850px;font-size:15px;line-height:1.65}
+.vipSafety{max-width:1130px;border-top:1px solid #2d4f5a;margin:22px 0 0;padding:12px 0 4px;color:#96acb8;font-size:12px}
+.vipSafety summary{cursor:pointer;color:#a7d4ce;font-weight:800}
+.vipSafety p{margin:9px 0 0;font-size:12px;color:#9db5c0;line-height:1.65}
+.vipStickyNote{display:flex;gap:12px;align-items:center;max-width:1260px;margin:0 auto 25px;padding:0 22px;font-size:12px;color:#a4c0c6}
+.vipStickyNote strong{color:#b1ffe1}
+.vipStickyNote a{color:#90e9d3;text-decoration:underline}
+.atlasIndexIntro{display:none}
+#routeFinder{margin-top:4px}
+#routeFinder .finderShell{background:linear-gradient(130deg,#172d39,#101e2b)!important;border:1px solid #39565e}
+#finderStats{padding:0 18px}
+#cards{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:stretch;max-width:1260px;padding-bottom:80px}
+#cards>.card{display:flex!important;flex-direction:column!important;min-width:0;height:650px;min-height:650px;max-height:650px;overflow:hidden;content-visibility:visible!important;background:linear-gradient(145deg,#172937,#111e2b)!important}
+#cards>.card[hidden]{display:none!important}
+#cards>.card .topline{flex:0 0 auto;min-height:54px;max-height:61px;overflow:hidden;padding-top:12px;margin-bottom:1px;gap:5px}
+#cards>.card .rank{font-size:11px}
+#cards>.card .badge{font-size:10px;padding:4px 8px}
+#cards>.card .mm,#cards>.card .wow{font-size:11px;padding:3px 7px;white-space:nowrap}
+#cards>.card>h2{font-size:18px;line-height:1.28;margin-top:10px;margin-bottom:7px;min-height:47px;max-height:69px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+#cards>.card .cardTools{flex:0 0 auto;margin-top:5px;margin-bottom:8px}
+#cards>.card .meta{font-size:12px;min-height:30px;max-height:43px;line-height:1.5;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+#cards>.card .cardDataChips{flex:0 0 30px;max-height:35px;overflow:hidden;margin-top:6px;margin-bottom:5px}
+#cards>.card>.vipSegmentPills{margin:0 18px 7px;display:flex;gap:5px;flex-wrap:wrap;max-height:43px;min-height:20px;overflow:hidden}
+.vipSegmentPills a{font-size:11px;font-weight:800;color:#93eacb;background:#193b3a;border:1px solid #335c55;padding:4px 8px;border-radius:7px;text-decoration:none;white-space:nowrap}
+.vipSegmentPills a:hover{background:#22645a;color:#fff}
+#cards>.card>p{flex:0 0 64px;max-height:64px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-top:5px;margin-bottom:10px;font-size:13px;line-height:1.64}
+#cards>.card .gallery{height:187px!important;min-height:187px!important;max-height:187px!important;flex:0 0 187px;order:-1!important;display:flex!important;overflow:hidden!important;gap:3px!important;background:#17313b;margin:0!important}
+#cards>.card .gallery img{height:187px!important;width:100%;object-fit:cover;display:block}
+#cards>.card .gallery .empty{width:100%}
+#cards>.card .detailCTA{flex:0 0 auto;margin:auto 18px 17px;padding:11px 16px;border-radius:12px;letter-spacing:-.01em}
+#cards>.card>.actions,#cards>.card>.proxy,#cards>.card>.wx-details{display:none!important}
+#cards>.card .compareAdd{font-size:12px;padding:7px 10px}
+#cards>.card .scoreBadge{font-size:11px}
+#cards>.card .cardMap{font-size:12px;padding:7px 9px}
+#cards>.card .cardTopbar{top:11px;left:12px;right:12px}
+#cards>.card .gallery.vipSplitGallery{gap:4px!important}
+.vipPartTile{position:relative;flex:1 1 0;min-width:0;overflow:hidden;display:flex;align-items:flex-end;justify-content:center;background:radial-gradient(ellipse at 36% 21%,#355c65,#153347 70%);text-decoration:none}
+.vipPartTile:nth-child(2n){background:radial-gradient(ellipse at 35% 20%,#426e57,#182f41 75%)}
+.vipPartTile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
+.vipPartTile:hover img{transform:scale(1.08)}
+.vipPartTile .vipPartShade{position:absolute;inset:34% 0 0;background:linear-gradient(0deg,#061622f0,#06162200);pointer-events:none}
+.vipPartTile .vipPartInfo{position:relative;z-index:1;padding:10px 7px;color:white;display:flex;flex-direction:column;align-items:center;gap:3px;width:100%;text-align:center;text-shadow:0 2px 9px #001b25}
+.vipPartTile .vipPartInfo b{display:block;font-size:11px;font-weight:850;line-height:1.25;overflow-wrap:anywhere}
+.vipPartTile .vipPartInfo small{font-size:9px;opacity:.9;letter-spacing:.05em}
+.vipPartTile .vipNoPhoto{position:absolute;font-size:35px;color:#b8f5e0;opacity:.68;left:50%;top:29%;transform:translate(-50%,-50%)}
+.vipPartTile .vipPhotoCredit{position:absolute;top:6px;right:5px;background:#102936b0;color:#def5ee;border-radius:5px;padding:2px 5px;font-size:8px;z-index:2}
+.vipCompositeHero{display:block!important}
+.vipDetailSegments{display:grid;grid-template-columns:repeat(var(--segment-count),minmax(0,1fr));gap:9px;height:385px}
+.vipDetailSegments .vipPartTile{border-radius:14px;border:1px solid #436b75}
+.vipDetailSegments .vipPartTile .vipPartInfo{padding:24px 9px}
+.vipDetailSegments .vipPartTile .vipPartInfo b{font-size:clamp(16px,2vw,23px)}
+.vipDetailSegments .vipPartTile .vipPartInfo small{font-size:11px}
+.vipDetailSegments .vipPartTile .vipNoPhoto{font-size:65px;top:38%}
+.vipDetailPhotoLinks{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:18px 0}
+.vipDetailPhotoLinks .vipComponentCard{border:1px solid #3e5b63;border-radius:13px;background:#1b3340;padding:13px;display:flex;flex-direction:column;gap:8px}
+.vipComponentCard h3{font-size:16px;margin:0;color:#dff9ed}
+.vipComponentCard>small{color:#b4cbd2}
+.vipComponentCard a{font-size:12px;color:#a7f3d8;text-decoration:none;font-weight:750}
+.vipComponentCard a:hover{text-decoration:underline}
+.vipComponentCard .vipSource{color:#8baebe;font-size:11px}
+.vipPrivacy{font-size:12px;line-height:1.6;color:#aac6cd;margin:20px auto 0;padding:0 20px;max-width:1220px}
+.vipPrivacy strong{color:#a5efce}
+.compareHero{margin:35px 0 20px;padding:35px;border-radius:20px;border:1px solid #386269;background:linear-gradient(135deg,#194645,#152b42)}
+.compareHero h1{font-size:clamp(33px,5vw,56px);margin:8px 0 12px;line-height:1.1}
+.compareHero p{max-width:940px;color:#b9d5dc;font-size:15px}
+.compareMeta{display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin-top:22px}
+.compareMeta #compareCount{color:#acffdf;font-weight:850}
+.datePick{display:flex;align-items:center;gap:7px;font-size:13px;color:#c0d8d9}
+.datePick input{width:145px;min-width:0!important;padding:9px 10px;color-scheme:dark}
+.vipWide{max-width:1420px;margin:auto;padding:0 22px}
+.vipEmpty{background:#142938;border:1px solid #375361;padding:65px 20px;text-align:center;border-radius:20px;margin-top:20px}
+.vipEmptyIcon{font-size:55px;color:#a4edd7}
+.vipEmpty h2{font-size:25px;margin:10px}
+.vipEmpty p{max-width:460px;color:#aac1c8;margin:12px auto 26px}
+.compareLegend{color:#a6c1c8;font-size:12px;margin:12px 0}
+.compareScroll{max-width:100%;overflow:auto;overscroll-behavior:contain;border-radius:18px;border:1px solid #3f5965;background:#142531;box-shadow:0 25px 65px #0004}
+.compareMatrix{border-collapse:separate;border-spacing:0;width:100%;min-width:max-content;font-size:13px;table-layout:fixed}
+.compareMatrix thead th{position:sticky;top:0;z-index:3;background:#162d39;border-bottom:1px solid #527079;padding:13px;vertical-align:top}
+.compareMatrix th:first-child{position:sticky;left:0;z-index:4;width:200px;min-width:200px;background:#162c39;box-shadow:4px 0 14px #0002}
+.compareMatrix .matrixCorner{z-index:7;top:0;left:0;text-align:left;vertical-align:middle;color:#9de6c8}
+.compareMatrix td{width:235px;min-width:235px;max-width:235px;white-space:normal;vertical-align:top;padding:16px 14px;border-bottom:1px solid #334753;border-right:1px solid #2d424e;background:#152937;line-height:1.55;color:#d2e4e9}
+.compareMatrix tbody tr:nth-child(2n) td{background:#172e3c}
+.compareMatrix tbody th[scope="row"]{padding:15px 13px;border-bottom:1px solid #38515b;border-right:1px solid #3e5861;font-size:12px;color:#adc4cc;text-align:left;vertical-align:top;z-index:2;white-space:normal;max-width:200px}
+.compareMatrix .matrixSection th{position:static;min-width:unset;width:auto;padding:13px 17px;background:#194b47;color:#b9ffdf;font-size:12px;text-transform:uppercase;letter-spacing:.09em;font-weight:800;box-shadow:none}
+.compareRouteHeading{min-width:235px;width:235px;max-width:235px;text-align:left}
+.comparePhoto{height:120px;margin-bottom:12px;border-radius:10px;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#244656;position:relative;overflow:hidden;text-decoration:none}
+.comparePhoto img{height:100%;width:100%;object-fit:cover}
+.comparePhoto>span{position:absolute;bottom:0;left:0;right:0;padding:20px 7px 4px;background:linear-gradient(0deg,#061820ed,transparent);color:#c4e5df;font-size:10px}
+.comparePhoto.photoBroken img{display:none}
+.comparisonNoPhoto{font-size:30px;color:#a2f3d3}
+.comparisonNoPhoto small{display:block;font-size:11px;color:#b7cbd5}
+.matrixRouteTitle{display:block;text-decoration:none;color:#eafff9;font-weight:850;font-size:16px;line-height:1.35;min-height:67px}
+.matrixRouteTitle:hover{color:#8bf2ce}
+.matrixHeadActions{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:8px}
+.matrixHeadActions a,.matrixHeadActions button{font-size:11px;color:#afeedc;background:transparent;border:1px solid #4c6c70;padding:6px 7px;text-decoration:none;border-radius:8px}
+.matrixHeadActions button{color:#edbbb0}
+.matrixValue{color:#f0faff;font-size:17px}
+.matrixValue.good{color:#91f0cc;font-size:23px}
+.matrixStatus{font-weight:750}
+.matrixProse{font-size:12px;color:#c2d9de;line-height:1.7}
+.matrixMuted{font-size:12px;color:#97b0bd}
+.matrixYes{color:#98e9d5;font-weight:800}
+.compareParts{display:grid;gap:6px}
+.compareParts a{color:#b6e9e1;background:#21443f;border:1px solid #365c56;text-decoration:none;padding:7px;border-radius:8px;font-size:12px}
+.matrixTextLink{color:#8ce8cd;text-decoration:none}
+.matrixTextLink:hover{text-decoration:underline}
+.matrixWeather{font-size:12px;color:#bbd9e1}
+.matrixWeather small{display:block;font-size:10px;color:#85aab7;margin-top:8px}
+.cmpWeatherStrong{font-size:16px;color:#bdffdf;font-weight:850}
+.cmpWeatherAlert{color:#ffc99a}
+.compareFooterTools{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:22px 0}
+@media(max-width:1150px){#cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}}
+@media(max-width:740px){.atlasNav.vipNav{padding:12px;display:flex;flex-direction:column;gap:8px;align-items:flex-start}.vipNav .atlasNavLinks{justify-content:flex-start;gap:1px}.vipNav .atlasNavLinks>a{font-size:11px;padding:7px 8px}.vipHeader{padding:21px 14px}.vipStickyNote{padding:0 14px}.vipHeader h1{font-size:32px}#cards{grid-template-columns:1fr;gap:13px;padding:0 12px 40px}#cards>.card{height:658px;min-height:658px;max-height:658px}.vipDetailSegments{height:255px;gap:5px}.vipDetailSegments .vipPartTile .vipPartInfo b{font-size:13px}.vipDetailSegments .vipPartTile .vipPartInfo small{font-size:9px}.vipDetailSegments .vipPartTile .vipNoPhoto{font-size:40px}.vipWide{padding:0 10px}.compareHero{padding:22px;margin-top:20px}.compareMatrix td,.compareRouteHeading{width:206px;min-width:206px;max-width:206px}.compareMatrix th:first-child{width:135px;min-width:135px;max-width:135px}.vipDetailPhotoLinks{grid-template-columns:1fr 1fr}}
+@media(max-width:420px){.vipNav .atlasNavLinks>a{font-size:10px;padding:6px}.vipDetailPhotoLinks{grid-template-columns:1fr}}
