@@ -1,0 +1,120 @@
+
+/* Ferrata Atlas • clarity + responsive detail pages */
+html,body{max-width:100%}
+*,*::before,*::after{box-sizing:border-box}
+body{overflow-x:clip}
+#routeFinder{scroll-margin-top:82px}
+#routeFinder .finderTitle h2{font-size:clamp(20px,3vw,29px);letter-spacing:-.04em}
+#routeFinder .finderTitle p{font-size:13px;color:#a6c5cc;line-height:1.55}
+#routeFinder .finderBlock>h3{font-size:15px;letter-spacing:-.015em}
+#routeFinder .filterHelper{color:#9dbcc4;font-size:12px;line-height:1.5;margin:0 0 12px}
+#routeFinder select,#routeFinder input{max-width:100%}
+#routeFinder .finderLine{min-width:0;flex-wrap:wrap}
+#routeFinder .finderLine span{font-size:12px}
+#routeFinder .quickTitle{display:flex;align-items:center;gap:12px;margin:0 0 16px}
+#routeFinder .quickBolt{flex:0 0 41px;width:41px;height:41px;border-radius:12px;background:linear-gradient(125deg,#317c68,#275478);display:grid;place-items:center;font-size:21px;border:1px solid #61b8a1}
+#routeFinder .quickTitle>div{flex:1;min-width:0}
+#routeFinder .quickTitle h3{margin:0;color:#e8fff7;line-height:1.3;font-size:19px;letter-spacing:-.035em}
+#routeFinder .quickTitle p{margin:4px 0 0;color:#a4c5cc;font-size:12px;line-height:1.45}
+#routeFinder .quickHint{font:800 10px "DM Sans",sans-serif;text-transform:uppercase;letter-spacing:.1em;background:#2a5548;color:#a9ffe3;padding:6px 10px;border-radius:20px;white-space:nowrap}
+#routeFinder .presetSection{margin:13px 0 23px;border-radius:19px;padding:21px;background:linear-gradient(125deg,#18443e,#193349 80%);border:1px solid #4d8f83;box-shadow:0 12px 27px #0003}
+#routeFinder .presetSection .presetbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;padding:0;margin:0;background:transparent;border:0}
+#routeFinder .presetbar button{min-width:0;width:100%;padding:13px 10px;border:1px solid #467876;background:#14313d;border-radius:12px;color:#ddf3e9;font-weight:750;font-size:12px;line-height:1.4;white-space:normal;min-height:51px}
+#routeFinder .presetbar button:hover{border-color:#82dcc3;background:#24524b}
+#routeFinder .presetbar button.isActive{color:#103228;background:#abffe0;border-color:#baffed;box-shadow:0 0 0 2px #baffed22}
+#routeFinder .importanceIntro h3{font-size:20px;letter-spacing:-.04em;color:#e9fff6;margin:0 0 4px}
+#routeFinder .importanceIntro p{font-size:12px;line-height:1.55;color:#9ebdc6;margin:0 0 17px}
+#routeFinder .importanceGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+#routeFinder .importanceGrid>label{display:flex;min-width:0;flex-direction:column;gap:6px;border:1px solid #426575;border-radius:15px;background:#193441;padding:15px;color:#e5f4ed;cursor:pointer}
+#routeFinder .importanceIcon{font-size:26px;line-height:1}
+#routeFinder .importanceGrid strong{font-size:15px;line-height:1.35;color:#edfff5;letter-spacing:-.02em}
+#routeFinder .importanceGrid small{font-size:12px;line-height:1.5;color:#a8c6cc;min-height:36px}
+#routeFinder .importanceGrid select{display:block;min-width:0!important;width:100%;font-size:12px;font-weight:750;background:#214d4f;color:#effff7;border:1px solid #6cae9c;padding:12px 10px;border-radius:9px;margin-top:auto;line-height:1.3;cursor:pointer}
+#routeFinder .importanceCaution{font-size:11px;line-height:1.55;color:#a8bec2;margin:15px 0 0}
+#routeFinder .importanceBlock{border:1px solid #4b7b71!important;background:linear-gradient(115deg,#1a3745,#18363a)!important}
+#routeFinder .wxNote{color:#91b0bc}
+body.atlasDetail .detailIntro,body.atlasDetail .detailHero,body.atlasDetail main{min-width:0;width:100%;max-width:1300px}
+body.atlasDetail .detailIntro{padding:0 clamp(12px,3vw,24px)}
+body.atlasDetail .detailHero{padding:0 clamp(12px,3vw,24px)}
+body.atlasDetail main{padding:0 clamp(12px,3vw,24px) 80px}
+body.atlasDetail #routePage{min-width:0;max-width:100%;overflow-x:clip}
+body.atlasDetail .detailGrid{width:100%;min-width:0;grid-template-columns:minmax(0,1.85fr) minmax(260px,.8fr)}
+body.atlasDetail .detailGrid>.detailContent,
+body.atlasDetail .detailGrid>.detailSide,
+body.atlasDetail .detailContent>section,
+body.atlasDetail .detailSide section{min-width:0;max-width:100%}
+body.atlasDetail .detailGrid .hourlyScroll{max-width:100%;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+body.atlasDetail .detailGrid .hourlyTable{min-width:675px;width:max-content}
+body.atlasDetail #routePills{min-width:0;max-width:100%;flex-wrap:wrap}
+body.atlasDetail .infoPill{white-space:normal;max-width:100%;overflow-wrap:anywhere}
+body.atlasDetail .detailTitle,body.atlasDetail .detailSubtitle,
+body.atlasDetail .detailContent p,body.atlasDetail .detailSide p,
+body.atlasDetail .routeSteps,body.atlasDetail .detailLink,body.atlasDetail .crumbs{overflow-wrap:anywhere;word-break:normal}
+body.atlasDetail .detailActionLine{max-width:100%}
+body.atlasDetail .detailActionLine a,body.atlasDetail .detailActionLine button{min-height:44px;min-width:0;max-width:100%;white-space:normal}
+body.atlasDetail .mapFrame{max-width:100%;overflow:hidden}
+body.atlasDetail .mapFrame iframe{max-width:100%;width:100%}
+body.atlasDetail .dataGrid{min-width:0}
+body.atlasDetail .dataGrid .dataCell{min-width:0;overflow-wrap:anywhere}
+body.atlasDetail .detailHero.vipCompositeHero{display:block!important;height:auto!important;grid-template-columns:none!important;grid-template-rows:none!important;max-width:1300px}
+body.atlasDetail .detailHero.vipCompositeHero .vipDetailSegments{width:100%;height:385px;min-width:0}
+body.atlasDetail .detailHero.vipCompositeHero .vipPartTile{display:flex;min-width:0}
+body.atlasDetail .detailLink{min-width:0;overflow-wrap:anywhere}
+@media(max-width:1100px){
+ #routeFinder .presetSection .presetbar{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:850px){
+ body.atlasDetail .detailGrid{display:flex!important;flex-direction:column!important;gap:15px}
+ body.atlasDetail .detailContent,body.atlasDetail .detailSide{width:100%}
+ body.atlasDetail .detailSide{order:-1}
+ body.atlasDetail .detailSide>.detailSticky{position:static}
+ body.atlasDetail #routeGallery:not(.vipCompositeHero){grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:235px 115px}
+ body.atlasDetail #routeGallery:not(.vipCompositeHero)>.heroFrame:first-child{grid-column:1 / -1;grid-row:auto}
+ body.atlasDetail .detailHero.vipCompositeHero .vipDetailSegments{display:flex!important;overflow-x:auto!important;overflow-y:hidden;width:100%;max-width:100%;height:275px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;gap:9px;padding-bottom:3px}
+ body.atlasDetail .detailHero.vipCompositeHero .vipDetailSegments .vipPartTile{flex:0 0 73%;width:73%;height:100%;scroll-snap-align:start;border-radius:14px}
+ body.atlasDetail .detailHero.vipCompositeHero .vipDetailSegments .vipPartTile .vipPartInfo b{font-size:18px}
+ body.atlasDetail .detailHero.vipCompositeHero .vipDetailSegments .vipPartTile .vipPartInfo small{font-size:11px}
+ body.atlasDetail .detailHero.vipCompositeHero .vipDetailSegments .vipPartTile .vipNoPhoto{font-size:52px}
+ #routeFinder .importanceGrid{grid-template-columns:1fr}
+ #routeFinder .importanceGrid>label{display:grid;grid-template-columns:34px minmax(0,1fr);align-items:center;gap:2px 12px;padding:13px}
+ #routeFinder .importanceIcon{grid-row:1/3;font-size:25px}
+ #routeFinder .importanceGrid strong{font-size:14px}
+ #routeFinder .importanceGrid small{min-height:0;grid-column:2;font-size:11px}
+ #routeFinder .importanceGrid select{grid-column:1/-1;margin-top:8px}
+}
+@media(max-width:610px){
+ #routeFinder .presetSection{padding:14px;border-radius:14px;margin:12px 0 20px}
+ #routeFinder .presetSection .presetbar{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ #routeFinder .presetSection .presetbar button{font-size:12px;min-height:49px}
+ #routeFinder .quickTitle{gap:9px}
+ #routeFinder .quickBolt{width:35px;flex-basis:35px;height:35px}
+ #routeFinder .quickHint{display:none}
+ #routeFinder .quickTitle h3{font-size:17px}
+ body.atlasDetail .atlasNav.vipNav{max-width:100vw;overflow:visible}
+ body.atlasDetail .detailTitle{font-size:clamp(27px,7.5vw,39px);line-height:1.12;overflow-wrap:anywhere}
+ body.atlasDetail .detailIntro{padding:0 13px}
+ body.atlasDetail .detailHero{padding:0 12px}
+ body.atlasDetail main{padding:0 11px 64px}
+ body.atlasDetail .detailContent>section,body.atlasDetail .detailSide section{padding:17px 14px;border-radius:15px}
+ body.atlasDetail .detailActionLine{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ body.atlasDetail .detailActionLine>*{padding:10px!important;min-width:0;width:100%;display:flex;justify-content:center;text-align:center;font-size:12px!important}
+ body.atlasDetail .infoStrip{gap:6px}
+ body.atlasDetail .infoPill{font-size:11px;padding:7px 8px}
+ body.atlasDetail .detailHero.vipCompositeHero .vipDetailSegments{height:250px}
+ body.atlasDetail .detailHero.vipCompositeHero .vipDetailSegments .vipPartTile{flex-basis:79%;width:79%}
+ body.atlasDetail .weatherHeader{display:flex;align-items:flex-start;flex-direction:column}
+ body.atlasDetail .weatherDateControls{width:100%;justify-content:flex-start}
+ body.atlasDetail .wxKpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+ body.atlasDetail .wxKpi strong{font-size:17px}
+ body.atlasDetail .detailGrid .hourlyTable{min-width:680px}
+ body.atlasDetail .relatedGrid{grid-template-columns:1fr}
+ body.atlasDetail .vipDetailPhotoLinks{grid-template-columns:1fr!important}
+ body.atlasDetail .detailHero:not(.vipCompositeHero)>.heroFrame{min-width:0}
+ body.atlasDetail .detailLink{font-size:12px;padding:12px}
+}
+@media(max-width:360px){
+ body.atlasDetail .detailActionLine{grid-template-columns:1fr 1fr}
+ body.atlasDetail .detailHero.vipCompositeHero .vipDetailSegments{height:210px}
+ body.atlasDetail .detailHero.vipCompositeHero .vipDetailSegments .vipPartTile{flex-basis:87%;width:87%}
+ #routeFinder .presetSection .presetbar button{font-size:11px}
+}
