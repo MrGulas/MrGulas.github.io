@@ -99,9 +99,10 @@ function updateFav(){$("favRoute").textContent=favs.has(r.id)?"♥ В избра
 $("favRoute").addEventListener("click",()=>{if(favs.has(r.id))favs.delete(r.id);else favs.add(r.id);localStorage.setItem(favKey,JSON.stringify([...favs]));updateFav()});updateFav();
 $("shareRoute").addEventListener("click",async()=>{try{if(navigator.share)await navigator.share({title:r.name,url:location.href});else {await navigator.clipboard.writeText(location.href);$("shareRoute").textContent="✓ Ссылка скопирована";setTimeout(()=>$("shareRoute").textContent="🔗 Поделиться",2000)}}catch(e){if(e.name!=="AbortError")window.prompt("Ссылка",location.href)}});
 async function forecast(){
+var weatherDate=$("weatherDate")?.value||"2026-10-10";
 var load=$("weatherLoading"),out=$("weatherData");load.hidden=false;out.hidden=true;
 if(!hasCoordinates){load.textContent="Для района пока нет точных координат. Используй ссылки на официальные метеослужбы.";return}
-var req=new URLSearchParams({latitude:r.lat,longitude:r.lon,hourly:"temperature_2m,precipitation,precipitation_probability,cloud_cover,snowfall,wind_gusts_10m",timezone:"Europe/Vienna",start_date:"2026-10-10",end_date:"2026-10-10"});
+var req=new URLSearchParams({latitude:r.lat,longitude:r.lon,hourly:"temperature_2m,precipitation,precipitation_probability,cloud_cover,snowfall,wind_gusts_10m",timezone:"Europe/Vienna",start_date:weatherDate,end_date:weatherDate});
 try{
 var rr=await fetch("https://api.open-meteo.com/v1/forecast?"+req.toString());if(!rr.ok)throw Error("HTTP "+rr.status);
 var d=await rr.json();if(d.error)throw Error(d.reason||"API error");
@@ -112,7 +113,7 @@ var win=rows.filter(x=>x.hour>=10&&x.hour<=16);
 var total=win.reduce((s,x)=>s+(+x.mm||0),0),pop=Math.max(...win.map(x=>+x.pop||0)),gust=Math.max(...win.map(x=>+x.gust||0));
 var cloud=Math.round(win.reduce((s,x)=>s+(+x.cloud||0),0)/win.length),snow=win.reduce((s,x)=>s+(+x.snow||0),0);
 var dec=v=>v==null?"—":Number(v).toFixed(1);
-out.innerHTML='<p class="sourceNote">Open-Meteo · координаты района '+esc(r.region)+' · дата 10 октября 2026. Сумма для периода 10:00–17:00.</p>'+
+out.innerHTML='<p class="sourceNote">Open-Meteo · координаты района '+esc(r.region)+' · дата '+esc(weatherDate)+'. Сумма для периода 10:00–17:00.</p>'+
 '<div class="wxKpis"><div class="wxKpi"><label>Осадки 10–17</label><strong>'+dec(total)+' мм</strong></div><div class="wxKpi"><label>Макс. вероятность</label><strong>'+pop+'%</strong></div><div class="wxKpi"><label>Средние облака</label><strong>'+cloud+'%</strong></div><div class="wxKpi"><label>Порывы ветра</label><strong>'+gust.toFixed(0)+' км/ч</strong></div></div>'+
 (snow>0?'<div class="warning"><b>❄️ Снег в модели: '+dec(snow)+' см.</b> Горные условия могут быть значительно сложнее.</div>':"")+
 '<div class="hourlyScroll"><table class="hourlyTable"><thead><tr><th>Время</th><th>Осадки</th><th>Шанс</th><th>Облака</th><th>Темп.</th><th>Порывы</th><th>Снег</th></tr></thead><tbody>'+
@@ -120,5 +121,5 @@ rows.map(x=>'<tr><td><b>'+x.time+'</b></td><td>'+dec(x.mm)+' мм<div class="wxB
 load.hidden=true;out.hidden=false;
 }catch(e){load.textContent="Не удалось загрузить прогноз ("+e.message+"). Используй официальные ссылки ниже.";out.hidden=true}
 }
-$("refreshWeather").addEventListener("click",forecast);forecast();
+$("refreshWeather").addEventListener("click",forecast);$("weatherDate").addEventListener("change",forecast);forecast();
 })();
