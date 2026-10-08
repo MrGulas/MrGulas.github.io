@@ -126,3 +126,11 @@ body{background:radial-gradient(ellipse at 35% -18%,#1b5050 0%,#091722 34%,#080f
 @media(max-width:1150px){#cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}}
 @media(max-width:740px){.atlasNav.vipNav{padding:12px;display:flex;flex-direction:column;gap:8px;align-items:flex-start}.vipNav .atlasNavLinks{justify-content:flex-start;gap:1px}.vipNav .atlasNavLinks>a{font-size:11px;padding:7px 8px}.vipHeader{padding:21px 14px}.vipStickyNote{padding:0 14px}.vipHeader h1{font-size:32px}#cards{grid-template-columns:1fr;gap:13px;padding:0 12px 40px}#cards>.card{height:658px;min-height:658px;max-height:658px}.vipDetailSegments{height:255px;gap:5px}.vipDetailSegments .vipPartTile .vipPartInfo b{font-size:13px}.vipDetailSegments .vipPartTile .vipPartInfo small{font-size:9px}.vipDetailSegments .vipPartTile .vipNoPhoto{font-size:40px}.vipWide{padding:0 10px}.compareHero{padding:22px;margin-top:20px}.compareMatrix td,.compareRouteHeading{width:206px;min-width:206px;max-width:206px}.compareMatrix th:first-child{width:135px;min-width:135px;max-width:135px}.vipDetailPhotoLinks{grid-template-columns:1fr 1fr}}
 @media(max-width:420px){.vipNav .atlasNavLinks>a{font-size:10px;padding:6px}.vipDetailPhotoLinks{grid-template-columns:1fr}}
+
+.vipBackup{margin:27px 0 26px;display:flex;gap:25px;align-items:center;justify-content:space-between;padding:24px 27px;background:linear-gradient(125deg,#183b3d,#152b40);border:1px solid #386266;border-radius:18px}
+.vipBackup h2{margin:2px 0 8px;font-size:22px;color:#ebfff9}
+.vipBackup p{margin:0;max-width:770px;color:#bbd1d7;font-size:13px;line-height:1.66}
+.vipBackupTools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;max-width:440px;min-width:320px}
+#backupFeedback{flex-basis:100%;font-size:12px;line-height:1.5;color:#a6f0cf}
+.vipDetailCompareBtn[data-active="1"]{background:#1d5847;color:#b7ffe7;border-color:#5fc5a6}
+@media(max-width:800px){.vipBackup{flex-direction:column;align-items:stretch;padding:18px}.vipBackupTools{min-width:0;max-width:none}}
