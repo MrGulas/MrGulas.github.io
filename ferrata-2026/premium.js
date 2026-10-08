@@ -24,7 +24,7 @@ if(counter)counter.textContent="♥ "+fav.size;
 }
 const original=[...list.querySelectorAll(":scope>.card")];
 for(let i=0;i<original.length;i++){
- const el=original[i],r=db.routes[i];if(!r)continue;
+ const el=original[i],r=db.routes[Number(el.dataset.orig)];if(!r)continue;
  el.dataset.routeId=r.id;
  const link="./route.html?route="+encodeURIComponent(r.slug);
  const top=document.createElement("div");top.className="cardTopbar";
