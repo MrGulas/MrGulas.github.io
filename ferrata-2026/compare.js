@@ -36,7 +36,7 @@ function getPair(routes){
  let saved=[];try{saved=JSON.parse(localStorage.getItem(PAIR_KEY)||"[]")}catch(e){}
  if(!Array.isArray(saved))saved=[];
  const first=ids.includes(saved[0])?saved[0]:ids[0];
- const second=ids.includes(saved[1])&&saved[1]!==first?saved[1]:(ids.find(x=>x!==first)||null);
+ const second=saved.length>1&&saved[1]===null?null:(ids.includes(saved[1])&&saved[1]!==first?saved[1]:(ids.find(x=>x!==first)||null));
  return [first,second];
 }
 function setPair(pair){try{localStorage.setItem(PAIR_KEY,JSON.stringify(pair))}catch(e){}}
@@ -90,8 +90,8 @@ function renderMobile(routes){
    const sel=Number(select.dataset.mobileSlot),next=[...pair];
    next[sel]=select.value?Number(select.value):null;
    if(next[0]===next[1] && next[1]!=null){
-      const alternate=routes.find(r=>r.id!==next[sel]);
-      next[1-sel]=alternate?.id||null;
+      if(sel===1){next[0]=routes.find(r=>r.id!==next[1])?.id||next[0]}
+      else {next[1]=routes.find(r=>r.id!==next[0])?.id||null}
    }
    if(next[0]==null){next[0]=routes[0].id;next[1]=null}
    setPair(next);
