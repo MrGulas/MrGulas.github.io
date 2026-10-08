@@ -155,3 +155,5 @@ body.atlasDetail{min-height:100vh;background:radial-gradient(ellipse at 60% 0%,#
 @media(max-width:680px){.deepDive{grid-template-columns:1fr}.detailHero:has(>.heroFrame:only-child)>.heroFrame{height:270px}}
 
 .weatherDateControls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.weatherDateControls label{font-size:12px;color:#add9dd}.weatherDateInput{padding:10px 13px;min-width:142px;max-width:175px;border:1px solid #577684;background:#193440;color:#e9faff;border-radius:10px;font:inherit;color-scheme:dark}
+
+.topoInline{border:1px solid #466575;border-radius:13px;background:#1b3647;margin:12px 0 16px;padding:12px}.topoInline summary{cursor:pointer;color:#c8ffee;font-weight:800;font-size:14px;padding:5px 3px 12px}.topoInline img{max-width:100%;height:auto;max-height:680px;object-fit:contain;border-radius:11px;display:block;margin:0 auto;background:#fff}.topoInline a{display:block}
