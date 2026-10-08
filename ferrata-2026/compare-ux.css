@@ -1,0 +1,96 @@
+
+/* Comparison UX hotfix: vertical page wheel works, desktop columns drag, mobile is a two-route comparison. */
+.vipComparePage{overscroll-behavior:auto}
+.vipComparePage .compareScroll{position:relative;max-width:100%;width:100%;overflow-x:auto;overflow-y:auto;overscroll-behavior:auto!important;scrollbar-width:thin;scrollbar-color:#5b9d95 #162d38;-webkit-overflow-scrolling:touch;touch-action:auto;cursor:grab}
+.vipComparePage .compareScroll.dragging{cursor:grabbing;user-select:none;-webkit-user-select:none;scroll-behavior:auto}
+.vipComparePage .compareScroll.dragging *{user-select:none;-webkit-user-select:none}
+.vipComparePage .compareScroll:not(.dragging){scroll-behavior:smooth}
+.vipComparePage .compareToolbar{display:flex;justify-content:space-between;align-items:center;gap:18px;margin:19px 0 10px}
+.vipComparePage .compareToolbar>div:first-child{display:flex;flex-direction:column;gap:3px}
+.vipComparePage .compareToolbar b{font-size:15px;color:#e6fbf5;letter-spacing:-.015em}
+.vipComparePage .compareToolbar span{font-size:12px;color:#9fbfc6}
+.vipComparePage .compareArrowButtons{display:flex;gap:9px;flex-shrink:0}
+.vipComparePage .compareArrowButtons button{border:1px solid #467a75;background:#214947;color:#bbffe5;border-radius:12px;width:45px;height:40px;font-size:18px;font-weight:800;cursor:pointer;transition:background-color .18s}
+.vipComparePage .compareArrowButtons button:hover:not(:disabled){background:#2c6b62}
+.vipComparePage .compareArrowButtons button:disabled{opacity:.31;cursor:not-allowed}
+.vipComparePage .compareScrollProgress{height:4px;border-radius:10px;background:#22424c;max-width:100%;margin:13px 0;overflow:hidden}
+.vipComparePage .compareScrollProgress>div{height:100%;width:100%;background:linear-gradient(90deg,#7ce5c1,#b6d8ff);border-radius:10px;transition:margin-left .2s,width .2s}
+.vipComparePage .compareDesktop{min-width:0}
+.vipComparePage .compareMobile{display:none}
+.vipComparePage .matrixSection th{background:#194b47!important;color:#b9ffdf!important}
+.vipComparePage .compareMatrix td,.vipComparePage .compareMatrix tbody th[scope="row"]{line-height:1.52}
+.vipComparePage .compareScroll:focus-visible{outline:2px solid #8cdec6;outline-offset:4px}
+.vipComparePage .matrixRouteTitle{min-height:initial;margin:7px 0 9px}
+.vipComparePage .matrixHeadActions{margin-top:11px}
+@media(max-width:850px){
+ .vipComparePage .compareDesktop{display:none!important}
+ .vipComparePage .compareMobile{display:block!important}
+ .vipComparePage .vipWide{padding:0 12px;max-width:700px}
+ .vipComparePage .compareHero{padding:22px 19px 23px;margin:17px 0 14px;border-radius:17px}
+ .vipComparePage .compareHero h1{font-size:clamp(28px,8vw,42px);line-height:1.12;margin-bottom:10px}
+ .vipComparePage .compareHero p{font-size:13px;line-height:1.58;margin:0}
+ .vipComparePage .compareMeta{gap:8px;margin-top:18px}
+ .vipComparePage .compareMeta>a,.vipComparePage .compareMeta>button{font-size:12px;padding:9px}
+ .vipComparePage .datePick{font-size:12px}
+ .vipComparePage .datePick input{width:137px;padding:8px;font-size:13px}
+ .vipComparePage .mobileCompareIntro{padding:9px 4px 11px}
+ .vipComparePage .mobileCompareIntro h2{font-size:22px;color:#e6fff5;line-height:1.25;margin:6px 0 8px}
+ .vipComparePage .mobileCompareIntro p{font-size:13px;line-height:1.6;color:#a7c2c9;margin:0}
+ .vipComparePage .mobileCompareSelectors{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin:12px 0 14px}
+ .vipComparePage .mobileSelectField{display:flex;min-width:0;flex-direction:column;gap:6px;font-size:12px;color:#add7d1;font-weight:750}
+ .vipComparePage .mobileSelectField select{appearance:auto;-webkit-appearance:menulist;display:block;min-width:0!important;width:100%;box-sizing:border-box;font:700 12px/1.4 "DM Sans",sans-serif;color:#effdf7;background:#22434c;border:1px solid #57918c;border-radius:11px;padding:12px 10px;box-shadow:0 5px 20px #0002}
+ .vipComparePage .mobileCompareHeroes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:9px;margin:0 0 16px}
+ .vipComparePage .mobileCompareHeroes.oneColumn{grid-template-columns:1fr}
+ .vipComparePage .mobileCompareHero{position:relative;min-width:0;border:1px solid #426c73;background:linear-gradient(130deg,#1f3d48,#162c3b);border-radius:15px;overflow:hidden;padding:0 12px 14px;box-shadow:0 8px 30px #0003}
+ .vipComparePage .mobileHeroPhoto{margin:0 -12px 10px;height:125px;background:linear-gradient(145deg,#33605e,#1a3a45)}
+ .vipComparePage .mobileHeroPhoto .comparePhoto{margin:0;border:0;border-radius:0;height:100%}
+ .vipComparePage .mobileRouteIndex{display:inline-flex;align-items:center;color:#adefd3;background:#254e4a;border:1px solid #3d7770;border-radius:8px;font-weight:850;font-size:11px;padding:3px 7px;margin:0 0 7px}
+ .vipComparePage .mobileHeroTitle{display:block;color:#ecfff6;font-weight:850;font-size:14px;line-height:1.4;min-height:57px;text-decoration:none;overflow-wrap:anywhere}
+ .vipComparePage .mobileHeroTitle:hover{text-decoration:underline}
+ .vipComparePage .mobileHeroMeta{margin-top:8px;font-size:12px;font-weight:750;color:#a5e9d1}
+ .vipComparePage .mobileCompareGroup{margin:0 0 13px;border:1px solid #3b636b;border-radius:17px;background:#112732;overflow:hidden}
+ .vipComparePage .mobileCompareGroup>summary{display:flex;align-items:center;justify-content:space-between;gap:8px;list-style:none;cursor:pointer;background:#1a3f40;border-bottom:1px solid #305458;padding:16px 16px;min-height:53px;color:#bdf4db}
+ .vipComparePage .mobileCompareGroup>summary::-webkit-details-marker{display:none}
+ .vipComparePage .mobileCompareGroup>summary strong{font-size:12px;line-height:1.4;text-transform:uppercase;letter-spacing:.055em}
+ .vipComparePage .mobileCompareGroup>summary span{font-size:24px;line-height:.8;transition:transform .15s}
+ .vipComparePage .mobileCompareGroup:not([open])>summary span{transform:rotate(-90deg)}
+ .vipComparePage .mobileCompareMetrics{display:grid}
+ .vipComparePage .mobileCompareMetric{padding:14px 12px;border-top:1px solid #29454e;background:#122a35}
+ .vipComparePage .mobileCompareMetric:nth-child(even){background:#172f3b}
+ .vipComparePage .mobileCompareMetric:first-child{border-top:0}
+ .vipComparePage .mobileCompareMetric h3{margin:0 0 10px;font-size:12px;font-weight:850;letter-spacing:.01em;color:#91c6c0}
+ .vipComparePage .mobileValueGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .vipComparePage .mobileValueGrid.oneColumn{grid-template-columns:1fr}
+ .vipComparePage .mobileValue{min-width:0;overflow-wrap:anywhere;word-break:normal;padding:12px 10px;background:#1b3945;border:1px solid #345462;border-radius:12px;color:#ddf0f0;font-size:12px;line-height:1.58}
+ .vipComparePage .mobileValue:nth-child(2){background:#224037;border-color:#3c6059}
+ .vipComparePage .mobileValueLabel{display:block;color:#8fbdb7;font-size:10px;font-weight:850;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+ .vipComparePage .mobileValue .matrixValue.good{font-size:24px}
+ .vipComparePage .mobileValue .matrixValue{font-size:14px}
+ .vipComparePage .mobileValue .matrixProse{font-size:12px;line-height:1.6}
+ .vipComparePage .mobileValue .matrixMuted{font-size:11px}
+ .vipComparePage .mobileValue .compareParts{gap:5px}
+ .vipComparePage .mobileValue .compareParts a{font-size:11px;padding:7px 6px}
+ .vipComparePage .mobileExcerpt{font-size:12px;color:#d5e9e8;line-height:1.55}
+ .vipComparePage .mobileMore{margin:8px 0 0;border-top:1px solid #44606c;padding-top:6px}
+ .vipComparePage .mobileMore summary{color:#a2f2ce;font-size:11px;font-weight:850;cursor:pointer;min-height:28px;padding:5px 0;list-style:none}
+ .vipComparePage .mobileMore .matrixProse{display:block;margin-top:9px}
+ .vipComparePage .mobileMore[open] .mobileExcerpt{display:none}
+ .vipComparePage .mobileCompareDisclaimer{color:#a6bec4;font-size:12px;line-height:1.65;margin:14px 5px 20px}
+ .vipComparePage .compareFooterTools{gap:8px;margin:20px 0}
+ .vipComparePage .compareFooterTools .actionSoft,.vipComparePage .compareFooterTools .actionMain{padding:11px 13px;font-size:12px}
+ .vipComparePage .vipBackup{margin-top:32px}
+}
+@media(max-width:360px){
+ .vipComparePage .vipWide{padding:0 8px}
+ .vipComparePage .mobileCompareSelectors{gap:6px}
+ .vipComparePage .mobileValueGrid{gap:5px}
+ .vipComparePage .mobileValue{padding:9px 7px;font-size:11px}
+ .vipComparePage .mobileCompareMetric{padding:12px 9px}
+ .vipComparePage .mobileCompareHero{padding-left:8px;padding-right:8px}
+ .vipComparePage .mobileHeroPhoto{margin-left:-8px;margin-right:-8px;height:105px}
+ .vipComparePage .mobileHeroTitle{font-size:13px}
+}
+@media(prefers-reduced-motion:reduce){
+ .vipComparePage .compareScroll:not(.dragging){scroll-behavior:auto}
+ .vipComparePage .compareScrollProgress>div{transition:none}
+}
