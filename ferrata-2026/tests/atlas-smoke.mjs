@@ -90,5 +90,85 @@ await check("Desktop compare wheel scrolls page and arrows move table",async()=>
  assert.equal(errors.length,0,JSON.stringify(errors));
  await context.close();
 });
+
+/* Regression coverage for the eight researched routes, preserved storage
+   indices, no-lift logistics, and real forecast refresh / date-selection UI.
+   A deterministic API stub verifies DOM wiring; the separate Actions step
+   checks live Open-Meteo reachability. */
+await check("69 routes and newly added alpine entries",async()=>{
+ const {context,page,errors}=await pageAt(390,"/index.html");
+ assert.equal(await page.locator("#cards>.card").count(),69);
+ assert.equal(await page.locator(".newRoutesNotice").count(),1);
+ await page.locator('input[name="showStatus"][value="red"]').check();
+ await page.locator("#maxDifficulty").selectOption("4");
+ const card=page.locator('#cards>.card[data-orig="68"]');
+ assert.equal(await card.count(),1);
+ assert.equal(await card.isVisible(),true);
+ const uri=await card.locator(".detailCTA").getAttribute("href");
+ assert.ok(uri?.includes("69-irg-ii-koppenkarstein"),String(uri));
+ assert.equal(errors.length,0,JSON.stringify(errors));
+ await context.close();
+});
+await check("Lift-free guide does not invent an operator URL",async()=>{
+ const {context,page,errors}=await pageAt(390,"/route.html?route=63-berchtesgadener-hochthronsteig");
+ await page.waitForSelector("#routePage:not([hidden])");
+ assert.equal(await page.locator("#transportPlan").count(),0);
+ assert.equal(await page.locator('#sourcesLinks a[href*="bergsteigen.com"]').count()>0,true);
+ assert.equal(await page.locator("#routeDeepDives .deepText").count(),4);
+ assert.equal(errors.length,0,JSON.stringify(errors));
+ await context.close();
+});
+await check("Dachstein / Nebelhorn access lists actual operators",async()=>{
+ for(const [slug,domain] of [["69-irg-ii-koppenkarstein","derdachstein.at"],["68-hindelanger-klettersteig","ok-bergbahnen.com"]]){
+  const {context,page,errors}=await pageAt(390,"/route.html?route="+slug);
+  await page.waitForSelector("#routePage:not([hidden])");
+  assert.equal(await page.locator("#transportPlan").count(),1);
+  assert.equal(await page.locator('#transportPlan a[href*="'+domain+'"]').count(),1);
+  assert.equal(errors.length,0,JSON.stringify(errors));
+  await context.close();
+ }
+});
+function fakeWeather(day){
+ const h=[...Array(24)].map((_,i)=>String(day)+"T"+String(i).padStart(2,"0")+":00");
+ const n=day==="2026-10-11"?0.9:0.2;
+ return {latitude:47.7,longitude:13.6,hourly:{time:h,precipitation:h.map(()=>n),precipitation_probability:h.map(()=>30),cloud_cover:h.map(()=>40),temperature_2m:h.map(()=>7),snowfall:h.map(()=>0),wind_gusts_10m:h.map(()=>14)}};
+}
+await check("Route weather refetches and updates after date selection",async()=>{
+ const {context,page,errors}=await pageAt(390,"/route.html?route=63-berchtesgadener-hochthronsteig");
+ let calls=[];
+ await page.route(/^https:\/\/api\.open-meteo\.com\/v1\/forecast\?/,async r=>{
+  const day=new URL(r.request().url()).searchParams.get("start_date");
+  calls.push(day);
+  await r.fulfill({status:200,contentType:"application/json",body:JSON.stringify(fakeWeather(day))});
+ });
+ await page.locator("#refreshWeather").click();
+ await page.waitForFunction(()=>document.querySelector("#weatherData")?.hidden===false);
+ assert.match(await page.locator("#weatherData").innerText(),/2026-10-10/);
+ await page.locator("#weatherDate").fill("2026-10-11");
+ await page.locator("#weatherDate").dispatchEvent("change");
+ await page.waitForFunction(()=>document.querySelector("#weatherData")?.innerText?.includes("2026-10-11"));
+ assert.deepEqual(calls,["2026-10-10","2026-10-11"]);
+ assert.equal(errors.length,0,JSON.stringify(errors));
+ await context.close();
+});
+await check("Comparison weather date updates mobile and desktop rows",async()=>{
+ const {context,page,errors}=await pageAt(390,"/index.html");
+ await page.evaluate(()=>localStorage.setItem("ferrataWOW_compare_v2","[61,62]"));
+ await page.goto(site+"/compare.html",{waitUntil:"domcontentloaded"});
+ let dates=[];
+ await page.route(/^https:\/\/api\.open-meteo\.com\/v1\/forecast\?/,async r=>{
+  const day=new URL(r.request().url()).searchParams.get("start_date");
+  dates.push(day);
+  await r.fulfill({status:200,contentType:"application/json",body:JSON.stringify(fakeWeather(day))});
+ });
+ await page.locator("#refreshCompareWeather").click();
+ await page.waitForFunction(()=>document.querySelector("#cmpWX-62")?.innerText?.includes("мм"));
+ await page.locator("#compareDate").fill("2026-10-11");
+ await page.locator("#compareDate").dispatchEvent("change");
+ await page.waitForFunction(()=>document.querySelector("#cmpWX-62")?.innerText?.includes("2026-10-11") || document.querySelector("#cmpWX-62")?.innerText?.includes("6.3"));
+ assert.ok(dates.filter(d=>d==="2026-10-11").length>=2,JSON.stringify(dates));
+ assert.equal(errors.length,0,JSON.stringify(errors));
+ await context.close();
+});
 await browser.close();
 if(failures.length){console.error(JSON.stringify(failures,null,2));process.exitCode=1}else console.log("All Ferrata Atlas smoke checks passed");
