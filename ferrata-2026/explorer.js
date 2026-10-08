@@ -139,6 +139,21 @@ function observePhotoRows(){
 }
 function googleImagesLinks(){for(const it of items){let a=q('.actions a[href*="google.com/search"]',it.el);if(a){a.title="Открыть Google Картинки с точным названием маршрута: снимки не встраиваются и не подменяются похожими местами.";a.textContent="🖼 Google: реальные фото маршрута ↗"}}}
 googleImagesLinks();
+// Another tab or the detailed guide can update this user's comparison list.
+window.addEventListener("storage",event=>{
+ if(event.key!==COMP_KEY)return;
+ try{
+  let ids=JSON.parse(localStorage.getItem(COMP_KEY)||"[]");
+  if(!Array.isArray(ids))ids=[];
+  compare.clear();for(const id of ids){if(Number.isInteger(id)&&id>=0&&id<items.length)compare.add(id)}
+  for(const it of items){
+   const b=q(".compareAdd",it.el);if(!b)continue;
+   const active=compare.has(it.id);
+   b.dataset.active=active?"1":"0";b.textContent=active?"✓ В сравнении":"＋ Сравнить";
+  }
+  updateCompareCount();
+ }catch(e){}
+});
 const mapPoints=[
 ["Laserer Alpin · Gosausee",47.5338,13.4959,"https://www.google.com/maps/search/?api=1&query=Gosausee+Parkplatz"],
 ["Schmiedsteig · Gosau",47.5510,13.5164,"https://www.google.com/maps/search/?api=1&query=Parkplatz+Gosauschmied"],
