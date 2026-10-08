@@ -23,3 +23,32 @@ jobs:
           python3 -m http.server 8765 --bind 127.0.0.1 --directory ferrata-2026 > /tmp/atlas-http.log 2>&1 &
           sleep 2
           node ferrata-2026/tests/atlas-smoke.mjs
+
+      - name: Validate live Open-Meteo forecast for route detail and comparison
+        run: |
+          python3 - <<'PY'
+          import json, time, urllib.request, urllib.parse
+          params = urllib.parse.urlencode({
+              "latitude": 47.692,
+              "longitude": 13.003,
+              "hourly": "temperature_2m,precipitation,precipitation_probability,cloud_cover,snowfall,wind_gusts_10m",
+              "timezone": "Europe/Vienna",
+              "start_date": "2026-10-10",
+              "end_date": "2026-10-10",
+          })
+          url = "https://api.open-meteo.com/v1/forecast?" + params
+          for attempt in range(3):
+              try:
+                  with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent":"FerrataAtlas-QA/1.0"}), timeout=22) as response:
+                      data = json.load(response)
+                  hourly = data.get("hourly") or {}
+                  assert len(hourly.get("time", [])) == 24, "unexpected weather hours"
+                  for key in ["precipitation", "precipitation_probability", "temperature_2m", "cloud_cover", "snowfall", "wind_gusts_10m"]:
+                      assert len(hourly.get(key, [])) == 24, "missing hourly field: " + key
+                  print("PASS: live Open-Meteo hourly weather received for 2026-10-10")
+                  break
+              except Exception as exc:
+                  if attempt == 2:
+                      raise SystemExit("FAIL: live Open-Meteo unavailable: " + str(exc))
+                  time.sleep(3)
+          PY
