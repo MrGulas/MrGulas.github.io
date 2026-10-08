@@ -67,4 +67,11 @@ window.addEventListener("storage",event=>{if(event.key===favKey){updateFavCards(
 document.querySelector("#resetFilters")?.addEventListener("click",()=>{const chk=document.getElementById("onlyFavorites");if(chk)chk.checked=false;});
 const helper=document.querySelector("#finderHint");
 if(helper)helper.title="Указанные интервалы лазания ориентировочные. Для подтверждённой длины и времени всегда сверяйся с топо.";
+function rescueStaticGalleryImage(img){
+ if(!img.matches(".gallery img")||img.closest(".vipPartTile")||img.dataset.proxyFallback)return;
+ if(!img.dataset.galleryRescue&&!img.src.startsWith("https://images.weserv.nl/")){img.dataset.galleryRescue="1";img.style.display="block";img.src=proxyImage(img.src);return}
+ img.closest("a")?.remove();
+}
+document.addEventListener("error",event=>{if(event.target instanceof HTMLImageElement)rescueStaticGalleryImage(event.target)},true);
+setTimeout(()=>document.querySelectorAll(".gallery img").forEach(img=>{if(img.complete&&!img.naturalWidth)rescueStaticGalleryImage(img)}),0);
 })();
