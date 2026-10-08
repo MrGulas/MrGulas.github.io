@@ -27,6 +27,133 @@ function components(r){
  return '<a class="matrixTextLink" target="_blank" rel="noopener noreferrer" href="'+photoSearch(r.name)+'">Фотографии именно этой линии ↗</a>';
 }
 function textOrTopo(r,key){return r.guide?.[key]?'<span class="matrixProse">'+esc(r.guide[key])+'</span>':'<span class="matrixMuted">Подробности подхода и спуска — в оригинальном топо. Не указаны без проверки.</span>'}
+
+/* Mobile: compare any two of the five routes vertically, section by section,
+   without requiring a 1200px-wide spreadsheet to be swiped on a 390px phone. */
+const PAIR_KEY="ferrataAtlas_mobileComparePair_v1";
+function getPair(routes){
+ const ids=routes.map(r=>r.id);
+ let saved=[];try{saved=JSON.parse(localStorage.getItem(PAIR_KEY)||"[]")}catch(e){}
+ if(!Array.isArray(saved))saved=[];
+ const first=ids.includes(saved[0])?saved[0]:ids[0];
+ const second=ids.includes(saved[1])&&saved[1]!==first?saved[1]:(ids.find(x=>x!==first)||null);
+ return [first,second];
+}
+function setPair(pair){try{localStorage.setItem(PAIR_KEY,JSON.stringify(pair))}catch(e){}}
+function mobileSelect(label,slot,value,routes){
+ return '<label class="mobileSelectField"><span>'+label+'</span><select data-mobile-slot="'+slot+'" aria-label="'+label+'">'+
+ (slot===1?'<option value="">Только один маршрут</option>':"")+
+ routes.map(r=>'<option value="'+r.id+'" '+(r.id===value?"selected":"")+'>'+esc(r.name)+'</option>').join("")+'</select></label>';
+}
+function mobileLongText(label,html,plain){
+ const val=plain.trim();if(val.length<185)return html;
+ return '<div class="mobileExcerpt">'+esc(val.slice(0,120))+'…</div><details class="mobileMore"><summary>Раскрыть полностью ↓</summary><div>'+html+'</div></details>';
+}
+function renderMobile(routes){
+ const target=$("compareMobile");if(!target)return;
+ if(!routes.length){target.innerHTML="";return}
+ const pair=getPair(routes);setPair(pair);
+ const shown=pair.map(id=>routes.find(r=>r.id===id)).filter(Boolean);
+ const matrix=$("compareMatrix").querySelector("table");
+ if(!matrix)return;
+ let out='<div class="mobileCompareIntro"><span class="atlasEyebrow">Сравнение на телефоне</span><h2>Два маршрута — все детали</h2><p>Выбери любые две из '+routes.length+' добавленных феррат. Сравнивай по показателям, раскрывай длинные описания и меняй маршруты одним нажатием.</p></div>';
+ out+='<div class="mobileCompareSelectors">'+mobileSelect("Маршрут № 1",0,pair[0],routes)+mobileSelect("Маршрут № 2",1,pair[1],routes)+'</div>';
+ out+='<div class="mobileCompareHeroes'+(shown.length===1?" oneColumn":"")+'">'+shown.map((r,i)=>'<div class="mobileCompareHero"><div class="mobileHeroPhoto">'+photoCell(r)+'</div><span class="mobileRouteIndex">'+(i+1).toString().padStart(2,"0")+'</span><a href="'+hrLink(r)+'" class="mobileHeroTitle">'+esc(r.name)+'</a><div class="mobileHeroMeta">✨ '+r.wow+'/10 · '+esc(r.grade)+'</div></div>').join("")+'</div>';
+ const indexById=id=>routes.findIndex(r=>r.id===id);
+ const body=matrix.tBodies[0];
+ if(!body){target.innerHTML=out;return}
+ let group=null,metrics=[];
+ function flush(){
+  if(!group)return;
+  out+='<details class="mobileCompareGroup" open><summary><strong>'+esc(group)+'</strong><span aria-hidden="true">⌄</span></summary><div class="mobileCompareMetrics">'+metrics.join("")+'</div></details>';
+  metrics=[];
+ }
+ for(const tr of body.rows){
+  if(tr.classList.contains("matrixSection")){
+   flush();group=tr.textContent.trim();continue;
+  }
+  const th=tr.querySelector('th[scope="row"]');if(!th)continue;
+  const title=th.textContent.trim(),cols=[...tr.querySelectorAll("td")];
+  const values=shown.map((r,i)=>{
+   const pos=indexById(r.id),cell=cols[pos];if(!cell)return '<div class="mobileValue">—</div>';
+   let inner=cell.innerHTML.replace(/id="cmpWX-(\d+)"/g,'id="cmpMobileWX-$1"');
+   if(title==="Почему сюда"||title==="Подход и логистика"||title==="Хайк после ферраты"||title==="Риски и ограничения")
+     inner=mobileLongText(title,inner,cell.textContent||"");
+   return '<div class="mobileValue"><span class="mobileValueLabel">Маршрут '+(i+1)+'</span>'+inner+'</div>';
+  });
+  metrics.push('<article class="mobileCompareMetric"><h3>'+esc(title)+'</h3><div class="mobileValueGrid'+(shown.length===1?" oneColumn":"")+'">'+values.join("")+'</div></article>');
+ }
+ flush();
+ out+='<p class="mobileCompareDisclaimer">* Продолжительность ориентировочная. Прогноз Open-Meteo — модель по координатам района, а не подтверждение безопасности ферраты.</p>';
+ target.innerHTML=out;
+ target.querySelectorAll("[data-mobile-slot]").forEach(select=>select.addEventListener("change",()=>{
+   const sel=Number(select.dataset.mobileSlot),next=[...pair];
+   next[sel]=select.value?Number(select.value):null;
+   if(next[0]===next[1] && next[1]!=null){
+      const alternate=routes.find(r=>r.id!==next[sel]);
+      next[1-sel]=alternate?.id||null;
+   }
+   if(next[0]==null){next[0]=routes[0].id;next[1]=null}
+   setPair(next);
+   renderMobile(routes);refreshWeather();
+ }));
+}
+/* Desktop: show explicit arrows and allow click-and-drag column navigation.
+   Normal vertical mouse-wheel must keep scrolling the document. */
+const scrollElement=document.querySelector(".compareScroll");
+function refreshScrollNav(){
+ if(!scrollElement)return;
+ const max=Math.max(0,scrollElement.scrollWidth-scrollElement.clientWidth);
+ const left=$("compareScrollLeft"),right=$("compareScrollRight"),bar=$("compareScrollProgressBar");
+ if(left)left.disabled=scrollElement.scrollLeft<=2;
+ if(right)right.disabled=scrollElement.scrollLeft>=max-2;
+ if(bar){const pct=scrollElement.scrollWidth?Math.min(100,scrollElement.clientWidth/scrollElement.scrollWidth*100):100;bar.style.width=pct+"%";bar.style.marginLeft=(scrollElement.scrollWidth?scrollElement.scrollLeft/scrollElement.scrollWidth*100:0)+"%"}
+}
+["compareScrollLeft","compareScrollRight"].forEach((id,i)=>$(id)?.addEventListener("click",()=>{
+ const direction=i===0?-1:1;
+ scrollElement?.scrollBy({left:direction*Math.max(240,scrollElement.clientWidth*.75),behavior:"smooth"});
+}));
+if(scrollElement){
+ scrollElement.addEventListener("scroll",refreshScrollNav,{passive:true});
+ scrollElement.addEventListener("keydown",event=>{
+  if(event.target!==scrollElement)return;
+  if(event.key==="ArrowRight"||event.key==="ArrowLeft"){
+    event.preventDefault();scrollElement.scrollBy({left:(event.key==="ArrowRight"?1:-1)*290,behavior:"smooth"});
+  }
+ });
+ scrollElement.addEventListener("wheel",event=>{
+  // Shift-wheel is an intentional horizontal-navigation gesture. Ordinary
+  // wheel events must bubble to the document for natural vertical scrolling.
+  if(!event.shiftKey||Math.abs(event.deltaY)<Math.abs(event.deltaX))return;
+  const max=scrollElement.scrollWidth-scrollElement.clientWidth;
+  const next=scrollElement.scrollLeft+event.deltaY;
+  if((event.deltaY<0&&scrollElement.scrollLeft>0)||(event.deltaY>0&&scrollElement.scrollLeft<max)){
+   event.preventDefault();
+   scrollElement.scrollLeft=Math.max(0,Math.min(max,next));
+  }
+ },{passive:false});
+ let drag=null;
+ scrollElement.addEventListener("pointerdown",event=>{
+  if(event.pointerType!=="mouse"||event.button!==0||scrollElement.scrollWidth<=scrollElement.clientWidth+1)return;
+  if(event.target.closest("a,button,input,select,textarea,summary"))return;
+  drag={id:event.pointerId,start:event.clientX,scroll:scrollElement.scrollLeft,moved:false};
+  try{scrollElement.setPointerCapture(event.pointerId)}catch(e){}
+ });
+ scrollElement.addEventListener("pointermove",event=>{
+  if(!drag||drag.id!==event.pointerId)return;
+  const delta=drag.start-event.clientX;
+  if(Math.abs(delta)>5){
+   drag.moved=true;
+   scrollElement.classList.add("dragging");
+   scrollElement.scrollLeft=drag.scroll+delta;
+  }
+ });
+ function endDrag(){drag=null;scrollElement.classList.remove("dragging")}
+ scrollElement.addEventListener("pointerup",endDrag);
+ scrollElement.addEventListener("pointercancel",endDrag);
+ window.addEventListener("resize",refreshScrollNav,{passive:true});
+}
+
 function display(){
  const ids=getIds(),routes=ids.map(id=>db.routes[id]);
  $("compareEmpty").hidden=!!routes.length;$("compareContent").hidden=!routes.length;
@@ -62,6 +189,8 @@ function display(){
  out+=row("Подробный гид",routes,r=>'<a class="matrixTextLink" href="'+hrLink(r)+'">Все детали и прогноз ↗</a>');
  out+='</tbody></table>';
  $("compareMatrix").innerHTML=out;
+ renderMobile(routes);
+ requestAnimationFrame(refreshScrollNav);
  document.querySelectorAll("[data-remove-id]").forEach(btn=>btn.addEventListener("click",()=>{const id=Number(btn.dataset.removeId);setIds(getIds().filter(x=>x!==id));display()}));
  refreshWeather();
 }
