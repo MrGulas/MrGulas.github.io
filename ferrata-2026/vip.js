@@ -16,6 +16,12 @@ const componentLibrary={
  "grünstein klettersteig":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Gruenstein-klettersteig-ausblick-koenigssee-nationalpark-berchtesgaden.jpg?width=1200",
  "hochstaufen":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Hochstaufen011.jpg?width=1200"
 };
+// Prefer stable, route-specific publisher URLs when an older catalog image is
+// known to reject hotlinking. Keep this separate from the generic component
+// library so the exact ferrata photo wins before lake/region fallbacks.
+const componentPhotoOverrides={
+ "seewand klettersteig":"https://www.hallstatt.net/assets/Hallstatt/Artikel/ueber-hallstatt/aktiv-urlaub-im-salzkammergut/klettern-adrenalin-pur/klettersteige/seewandklettersteig-am-hallstaettersee/seewandklettersteig/_resampled/WebsitePictureW10/hallstatt-obertraun-klettersteig-seewand-c-outdoor-leadership-006.jpg"
+};
 const googleImages=(name,kind)=>"https://www.google.com/search?tbm=isch&q="+encodeURIComponent(name+" Fotos "+(kind==="lake"||/see|weiher|mara|озеро|lake/i.test(name)?"See Austria":kind==="hike"||kind==="view"?"Panorama Wanderung":"Klettersteig"));
 const routeURL=c=>{const id=c.routeId;return id&&db.routes[id-1]?"./route.html?route="+encodeURIComponent(db.routes[id-1].slug):null};
 function count(){
@@ -39,8 +45,9 @@ function componentTile(c,parentRoute){
  const linked=c.routeId&&db.routes[c.routeId-1];
  const named=db.routes.find(r=>r.name?.toLowerCase()===String(c.name||"").toLowerCase());
  const librarySrc=componentLibrary[String(c.name||"").toLowerCase()];
+ const overrideSrc=componentPhotoOverrides[String(c.name||"").toLowerCase()];
  const photo=c.photo||linked?.photos?.[0]||named?.photos?.[0];
- const candidates=[photo?.src,librarySrc,...(linked?.photos||[]).map(p=>p.src),...(named?.photos||[]).map(p=>p.src),...(parentRoute?.photos||[]).map(p=>p.src)].filter(Boolean);
+ const candidates=[overrideSrc,photo?.src,librarySrc,...(linked?.photos||[]).map(p=>p.src),...(named?.photos||[]).map(p=>p.src),...(parentRoute?.photos||[]).map(p=>p.src)].filter(Boolean);
  const unique=[...new Set(candidates)];
  const fallbacks=[...unique.slice(1),...unique.map(proxyImage)];
  const photoSrc=unique[0]||"";
