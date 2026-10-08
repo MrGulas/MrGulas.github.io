@@ -86,18 +86,43 @@ async function loadWeather(it,btn){const node=q(".wxResults",it.el);btn.disabled
 function enhance(it){const e=it.el,[source,url,secondary,secondaryURL]=official(it),name=it.name;const b=document.createElement("div");b.className="cardTools";b.innerHTML='<span class="scoreBadge"></span><button type="button" class="compareAdd" data-active="'+(compare.has(it.id)?"1":"0")+'">'+(compare.has(it.id)?"✓ В сравнении":"＋ Сравнить")+'</button><a class="cardMap" href="'+mapsURL(it)+'" target="_blank" rel="noreferrer" style="text-decoration:none">📍 Карта</a>'+(it.kind==="combo"?'<span class="badge" style="background:#335577">⇄ Комбинация</span>':"");
 q("h2",e).insertAdjacentElement("afterend",b);q(".compareAdd",e).addEventListener("click",()=>toggleCompare(it));let wx=document.createElement("details");wx.className="wx-details";wx.innerHTML='<summary>🌤 Погода: '+safe(it.location)+' · официальный источник</summary><p>Суточные осадки в карточке — зафиксированный региональный прогноз на 08.10, а не проверка сухости скалы. Для текущего прогноза на 10.10 открой почасовые значения и сравни с официальным источником.</p><button type="button" class="weatherOpen">🌦 Показать погоду 09:00–21:00</button><div class="wxResults"></div><div><a class="wx-official" target="_blank" rel="noreferrer" href="'+url+'">🏛 '+safe(source)+' ↗</a><a class="wx-official" target="_blank" rel="noreferrer" href="'+secondaryURL+'">⛰ '+safe(secondary)+' ↗</a></div>';q(".actions",e).before(wx);q(".weatherOpen",wx).addEventListener("click",ev=>loadWeather(it,ev.currentTarget));}
 items.forEach(enhance);updateCompareCount();
-const COMMONS="https://commons.wikimedia.org/w/api.php";
-let photoObserver=null;
-const seenPhotos=new Set();
-const queue=[],working={n:0};
-function photoName(it){return it.name.replace(/[—–+\/]/g," ").replace(/, (Германия|Словакия|Словения)/g,"").replace(/\b(?:красивые|варианты|короткие|феррата|комбинация|с видом|не слишком)\b/gi,"").trim().split(/\s+/).slice(0,4).join(" ")}
-async function fetchCommons(queryText){const queryParams=new URLSearchParams({action:"query",generator:"search",gsrsearch:queryText,gsrnamespace:"6",gsrlimit:"12",prop:"imageinfo",iiprop:"url|extmetadata",iiurlwidth:"500",format:"json",origin:"*"});const rs=await fetch(COMMONS+"?"+queryParams);if(!rs.ok)throw Error("Commons "+rs.status);const data=await rs.json();return Object.values(data.query?.pages||{}).filter(x=>x.imageinfo?.[0]?.thumburl).filter(x=>/\.(jpe?g|png|webp)$/i.test(x.title)).map(x=>({title:x.title,url:x.imageinfo[0].thumburl,source:x.imageinfo[0].descriptionurl,author:x.imageinfo[0].extmetadata?.Artist?.value||"",license:x.imageinfo[0].extmetadata?.LicenseShortName?.value||""}));}
-function sanitizeArtist(markup){let d=document.createElement("div");d.innerHTML=markup||"";return(d.textContent||"Автор Commons").slice(0,90)}
-function commonsGallery(imgs,sourceType){return imgs.slice(0,5).map((a,i)=>'<a href="'+a.source+'" target="_blank" rel="noreferrer" title="'+safe(sanitizeArtist(a.author))+' · '+safe(a.license)+' · Wikimedia Commons"><img loading="lazy" src="'+a.url+'" alt="'+safe(sourceType+": "+a.title.slice(5))+'" onerror="this.closest(\'a\').style.display=\'none\'"></a>').join("")}
-async function getPhotos(it){let el=it.el,gallery=q(".gallery",el);if(!gallery||!q(".empty",gallery))return;gallery.innerHTML='<div class="imageLoading">📷 Ищу открытые фотографии маршрута / района…</div>';let photos=[];try{const query=photoName(it),parts=query.split(" ");photos=await fetchCommons(query+" filetype:bitmap");let keyword=parts.find(x=>x.length>5);if(keyword)photos=photos.filter(im=>im.title.toLowerCase().includes(keyword.toLowerCase())||im.title.toLowerCase().includes(parts[0].toLowerCase()));if(!photos.length){photos=await fetchCommons((it.location.split("/")[0]||it.location).trim()+" landscape filetype:bitmap");if(photos.length)el.dataset.photoRegion="1"}}catch(e){photos=[]}if(photos.length){gallery.innerHTML=commonsGallery(photos,el.dataset.photoRegion?"Район (не обязательно линия ферраты)":"Маршрут / район");const label=document.createElement("div");label.className="pgallerySource";label.textContent="Фото Wikimedia Commons · "+(el.dataset.photoRegion?"это фото района, не обязательно маршрута":"снимки по названию маршрута")+" · авторство и лицензия — по клику";gallery.after(label);}else{gallery.innerHTML='<div class="empty">🖼️ Нет проверенных фотографий для встраивания. Нажми «Все фотографии» — откроется Google Картинки по этому маршруту.</div>';}}
-function flushQueue(){while(queue.length&&working.n<3){working.n++;const it=queue.shift();getPhotos(it).finally(()=>{working.n--;flushQueue()})}}
-function observePhotoRows(){if(!photoObserver){photoObserver=new IntersectionObserver(es=>{for(let e of es)if(e.isIntersecting){let it=items.find(it=>it.el===e.target);if(it&&!seenPhotos.has(it.id)){seenPhotos.add(it.id);queue.push(it);flushQueue()}photoObserver.unobserve(e.target)}},{rootMargin:"120px 0px",threshold:0});}for(let it of items)if(it.el.style.display!=="none"&&!seenPhotos.has(it.id)){photoObserver.observe(it.el)}}
-function googleImagesLinks(){for(const it of items){let a=q('.actions a[href*="google.com/search"]',it.el);if(a){a.title="Показать изображения в Google Картинках (открывается в новой вкладке). Google не даёт автоматически встраивать эти результаты без отдельного API-ключа.";a.textContent="🖼 Google Картинки (5+)"}}}
+
+/* Accurate image policy:
+   Never substitute photographs of nearby mountains for the named via ferrata.
+   Direct images already curated in page stay visible; cards without directly
+   attributed photos present Google Images as an explicit external search.
+   We intentionally do not scrape or frame Google image results. */
+function observePhotoRows(){
+ for(const it of items){
+  const gallery=q(".gallery",it.el);
+  if(!gallery||gallery.dataset.photoReady==="1")continue;
+  gallery.dataset.photoReady="1";
+  const placeholder=q(".empty",gallery);
+  const google=q('.actions a[href*="google.com/search"]',it.el);
+  const googleUrl=google?.href||"https://www.google.com/search?tbm=isch&q="+encodeURIComponent(it.name+" Klettersteig Fotos");
+  if(placeholder){
+   gallery.classList.add("photoFallback");
+   placeholder.innerHTML=
+    '<div class="missingPhoto"><div class="missingIcon" aria-hidden="true">📷</div>'+
+    '<strong>Фото маршрута</strong>'+
+    '<span>Для этого маршрута пока нет подтверждённых изображений непосредственно в каталоге.</span>'+
+    '<a href="'+googleUrl+'" class="photoSearch" target="_blank" rel="noopener noreferrer">🖼 Посмотреть фотографии в Google ↗</a>'+
+    '</div>';
+  } else {
+    gallery.querySelectorAll("a img").forEach(img=>{
+      img.addEventListener("error",()=>{
+        const link=img.closest("a");if(link)link.style.display="none";
+        const good=[...gallery.querySelectorAll("img")].some(x=>x.complete&&x.naturalWidth>0&&x.closest("a")?.style.display!=="none");
+        const failing=[...gallery.querySelectorAll("img")].some(x=>!x.complete);
+        if(!good&&!failing&&!q(".empty",gallery)){
+           gallery.innerHTML='<div class="empty"><div class="missingPhoto"><strong>Фото не загрузились</strong><a href="'+googleUrl+'" target="_blank" rel="noopener noreferrer" class="photoSearch">🖼 Посмотреть точные фотографии в Google ↗</a></div></div>';
+        }
+      },{once:true})
+    })
+  }
+ }
+}
+function googleImagesLinks(){for(const it of items){let a=q('.actions a[href*="google.com/search"]',it.el);if(a){a.title="Открыть Google Картинки с точным названием маршрута: снимки не встраиваются и не подменяются похожими местами.";a.textContent="🖼 Google: реальные фото маршрута ↗"}}}
 googleImagesLinks();
 const mapPoints=[
 ["Laserer Alpin · Gosausee",47.5338,13.4959,"https://www.google.com/maps/search/?api=1&query=Gosausee+Parkplatz"],
