@@ -94,3 +94,11 @@
  .vipComparePage .compareScroll:not(.dragging){scroll-behavior:auto}
  .vipComparePage .compareScrollProgress>div{transition:none}
 }
+
+@media(max-width:850px){
+ .vipComparePage .mobileRemove{margin-top:12px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #496977;background:#213743;color:#f0c5ba;border-radius:8px;font-size:11px;font-weight:750;padding:7px 9px;cursor:pointer}
+ .vipComparePage .mobileRemove:hover{background:#4c343a;border-color:#a67c7c}
+ .vipComparePage .mobileCompareHero{display:flex;flex-direction:column}
+ .vipComparePage .mobileCompareHero .mobileHeroTitle{flex:1 0 auto}
+ .vipComparePage .mobileHeroPhoto .comparePhoto>span{font-size:9px;padding:18px 6px 5px}
+}
