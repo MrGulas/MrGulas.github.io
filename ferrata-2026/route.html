@@ -1,0 +1,39 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#09151c">
+<title>Маршрут · Ferrata Atlas</title><meta name="description" content="Подробное описание via ferrata: прогноз по часам, карта района, фотографии конкретного маршрута, топо, длина и сложность.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%231b4c51'/%3E%3Cpath d='M4 49L24 16l10 18 8-11 18 26z' fill='%23b0ffe2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="./explorer.css?v=3"><link rel="stylesheet" href="./premium.css?v=1">
+<script defer src="./routes-data.js?v=1"></script><script defer src="./detail.js?v=1"></script></head>
+<body class="atlasDetail">
+<nav class="atlasNav" aria-label="Главная навигация"><a class="atlasBrand" href="./index.html"><span class="mark">⌁</span>FERRATA<span style="color:#9ae5c5">ATLAS</span></a><div class="atlasNavLinks"><a href="./index.html">← Все 61 маршрутов</a><a href="./index.html#routeFinder">Фильтры</a></div></nav>
+<div id="pageLoading" class="detailIntro"><div class="atlasEyebrow">Гид по маршруту · 10 октября 2026</div><h1 class="detailTitle">Загружаю подробности…</h1><p>Данные о феррате, погоде и топо.</p></div>
+<div id="pageError" hidden class="detailIntro"><h1 class="detailTitle">Маршрут не найден</h1><p>Проверь ссылку или открой каталог.</p><a class="actionMain" href="./index.html">К каталогу ↗</a></div>
+<div id="routePage" hidden>
+<div class="detailIntro">
+<div class="crumbs"><a href="./index.html">Все маршруты</a><span>›</span><span id="crumbRegion">Район</span><span>›</span><span id="crumbRoute">Феррата</span></div>
+<div class="atlasEyebrow" id="routeEyebrow">Горная феррата · Планирование на 10 октября</div><h1 id="routeTitle" class="detailTitle"></h1>
+<p class="detailSubtitle" id="routeSubtitle"></p>
+<div class="infoStrip" id="routePills"></div>
+<div class="detailActionLine">
+<a id="topoCTA" class="actionMain" href="#" target="_blank" rel="noopener noreferrer">🗺️ Топо и описание ↗</a>
+<a id="googleCTA" class="actionSoft" href="#" target="_blank" rel="noopener noreferrer">🖼 Точные фотографии ↗</a>
+<button id="favRoute" class="actionSoft" type="button">♡ В избранное</button>
+<button id="shareRoute" class="actionSoft" type="button">🔗 Поделиться</button>
+</div></div>
+<div class="detailHero" id="routeGallery" aria-label="Фотографии маршрута"></div>
+<main><div class="detailGrid">
+<div class="detailContent">
+<section id="overview"><div class="atlasEyebrow">01 — Зачем сюда ехать</div><h2>Что тебя ждёт</h2><p id="routeDescription" class="detailLead"></p><div id="statusBox"></div><div class="dataGrid" id="routeStats"></div><p class="sourceNote">Оценка красоты субъективна. Значения продолжительности лазания — приблизительный диапазон, если не указано точное подтверждённое топо. Не путать со временем всего похода.</p></section>
+<section id="weather"><div class="weatherHeader"><div><div class="atlasEyebrow">02 — Прогноз на 10 октября 2026</div><h2>Погода по часам</h2></div><button type="button" id="refreshWeather" class="actionSoft">↻ Обновить</button></div><div id="weatherLoading">⏳ Загружаю прогноз для района…</div><div id="weatherData" hidden></div><p class="sourceNote" id="weatherNote">Данные Open-Meteo: модельные, ориентир по координатам района, не измерения на скале. Облака, ветер и снег наверху могут отличаться. Для решения обязательно проверь местные предупреждения и наличие льда.</p><div id="officialWeatherLinks" class="detailLinkGrid"></div></section>
+<section id="route"><div class="atlasEyebrow">03 — Лазание и хайк</div><h2>Как построить день</h2><div class="routeSteps" id="routeSteps"></div><div id="routeCautions"></div></section>
+<section id="map"><div class="atlasEyebrow">04 — Ориентирование</div><h2>Карта района и топо</h2><p>На карте отмечен район горы, <strong>не точка входа на страховочный трос</strong>. Точное расположение входа, спуска, сложных секций и при необходимости GPX смотри в официальном топо.</p><div class="mapFrame" id="mapContainer"></div><div class="detailLinkGrid" id="mapLinks"></div></section>
+<section id="photos"><div class="atlasEyebrow">05 — Фотографии</div><h2>Как выглядит феррата</h2><div id="photoDetails"></div><div class="detailLinkGrid"><a id="photoGoogleButton" class="detailLink" target="_blank" rel="noopener noreferrer" href="#">🖼 Открыть поиск фотографий по точному названию <span>↗</span></a></div><p class="sourceNote">Не подставляем соседние горы и другие ферраты ради красивой картинки. Встроены только фотографии с заранее указанными источниками, привязанными к маршруту.</p></section>
+<section id="sources"><div class="atlasEyebrow">06 — Первоисточники</div><h2>Маршрут, топо, статус</h2><div id="sourcesLinks" class="detailLinkGrid"></div></section>
+<section id="related"><div class="atlasEyebrow">07 — Продолжить поиск</div><h2>Что рядом</h2><div id="relatedRoutes" class="relatedGrid"></div></section>
+</div>
+<aside class="detailSide"><div class="detailSticky">
+<section><div class="atlasEyebrow">Твой маршрут</div><div class="detailScore"><span id="bigWow"></span><small> / 10</small></div><p>Субъективная оценка WOW — виды, скалы и атмосфера.</p><div class="dataGrid" id="sideQuickStats"></div><div class="warning" id="sideRisk"></div></section>
+<section><div class="atlasEyebrow">Быстрые разделы</div><div class="detailLinkGrid"><a class="detailLink" href="#weather">🌤 Прогноз по часам <span>↓</span></a><a class="detailLink" href="#route">🧗 План лазания <span>↓</span></a><a class="detailLink" href="#map">🗺 Карта и топо <span>↓</span></a><a class="detailLink" href="#photos">📷 Фотографии <span>↓</span></a></div></section>
+</div></aside></div>
+<div class="detailFooter">Ferrata Atlas · Прага → горы · Информация не заменяет topo, проверку статуса доступа и самостоятельную оценку погоды в день выхода.<br><a href="./index.html" style="color:#91e9cf">← Вернуться к фильтрам</a></div></main></div>
+<div class="popoverScreen" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Просмотр фотографии"><div class="popoverBody"><button type="button" id="closeLightbox" aria-label="Закрыть">✕ Закрыть</button><img id="lightboxImage" alt="Фотография маршрута"><a id="lightboxSource" href="#" target="_blank" rel="noopener noreferrer" style="font-size:13px;color:#a9dbc8">Фото: открыть оригинал ↗</a></div></div>
+</body></html>
