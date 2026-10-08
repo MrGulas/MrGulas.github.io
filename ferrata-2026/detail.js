@@ -24,6 +24,16 @@ $("routeTitle").textContent=r.name;$("routeSubtitle").textContent=r.desc.length>
 $("routePills").innerHTML='<span class="infoPill">'+esc(labels[r.status])+'</span><span class="infoPill">✨ WOW '+r.wow+'/10</span><span class="infoPill">🧗 '+esc(r.grade)+'</span><span class="infoPill">⏱ '+esc(minutes(r.climbMin,r.climbMax))+'*</span>'+(r.driveHours!=null?'<span class="infoPill">🚗 ~'+r.driveHours+' ч из Праги</span>':"")+(r.hasLake?'<span class="infoPill">💧 Озеро / вода</span>':"")+(r.combo?'<span class="infoPill">⇄ Комбинация</span>':"");
 $("topoCTA").href=r.topo||googleMaps;$("googleCTA").href=queryGoogle;$("photoGoogleButton").href=queryGoogle;
 $("routeDescription").textContent=r.desc;
+const long=r.guide;
+const details=document.getElementById("routeDeepDives");
+if(long){details.innerHTML=[
+ ["Почему маршрут особенный",long.why],
+ ["Подход и организация",long.approach],
+ ["Что добавить к феррате",long.hike],
+ ["На что обратить внимание 10 октября",long.conditions]
+].map(x=>'<div class="deepText"><h3>'+esc(x[0])+'</h3><p>'+esc(x[1])+'</p></div>').join("")}
+else{details.innerHTML='<div class="deepText"><h3>Особенности именно этого маршрута</h3><p>'+esc(r.meta)+'. За подробным описанием подхода, схемой сложных участков и спуска открой привязанный к карточке маршрутный топо. Эти детали нельзя надёжно восстановить по одной краткой заметке, поэтому мы не рисуем выдуманный трек.</p></div>'}
+
 $("statusBox").innerHTML='<div class="'+(r.status==="green"?"greenCallout":"warning")+'"><b>'+esc(labels[r.status])+'</b><br>'+esc(statusText[r.status])+'</div>';
 var stats=[
  ["Сложность",r.grade],["Лазание — оценка*",minutes(r.climbMin,r.climbMax)],["Длина троса",r.lengthM?r.lengthM+" м":"Нет подтверждённых данных"],
@@ -64,6 +74,11 @@ function fallback(){return '<div class="heroFrame heroPlaceholder"><div class="m
 var images=r.photos||[];
 $("routeGallery").innerHTML=images.length?images.slice(0,5).map((x,i)=>'<div class="heroFrame"><a href="'+esc(x.source)+'" class="openPhoto" data-index="'+i+'"><img src="'+esc(x.src)+'" loading="'+(i?"lazy":"eager")+'" alt="'+esc(x.alt||r.name)+'" onerror="this.closest(&quot;.heroFrame&quot;).style.display=&quot;none&quot;"></a><div class="heroCaption">'+esc(host(x.src))+'</div></div>').join(""):fallback();
 $("photoDetails").innerHTML=images.length?'<p>Здесь '+images.length+' изображений из заранее привязанных к маршруту источников. Нажми на фото для просмотра и ссылки на оригинал.</p>':'<p>У этой линии пока нет проверенных встроенных фотографий. Для достоверных снимков открывай точный поиск Google Картинок по названию маршрута.</p>';
+
+$("routeGallery").querySelectorAll("img").forEach(img=>img.addEventListener("error",()=>{
+const frame=img.closest(".heroFrame");if(frame)frame.remove();
+if(!$("routeGallery").querySelector("img"))$("routeGallery").innerHTML=fallback();
+},{once:true}));
 $("routeGallery").addEventListener("click",e=>{var a=e.target.closest(".openPhoto");if(!a)return;e.preventDefault();var i=+a.dataset.index,p=images[i];if(!p)return;$("lightboxImage").src=p.src;$("lightboxImage").alt=p.alt||r.name;$("lightboxSource").href=p.source;$("lightbox").hidden=false;document.body.style.overflow="hidden"});
 function closeLightbox(){$("lightbox").hidden=true;document.body.style.overflow=""}
 $("closeLightbox").addEventListener("click",closeLightbox);
