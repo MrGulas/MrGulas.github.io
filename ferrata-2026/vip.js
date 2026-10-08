@@ -27,7 +27,9 @@ window.addEventListener("storage",e=>{if([favKey,cmpKey].includes(e.key))count()
 document.addEventListener("click",e=>{if(e.target.closest(".compareAdd,.favCard,#favRoute"))setTimeout(count,0)},true);
 function icon(c){return c.kind==="lake"?"💧":c.kind==="hike"||c.kind==="view"?"🥾":"🧗"}
 function componentTile(c){
- const photo=c.photo;
+ const linked=c.routeId&&db.routes[c.routeId-1];
+ const named=db.routes.find(r=>r.name?.toLowerCase()===String(c.name||"").toLowerCase());
+ const photo=c.photo||linked?.photos?.[0]||named?.photos?.[0];
  const photoSrc=photo?.src||"";
  const link=googleImages(c.name,c.kind);
  return '<a class="vipPartTile" target="_blank" rel="noopener noreferrer" href="'+link+'" aria-label="Посмотреть фотографии '+safe(c.name)+' в Google Картинках">'+
