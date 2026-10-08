@@ -44,7 +44,10 @@ for(const width of [320,390,768,1280]){
   assert.equal(await page.locator("#wowImportance").inputValue(),"high");
   const d=await page.evaluate(()=>({body:document.documentElement.scrollWidth,vw:innerWidth}));
   assert.ok(d.body<=d.vw+3,JSON.stringify(d));
-  assert.ok(await page.locator("#cards>.card").first().isVisible());
+  // Presets filter and reorder the catalog. The original first DOM card may be
+  // intentionally hidden, so verify that the filtered result contains at least
+  // one visible card instead of requiring that specific card to stay visible.
+  assert.ok(await page.locator("#cards>.card:visible").count()>0);
   // External image requests are intentionally aborted in this smoke suite.
   // A component tile is valid with either a loaded image element or its designed
   // icon fallback; requiring <img> made resilient image cleanup fail the CI.
