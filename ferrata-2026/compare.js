@@ -10,7 +10,7 @@ const statusLabels={green:"🟢 Реалистично",yellow:"🟡 При ус
 const countryLabels={AT:"🇦🇹 Австрия",DE:"🇩🇪 Германия",SK:"🇸🇰 Словакия",SI:"🇸🇮 Словения"};
 const minutes=r=>r.climbMin==null||r.climbMax==null?"Нет точных данных":r.climbMin+"–"+r.climbMax+" мин*";
 const drive=r=>r.driveHours==null?"Нужно уточнить":"≈ "+r.driveHours.toFixed(1)+" ч из Праги";
-const photoSearch=name=>"https://www.google.com/search?tbm=isch&q="+encodeURIComponent(name+" Klettersteig Fotos");
+const photoSearch=(name,kind)=>"https://www.google.com/search?tbm=isch&q="+encodeURIComponent(name+" Fotos "+(kind==="lake"?"See Österreich":kind==="hike"||kind==="view"?"Wanderung Panorama":"Klettersteig"));
 const hrLink=r=>"./route.html?route="+encodeURIComponent(r.slug);
 const source=r=>r.topo||photoSearch(r.name);
 function photoCell(r){
@@ -23,7 +23,7 @@ const cells=(r,fn)=>r.map(x=>'<td>'+fn(x)+'</td>').join("");
 const row=(name,rs,func)=>'<tr><th scope="row">'+name+'</th>'+cells(rs,func)+'</tr>';
 const section=(name,count)=>'<tr class="matrixSection"><th colspan="'+(count+1)+'">'+name+'</th></tr>';
 function components(r){
- if(r.components?.length)return '<div class="compareParts">'+r.components.map(c=>'<a target="_blank" rel="noopener noreferrer" href="'+photoSearch(c.name)+'">'+(c.kind==="lake"?"💧":c.kind==="ferrata"?"🧗":"🥾")+' '+esc(c.name)+' ↗</a>').join("")+'</div>';
+ if(r.components?.length)return '<div class="compareParts">'+r.components.map(c=>'<a target="_blank" rel="noopener noreferrer" href="'+photoSearch(c.name,c.kind)+'">'+(c.kind==="lake"?"💧":c.kind==="ferrata"?"🧗":"🥾")+' '+esc(c.name)+' ↗</a>').join("")+'</div>';
  return '<a class="matrixTextLink" target="_blank" rel="noopener noreferrer" href="'+photoSearch(r.name)+'">Фотографии именно этой линии ↗</a>';
 }
 function textOrTopo(r,key){return r.guide?.[key]?'<span class="matrixProse">'+esc(r.guide[key])+'</span>':'<span class="matrixMuted">Подробности подхода и спуска — в оригинальном топо. Не указаны без проверки.</span>'}
