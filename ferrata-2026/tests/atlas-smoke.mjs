@@ -95,9 +95,9 @@ await check("Desktop compare wheel scrolls page and arrows move table",async()=>
    indices, no-lift logistics, and real forecast refresh / date-selection UI.
    A deterministic API stub verifies DOM wiring; the separate Actions step
    checks live Open-Meteo reachability. */
-await check("69 routes and newly added alpine entries",async()=>{
+await check("70 routes and newly added alpine entries",async()=>{
  const {context,page,errors}=await pageAt(390,"/index.html");
- assert.equal(await page.locator("#cards>.card").count(),69);
+ assert.equal(await page.locator("#cards>.card").count(),70);
  assert.equal(await page.locator(".newRoutesNotice").count(),1);
  await page.locator('input[name="showStatus"][value="red"]').check();
  await page.locator("#maxDifficulty").selectOption("4");
