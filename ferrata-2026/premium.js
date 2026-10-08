@@ -7,6 +7,7 @@ const favKey="ferrataWOW_favorites_v1";
 const favIds=()=>{try{return new Set(JSON.parse(localStorage.getItem(favKey)||"[]").map(Number))}catch(e){return new Set()}};
 const save=ids=>localStorage.setItem(favKey,JSON.stringify([...ids]));
 const esc=v=>String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const proxyImage=url=>"https://images.weserv.nl/?url="+encodeURIComponent(url)+"&w=1200&h=700&fit=cover&output=webp";
 const code={AT:"🇦🇹 Австрия",DE:"🇩🇪 Германия",SK:"🇸🇰 Словакия",SI:"🇸🇮 Словения"};
 const fmt=(a,b)=>a==null||b==null?"Не уточнено":b<=60?"до "+b+" мин":b<=120?"~1–2 ч":b<=180?"~2–3 ч":b<=300?"~3–5 ч":"длинная";
 function updateFavCards(){
@@ -31,13 +32,14 @@ for(let i=0;i<original.length;i++){
  if(gallery && r.photos?.length && gallery.querySelector(".empty")){
   gallery.classList.remove("photoFallback");
   gallery.dataset.photoReady="1";
-  gallery.innerHTML=r.photos.slice(0,5).map(p=>'<a href="'+esc(p.source)+'" rel="noopener noreferrer" target="_blank" title="Первоисточник фотографии"><img loading="lazy" src="'+esc(p.src)+'" alt="'+esc(p.alt||r.name)+'" onerror="this.closest(&quot;a&quot;).style.display=&quot;none&quot;"></a>').join("");
+  gallery.innerHTML=r.photos.slice(0,5).map(p=>'<a href="'+esc(p.source)+'" rel="noopener noreferrer" target="_blank" title="Первоисточник фотографии"><img loading="lazy" src="'+esc(p.src)+'" alt="'+esc(p.alt||r.name)+'" data-proxy-fallback="'+esc(proxyImage(p.src))+'"></a>').join("");
   const prev=gallery.nextElementSibling;if(prev?.classList.contains("pgallerySource"))prev.remove();
   // Remote publishers may reject hotlinking; never leave a blank, misleading image strip.
   const imgs=[...gallery.querySelectorAll("img")];
   let broken=0;
   for(const img of imgs)img.addEventListener("error",()=>{
-    broken++;
+    if(img.dataset.proxyFallback){const fallback=img.dataset.proxyFallback;delete img.dataset.proxyFallback;img.src=fallback;return}
+    broken++;img.closest("a").style.display="none";
     if(broken===imgs.length && !gallery.classList.contains("vipSplitGallery")){
       const lookup="https://www.google.com/search?tbm=isch&q="+encodeURIComponent(r.name+" Klettersteig Fotos");
       gallery.innerHTML='<div class="empty" style="display:grid;place-items:center;width:100%;height:185px;text-align:center"><div class="missingPhoto"><strong>Прямые фото недоступны</strong><span>Источник ограничил загрузку изображений на этом сайте.</span><a class="photoSearch" href="'+esc(lookup)+'" target="_blank" rel="noopener noreferrer">🖼 Точные фотографии маршрута ↗</a></div></div>';

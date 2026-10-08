@@ -7,6 +7,15 @@ const favKey="ferrataWOW_favorites_v1",cmpKey="ferrataWOW_compare_v2";
 const getArr=k=>{try{const a=JSON.parse(localStorage.getItem(k)||"[]");return Array.isArray(a)?a.filter(Number.isInteger):[]}catch(e){return []}};
 const setArr=(k,x)=>{localStorage.setItem(k,JSON.stringify(x));window.dispatchEvent(new Event("atlas:changed"))};
 const safe=x=>String(x||"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+const proxyImage=url=>"https://images.weserv.nl/?url="+encodeURIComponent(url)+"&w=1200&h=700&fit=cover&output=webp";
+const componentLibrary={
+ "affensteine":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Affensteine_im_Nationalpark_S%C3%A4chsische_Schweiz.jpg?width=1200",
+ "mondsee":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Mondsee_Lake_from_the_shoreline_at_the_town_of_Mondsee.jpg?width=1200",
+ "achensee":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Achensee_1.jpg?width=1200",
+ "hallstätter see":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Hallstatter_See_(203187435).jpeg?width=1200",
+ "grünstein klettersteig":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Gruenstein-klettersteig-ausblick-koenigssee-nationalpark-berchtesgaden.jpg?width=1200",
+ "hochstaufen":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Hochstaufen011.jpg?width=1200"
+};
 const googleImages=(name,kind)=>"https://www.google.com/search?tbm=isch&q="+encodeURIComponent(name+" Fotos "+(kind==="lake"||/see|weiher|mara|озеро|lake/i.test(name)?"See Austria":kind==="hike"||kind==="view"?"Panorama Wanderung":"Klettersteig"));
 const routeURL=c=>{const id=c.routeId;return id&&db.routes[id-1]?"./route.html?route="+encodeURIComponent(db.routes[id-1].slug):null};
 function count(){
@@ -26,14 +35,18 @@ window.addEventListener("atlas:changed",count);
 window.addEventListener("storage",e=>{if([favKey,cmpKey].includes(e.key))count()});
 document.addEventListener("click",e=>{if(e.target.closest(".compareAdd,.favCard,#favRoute"))setTimeout(count,0)},true);
 function icon(c){return c.kind==="lake"?"💧":c.kind==="hike"||c.kind==="view"?"🥾":"🧗"}
-function componentTile(c){
+function componentTile(c,parentRoute){
  const linked=c.routeId&&db.routes[c.routeId-1];
  const named=db.routes.find(r=>r.name?.toLowerCase()===String(c.name||"").toLowerCase());
+ const librarySrc=componentLibrary[String(c.name||"").toLowerCase()];
  const photo=c.photo||linked?.photos?.[0]||named?.photos?.[0];
- const photoSrc=photo?.src||"";
+ const candidates=[photo?.src,librarySrc,...(linked?.photos||[]).map(p=>p.src),...(named?.photos||[]).map(p=>p.src),...(parentRoute?.photos||[]).map(p=>p.src)].filter(Boolean);
+ const unique=[...new Set(candidates)];
+ const fallbacks=[...unique.slice(1),...unique.map(proxyImage)];
+ const photoSrc=unique[0]||"";
  const link=googleImages(c.name,c.kind);
  return '<a class="vipPartTile" target="_blank" rel="noopener noreferrer" href="'+link+'" aria-label="Посмотреть фотографии '+safe(c.name)+' в Google Картинках">'+
- '<span class="vipNoPhoto" aria-hidden="true">'+icon(c)+'</span>'+(photoSrc?'<img loading="lazy" src="'+safe(photoSrc)+'" alt="'+safe(photo.alt||c.name)+'" onerror="this.remove()">':'')+
+ '<span class="vipNoPhoto" aria-hidden="true">'+icon(c)+'</span>'+(photoSrc?'<img loading="lazy" src="'+safe(photoSrc)+'" alt="'+safe(photo?.alt||("Обложка программы: "+c.name))+'" data-fallbacks="'+safe(encodeURIComponent(JSON.stringify(fallbacks)))+'">':'')+
  '<span class="vipPartShade"></span><span class="vipPartInfo"><b>'+safe(c.name)+'</b><small>'+icon(c)+' Фотографии ↗</small></span></a>';
 }
 function componentPills(parts){
@@ -47,7 +60,7 @@ cards.forEach(el=>{
  const r=db.routes[index];if(!r?.components||r.components.length<2)return;
  const g=el.querySelector(".gallery");if(!g)return;
  g.dataset.photoReady="1";g.className="gallery vipSplitGallery";
- g.innerHTML=r.components.map(componentTile).join("");
+ g.innerHTML=r.components.map(c=>componentTile(c,r)).join("");
  const group=document.createElement("div");group.className="vipSegmentPills";group.setAttribute("aria-label","Части маршрута — фотографии по отдельности");
  group.innerHTML=componentPills(r.components);
  const meta=el.querySelector(".cardDataChips");
@@ -75,7 +88,7 @@ if(actions&&!$("vipDetailCompare")){
 const g=$("routeGallery"),parts=r.components;
 if(!g||!parts?.length||parts.length<2)return;
 g.classList.add("vipCompositeHero");
-g.innerHTML='<div class="vipDetailSegments" style="--segment-count:'+parts.length+'">'+parts.map(componentTile).join("")+'</div>';
+g.innerHTML='<div class="vipDetailSegments" style="--segment-count:'+parts.length+'">'+parts.map(c=>componentTile(c,r)).join("")+'</div>';
 const photos=$("photoDetails");
 if(photos){
  photos.innerHTML='<p class="detailLead">Здесь две или несколько самостоятельных точек. Ниже у каждой — своя ссылка на фотографии. Поэтому альбомы разных феррат и озёр больше не смешиваются.</p>'+
@@ -116,5 +129,12 @@ function detailsPrivacy(){
   detail.append(s)
  }
 }
+document.addEventListener("error",event=>{
+ const img=event.target;if(!(img instanceof HTMLImageElement)||!img.matches(".vipPartTile img"))return;
+ let fallbacks=[];try{fallbacks=JSON.parse(decodeURIComponent(img.dataset.fallbacks||"%5B%5D"))}catch(e){}
+ const next=fallbacks.shift();
+ if(!next){img.remove();return}
+ img.dataset.fallbacks=encodeURIComponent(JSON.stringify(fallbacks));img.src=next;
+},true);
 groupGalleryHome();groupGalleryDetail();favoritesView();updateCompareNav();detailsPrivacy();count();
 })();
