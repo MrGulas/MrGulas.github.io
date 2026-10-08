@@ -1,0 +1,82 @@
+/* Ferrata Atlas — unified desktop/mobile experience, 2026-10 */
+:root{--atlas-surface:#122431;--atlas-line:rgba(157,205,211,.18);--atlas-muted:#9db7c0;--atlas-mint:#9ff2d4}
+
+/* Filters: one clear surface, no nested-card visual noise. */
+#routeFinder{max-width:1288px;padding-inline:18px}
+#routeFinder .finderShell{padding:clamp(20px,3vw,34px);border-radius:28px;background:linear-gradient(145deg,rgba(20,46,55,.96),rgba(12,28,40,.98))!important;box-shadow:0 28px 80px rgba(0,0,0,.28)}
+#routeFinder .finderTitle{align-items:flex-start;margin-bottom:22px;padding-bottom:22px;border-bottom:1px solid var(--atlas-line)}
+#routeFinder .finderTitle .chiprow{justify-content:flex-end}
+#routeFinder .btnLite{border-radius:999px;padding:10px 15px;background:rgba(33,65,75,.74);border-color:rgba(132,211,190,.28)}
+#routeFinder .presetSection{padding:0 0 24px;margin:0 0 8px;border:0;border-bottom:1px solid var(--atlas-line);border-radius:0;background:none;box-shadow:none}
+#routeFinder .quickBolt{border-radius:50%;box-shadow:0 7px 22px rgba(35,133,105,.24)}
+#routeFinder .presetSection .presetbar{grid-template-columns:repeat(5,minmax(0,1fr))}
+#routeFinder .presetbar button{border-radius:999px;min-height:46px;background:rgba(21,52,62,.72);border-color:rgba(132,211,190,.24)}
+#routeFinder .finderCols{gap:0 34px}
+#routeFinder .finderBlock{padding:22px 0 19px;border-top:1px solid var(--atlas-line);background:none!important}
+#routeFinder .finderCols>.finderBlock:nth-child(-n+2){border-top:0}
+#routeFinder .finderBlock>h3{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:#b7d3d6}
+#routeFinder .chip{padding:8px 13px;border-radius:999px;background:rgba(29,53,67,.58);border-color:rgba(139,180,194,.22)}
+#routeFinder .chip:has(input:checked){background:rgba(27,89,75,.68);border-color:#66c8aa;box-shadow:none}
+#routeFinder select,#routeFinder #climbMax,#routeFinder #lengthMax,#routeFinder #sortOrder{border-radius:999px;background:#1b3542;border-color:rgba(132,188,194,.32);padding-inline:15px}
+#routeFinder .importanceBlock{padding:24px 0 10px!important;border:0!important;border-top:1px solid var(--atlas-line)!important;background:none!important}
+#routeFinder .importanceIntro{max-width:700px}
+#routeFinder .importanceGrid{gap:0;border-top:1px solid var(--atlas-line);border-bottom:1px solid var(--atlas-line)}
+#routeFinder .importanceGrid>label{border:0;border-radius:0;background:none;padding:22px 24px 22px 0}
+#routeFinder .importanceGrid>label+label{border-left:1px solid var(--atlas-line);padding-left:24px}
+#routeFinder .importanceGrid select{border-radius:999px;background:#1d514d;border-color:#579886;padding:11px 14px}
+#routeFinder .importanceCaution{margin-top:14px}
+
+/* Route cards: visual cover first, then a readable information hierarchy. */
+#cards{gap:22px;max-width:1288px;padding-inline:18px}
+#cards>.card{height:auto;min-height:630px;max-height:none;border-radius:24px!important;border-color:rgba(139,184,197,.2)!important;box-shadow:0 22px 55px rgba(0,0,0,.25)!important}
+#cards>.card:hover{transform:translateY(-4px);border-color:rgba(133,225,198,.54)!important;box-shadow:0 28px 70px rgba(0,0,0,.34)!important}
+#cards>.card .gallery{height:210px!important;min-height:210px!important;max-height:210px!important;flex-basis:210px}
+#cards>.card .gallery img{height:210px!important}
+#cards>.card .gallery .empty{border:0!important;background:radial-gradient(circle at 78% 18%,#2a675f,#173645 42%,#102333 78%)!important}
+#cards>.card .topline{min-height:0;max-height:none;padding-top:16px;gap:7px;overflow:visible}
+#cards>.card .rank,#cards>.card .badge,#cards>.card .mm,#cards>.card .wow{border-radius:999px;padding:5px 9px;line-height:1.25}
+#cards>.card .rank{color:#b7ccd2;background:rgba(30,55,68,.7)}
+#cards>.card>h2{font-size:19px;min-height:0;max-height:none;margin-top:12px;-webkit-line-clamp:2}
+#cards>.card .meta{min-height:0;max-height:none;display:flex;flex-wrap:wrap;gap:6px;color:#d5e7e9;line-height:1.45}
+#cards>.card .cardDataChips{flex-basis:auto;max-height:none;overflow:visible;margin-top:10px;gap:6px}
+#cards>.card .cardDataChips span{border-radius:999px;padding:5px 9px;background:rgba(24,55,64,.72);border-color:rgba(123,184,178,.25)}
+#cards>.card>.vipSegmentPills{max-height:none;margin-top:1px}
+.vipSegmentPills a{border-radius:999px;background:transparent;border-color:rgba(93,166,151,.35)}
+#cards>.card>p{flex-basis:auto;max-height:none;min-height:64px;margin-top:8px;-webkit-line-clamp:3}
+#cards>.card .detailCTA{margin-top:auto;border-radius:999px}
+.vipPartTile .vipPartInfo{align-items:flex-start;text-align:left;padding:13px 10px}
+.vipPartTile .vipPartInfo b{font-size:12px}
+
+@media(max-width:900px){
+ #routeFinder .presetSection .presetbar{grid-template-columns:repeat(3,minmax(0,1fr))}
+ #routeFinder .importanceGrid{grid-template-columns:1fr}
+ #routeFinder .importanceGrid>label{display:grid;grid-template-columns:36px minmax(0,1fr);padding:17px 0!important;border-left:0!important}
+ #routeFinder .importanceGrid>label+label{border-top:1px solid var(--atlas-line)}
+ #routeFinder .importanceGrid select{grid-column:1/-1}
+}
+@media(max-width:740px){
+ .atlasNav.vipNav{position:relative}
+ .vipNav .atlasNavLinks{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+ .vipNav .atlasNavLinks>a{justify-content:center;text-align:center;min-height:40px}
+ .vipHeader{padding-top:28px}
+ .vipStickyNote{align-items:flex-start;flex-direction:column;gap:4px}
+ #routeFinder{padding-inline:10px}
+ #routeFinder .finderShell{padding:18px 14px;border-radius:20px}
+ #routeFinder .finderTitle{display:block}
+ #routeFinder .finderTitle .chiprow{margin-top:16px;justify-content:flex-start}
+ #routeFinder .finderCols{display:block}
+ #routeFinder .finderCols>.finderBlock:nth-child(2){border-top:1px solid var(--atlas-line)}
+ #routeFinder .presetSection .presetbar{display:flex;overflow-x:auto;flex-wrap:nowrap;padding-bottom:7px;scroll-snap-type:x mandatory}
+ #routeFinder .presetbar button{flex:0 0 auto;width:auto;min-width:145px;scroll-snap-align:start}
+ #cards{padding-inline:10px}
+ #cards>.card{min-height:0}
+ #cards>.card .gallery{height:196px!important;min-height:196px!important;max-height:196px!important;flex-basis:196px;overflow:hidden}
+ #cards>.card .gallery img{height:196px!important}
+ #cards>.card>h2{font-size:18px}
+}
+@media(max-width:420px){
+ .vipNav .atlasNavLinks>a{font-size:10px;padding:7px 4px}
+ #routeFinder .chip{font-size:12px}
+ #cards>.card .gallery{height:182px!important;min-height:182px!important;max-height:182px!important;flex-basis:182px}
+ #cards>.card .gallery img{height:182px!important}
+}
