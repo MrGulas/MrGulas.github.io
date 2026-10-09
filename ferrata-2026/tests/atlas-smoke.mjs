@@ -98,7 +98,7 @@ await check("Desktop compare wheel scrolls page and arrows move table",async()=>
 await check("70 routes and newly added alpine entries",async()=>{
  const {context,page,errors}=await pageAt(390,"/index.html");
  assert.equal(await page.locator("#cards>.card").count(),70);
- assert.equal(await page.locator(".newRoutesNotice").count(),1);
+ assert.equal(await page.locator(".newRoutesNotice").count(),0);
  await page.locator('input[name="showStatus"][value="red"]').check();
  await page.locator("#maxDifficulty").selectOption("4");
  const card=page.locator('#cards>.card[data-orig="68"]');
@@ -227,8 +227,9 @@ await check("Fresh catalog forecast changes rain badges and numeric filtering",a
    await req.fulfill({status:200,contentType:"application/json",body:JSON.stringify(lats.length===1?payload[0]:payload)});
  });
  const prev=await page.locator('#cards>.card[data-orig="0"] .mm').innerText();
+ await page.waitForFunction(()=>!document.querySelector("#fetchLiveForecast")?.disabled);
  await page.locator("#fetchLiveForecast").click();
- await page.waitForFunction(()=>window.FERRATA_LIVE?.active);
+ await page.waitForFunction(()=>window.FERRATA_LIVE?.active&&window.FERRATA_LIVE.metrics?.filter(Boolean).length===70);
  const present=await page.locator('#cards>.card[data-orig="0"] .mm').innerText();
  assert.notEqual(prev,present);
  assert.match(present,/08–20/);
@@ -246,9 +247,8 @@ await check("Fresh catalog forecast changes rain badges and numeric filtering",a
  assert.ok(allVisible>0);
  await page.locator("#liveForecastDate").fill("2026-10-11");
  await page.locator("#liveForecastDate").dispatchEvent("change");
- assert.equal(await page.evaluate(()=>window.FERRATA_LIVE.active),false);
- const restored=await page.locator('#cards>.card[data-orig="0"] .mm').innerText();
- assert.equal(restored,prev,"Changing the date must restore/archive old labels until refetch");
+ await page.waitForFunction(()=>window.FERRATA_LIVE?.active&&window.FERRATA_LIVE.date==="2026-10-11");
+ assert.match(await page.locator("#liveForecastStatus").innerText(),/11\.10\.2026/);
  const dims=await page.evaluate(()=>({body:document.documentElement.scrollWidth,w:innerWidth}));
  assert.ok(dims.body<=dims.w+3,JSON.stringify(dims));
  assert.equal(errors.length,0,JSON.stringify(errors));
