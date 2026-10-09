@@ -41,3 +41,10 @@
 .snapshotGrid{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
 @media(max-width:1050px){.photoGrid.five{grid-template-columns:repeat(2,minmax(0,1fr))}.photoGrid.five figure:last-child{grid-column:1/-1}}
 @media(max-width:650px){.photoGrid.five{grid-template-columns:1fr}.photoGrid.five figure:last-child{grid-column:auto}.videoCard{grid-template-columns:120px 1fr}.videoCard img,.videoPlaceholder{width:120px}.mapEmbed iframe{height:520px}}
+
+/* Live snapshot refresh control */
+.weatherRefresh{cursor:pointer;border:1px solid #5a9c8a;border-radius:12px;background:#1b5949;color:#f0fff9;font:inherit;font-weight:800;padding:11px 16px;margin:5px 0}
+.weatherRefresh:hover{background:#286d59}.weatherRefresh:disabled{opacity:.58;cursor:wait}
+.snapshotGrid article span{line-height:1.65}
+.snapshot #snapshotForecastUpdated{margin:6px 0 12px}
+@media(max-width:580px){.weatherRefresh{width:100%}.snapshotGrid article{padding:15px}.snapshotGrid article span{font-size:14px}}
