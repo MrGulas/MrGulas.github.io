@@ -41,23 +41,26 @@
 </header>
 
 <main class="finalMain">
-  <section class="snapshot">
+  <section class="snapshot" id="forecast-now">
     <div>
-      <span class="eyebrow">Снимок прогноза · обновлено 09.10 после 13:00</span>
-      <h2>Что сейчас обещает официальный прогноз на 10.10</h2>
+      <span class="eyebrow" id="snapshotForecastSource">Модель Open-Meteo · 10 октября 2026</span>
+      <h2>Что сейчас обещают прогнозы на 10.10</h2>
+      <p class="note">Прогноз загружается при открытии страницы и по кнопке. <b>Источник: модель Open-Meteo, НЕ официальный прогноз GeoSphere.</b> Для решения сверить официальные прогнозы, камеры, радар и статус маршрута.</p>
+      <div class="linkRow"><button id="refreshFinalistsWeather" class="weatherRefresh" type="button">↻ Обновить прогноз всех маршрутов</button></div>
+      <p id="snapshotForecastUpdated" class="note" role="status" aria-live="polite">Загрузка данных на 10.10…</p>
     </div>
     <div class="snapshotGrid">
-      <article><b>Dachstein ~2700 м</b><span>≈ +1°C · до 2 см снега · ~2.6 мм · 65%</span><small>Потенциально очень красиво, но именно состояние снега/льда решает всё.</small></article>
-      <article><b>Reiteralm</b><span>≈ +9°C · 0 см снега · ~5 мм · 65%</span><small>По текущему GeoSphere: дружелюбный день с солнцем и облаками; сухость Franzi проверяем по факту утром.</small></article>
-      <article><b>Giglachseen / Schladminger Tauern</b><span>≈ +9°C · 0 см снега · около 1.1 мм в локальном расчёте</span><small>Светлее в начале дня, облачность растёт ближе к вечеру.</small></article>
-      <article><b>Stoderzinken</b><span>≈ +8°C · 0 см снега · ~3 мм · слабый NW</span><small>Сначала временами солнце, во второй половине дня повышается риск дождя — Peter надо делать до ухудшения.</small></article>
+      <article data-weather-location="0"><b>🏔 Dachstein · Hunerkogel ~2690 м</b><span>Загрузка прогноза…</span><small>Снег и лёд: смотреть glacier report и камеры.</small></article>
+      <article data-weather-location="1"><b>🧗 Reiteralm · Gasselhöhe ~2000 м</b><span>Загрузка прогноза…</span><small>Даже при сухом прогнозе проверить Franzi и тропы.</small></article>
+      <article data-weather-location="2"><b>🔥 Rotmandlspitze ~2453 м</b><span>Загрузка прогноза…</span><small>Старый снег и видимость на перевале неизвестны по этой модели.</small></article>
+      <article data-weather-location="3"><b>⛰ Stoderzinken ~2050 м</b><span>Загрузка прогноза…</span><small>Резерв: Peter только на сухой скале при безопасном прогнозе.</small></article>
     </div>
   </section>
 
 
   <section class="timeline" id="morning-check">
     <h3>🌤 Утренний контроль 10.10: камеры, облачность, снег, доступ</h3>
-    <p><b>Проверки в 07:15 и 08:30 и ещё раз перед развилкой маршрутов.</b> Не ориентироваться на проценты осадков из вчерашней карточки: это архивный снимок. Сначала сравнить <b>почасовую облачность 10:00–17:00</b>, реальный радар, высоту облачной базы, ветер и температуру; затем проверить официальное открытие троп и ферраты. <b>«Открыта» не означает «сухая».</b></p>
+    <p><b>Проверки в 07:15 и 08:30 и ещё раз перед развилкой маршрутов.</b> Верхние карточки обновляются из Open-Meteo, вместо старых зафиксированных цифр. Сначала сравнить <b>почасовую облачность 10:00–17:00</b>, реальный радар, высоту облачной базы, ветер и температуру; затем проверить официальное открытие троп и ферраты. <b>«Открыта» не означает «сухая».</b></p>
     <div class="resourceStrip">
       <a href="https://portale.geosphere.at/hpAT/index.php?gl=EN" target="_blank" rel="noopener noreferrer"><b>🌧 GeoSphere: радар и облака</b><span>Наложения Niederschlag / Bewölkung, спутник, снег</span></a>
       <a href="https://www.alpenverein.de/bergwetter/alpen/" target="_blank" rel="noopener noreferrer"><b>⛰ DAV / горный прогноз</b><span>Ветер, снег и предупреждения по высотам</span></a>
@@ -73,10 +76,10 @@
       <article class="infoCard"><h3>🔥 Rotmandl MAX — проверка</h3><p><b>1)</b> снег/наледь на Kruckeckscharte и Rotmandlspitze; <b>2)</b> облачная база и видимость выше 2300 м; <b>3)</b> дождь/ветер и часы света; <b>4)</b> дорога и парковка Eschachalm. <b>19,2 км / 9:20</b> при старте 10:30 не заканчиваются засветло: полный верхний круг только при безопасном, обоснованном графике, иначе короткий маршрут.</p></article>
       <article class="infoCard"><h3>🏔 Dachstein — проверка</h3><p><b>1)</b> видимость на камере Hunerkogel; <b>2)</b> официальные статусы гондолы, подготовленной ледниковой тропы и доступа к Rosmarie-Stollen; <b>3)</b> свежий снег/лёд, порывы ветра; <b>4)</b> забронированы подъём/спуск и время возврата. <b>B/C Westgrat и C/D Irg II не становятся безопасными только из-за низкой категории</b>: без ледниковых навыков, подходящего снаряжения и/или гида не выходить на самостоятельный ледниковый маршрут.</p></article>
     </div>
-    <h3>☁️ Почасовая облачность на трёх высотах</h3>
-    <p>Кнопка загружает <b>свежий модельный прогноз Open-Meteo</b> непосредственно для верхней станции Dachstein (~2690 м), Gasselhöhe (~2000 м) и Rotmandlspitze (~2450 м): процент облачного покрова и осадки каждые 2 часа. <b>Это модель, не гарантия видимости на гребне и не измерение льда на маршруте.</b></p>
-    <div class="linkRow"><button id="loadSaturdayForecast" type="button" style="cursor:pointer;border-radius:10px;border:1px solid #548a9b;padding:12px 17px;color:#f5ffff;background:#235465;font:inherit">☁️ Загрузить облачность на завтра ↻</button></div>
-    <div id="morningWeatherOutput" aria-live="polite" class="note">Прогноз пока не загружен. Нажми кнопку утром — покажу почасовой процент облаков и осадки по трём локациям.</div>
+    <h3>☁️ Почасовая облачность: четыре локации</h3>
+    <p>Кнопка обновляет <b>те же данные Open-Meteo, что и верхние карточки</b>, для Dachstein, Reiteralm, Rotmandlspitze и Stoderzinken: облачность, осадки, снег и температура каждые два часа. Прогноз также загружается при открытии страницы. <b>Это модель, не гарантия видимости на гребне и не измерение льда на маршруте.</b></p>
+    <div class="linkRow"><button id="loadSaturdayForecast" type="button" style="cursor:pointer;border-radius:10px;border:1px solid #548a9b;padding:12px 17px;color:#f5ffff;background:#235465;font:inherit">↻ Обновить почасовой прогноз</button></div>
+    <div id="morningWeatherOutput" aria-live="polite" class="note">Загрузка облачности по часам…</div>
     <p class="note"><b>Приоритет решения:</b> безопасный сухой маршрут и время возврата &gt; красивая камера &gt; количество километров. Если модель и официальные источники противоречат друг другу, нужна локальная проверка, а не автоматическое «GO».</p>
   </section>
 
@@ -271,9 +274,9 @@
       <div>
         <span class="routeNo">Reiteralm MAX · максимум видов за световой день · без канатки</span>
         <h2>Franzi C/D → Gasselhöhe → Rippetegg → Obersee → Schober → Spiegelsee → Untersee / Waldsee → Reiteralmsee</h2>
-        <p class="lead">Собираем не короткую «часовую феррату», а полноценный панорамно-озёрный день с той же машиной на верхней парковке. Главные акценты: Franzi, три вершины, Gasselseen и лесная озёрная тропа Stille Wasser. Не добавляем бессмысленные километры на асфальте только ради цифры 19 км.</p>
+        <p class="lead">Собираем не короткую «часовую феррату», а полноценный панорамно-озёрный день с той же машиной на верхней парковке. Главные акценты: Franzi, три вершины и <b>два главных красивых озера — Obersee и Spiegelsee</b>. Untersee, Waldsee и Reiteralmsee — приятные, но менее впечатляющие дополнительные остановки. Не добавляем бессмысленные километры на асфальте только ради цифры 19 км.</p>
       </div>
-      <div class="scoreBox"><b>WOW 9.5/10</b><span>Franzi C/D ≈1 ч</span><span>3 вершины · 5 озёрных точек</span><span>19 км — не подтверждено</span></div>
+      <div class="scoreBox"><b>WOW 9/10 · субъективно</b><span>Franzi C/D ≈1 ч</span><span>3 вершины · 2 главных озера</span><span>Остальные озёра — по желанию</span></div>
     </div>
 
     <div class="photoGrid five">
@@ -296,16 +299,17 @@
           <li><b>Obersee:</b> крутой спуск от Rippetegg; здесь главный пункт решения по времени и погоде.</li>
           <li><b>Schober 2133 м:</b> только при запасе времени: официальный источник даёт примерно <b>по часу на подъём и спуск</b> от ответвления у Obersee, то есть +2 часа за третью вершину.</li>
           <li><b>Spiegelsee:</b> главный фотостоп с отражением Dachstein, если облака позволят.</li>
-          <li><b>Untersee → Waldsee → Reiteralmsee:</b> возвращение через отмеченные лесные/озёрные тропы <b>Stille Wasser</b>, не по произвольным срезкам. У Reiteralmsee закончить у верхней парковки.</li>
+          <li><b>Untersee → Waldsee → Reiteralmsee (необязательная часть):</b> лесной маршрут <b>Stille Wasser</b>, со скамейками и семейной атмосферой. <b>Эти водоёмы заметно менее драматичные, чем Obersee, Spiegelsee и Giglachseen.</b> Добавляйте их ради прогулки, не ради «пяти равноценных озёр». У Reiteralmsee закончить возле верхней парковки.</li>
         </ol>
         <p class="note">У официальной 3-Gipfel-Tour база <b>7,5 км / 5 ч / ±652 м</b> (без отдельной Franzi); дополнительный Untersee добавляет <b>30–40 минут</b>. Маршрут Stille Wasser отдельно — <b>3 км / 1:10</b>, но он частично пересекается с возвратом. <b>Эти длины нельзя сложить арифметически.</b> Конечная связка Franzi + все вершины + все озёра пока <b>не измерена единым GPX</b>; точную длину и набор не выдаём за проверенные.</p>
       </article>
 
       <article class="infoCard">
-        <h3>Максимум километров или максимум красоты?</h3>
+        <h3>Где действительно WOW, а где проходные озёра?</h3>
+        <p><b>Главные фототочки:</b> гребень Gasselhöhe–Rippetegg, скалы у <b>Obersee</b> и <b>Spiegelsee</b> с отражением Dachstein (только при видимости). <b>Untersee / Waldsee / Reiteralmsee</b> — уютный лесной/семейный пейзаж, но они не соперничают с Giglachseen и Duisitzkarsee из Rotmandl MAX. Количество озёр не равно количеству выдающихся видов. Для максимума WOW сначала Franzi, вершины и две верхние озёрные точки.</p>
         <p><b>Реалистичный верхний scenic-MAX:</b> ориентировочно <b>10–13 км</b> (предварительная оценка, не GPS-расчёт), <b>~7–9 ч с остановками</b> и всеми опциями. Главная красота региона сосредоточена в районе Gasselhöhe–Rippetegg–Schober и озёр. После этого километры не обязательно улучшат виды.</p>
         <p><b>Вариант XXL «приблизить к Rotmandl 19,2 км»:</b> можно отдельно проектировать старт/финиш в долине Preunegg Jet с пешим набором/сбросом по официальной тропе №772, затем Franzi + 3-Gipfel + озёра. Но это <b>другой, существенно более длинный день</b>; общая длина, суммарный набор и проход по №772 требуют единого проверенного GPX и свежего статуса тропы. <b>На завтра при старте 10:30–11:00 не рекомендован</b>: большой набор до ферраты, много часов и поздний спуск.</p>
-        <p class="note">Приоритет завтра — пройти самые красивые места, а не «выжать» 19 км любой ценой. Schober можно пропустить, не теряя Franzi, Rippetegg, Obersee и Spiegelsee.</p>
+        <p class="note">Приоритет завтра — пройти самые красивые места, а не «выжать» 19 км любой ценой. При нехватке времени сначала исключить Untersee/Waldsee/Reiteralmsee, затем Schober, сохраняя безопасный возврат. Базовая 3-Gipfel-Tour — официальный маршрут, но Franzi + расширение пока не имеют единого подтверждённого GPX.</p>
       </article>
 
       <article class="infoCard">
@@ -521,7 +525,7 @@
         <tr class="winner"><td><b>🔥 Rotmandl MAX</b></td><td>10.5/10</td><td>10/10</td><td>10/10</td><td>19.2 км · +1430 · 9:20</td><td>8.5/10*</td><td>Одна машина</td><td><b>№1, если верх чистый</b></td></tr>
         <tr><td><b>🏞️ Giglach + Kalkspitze</b></td><td>10/10</td><td>9.8/10</td><td>8.8/10</td><td>~8 ч</td><td>9/10*</td><td>Одна машина</td><td>Лучший более простой backup</td></tr>
         <tr><td><b>⛰️ Stoder + Peter</b></td><td>9.2/10</td><td>8.5/10</td><td>10/10</td><td>~9–10.5 ч</td><td>8/10*</td><td>Одна машина</td><td>№1, если феррата обязательна</td></tr>
-        <tr><td><b>🧗 Reiteralm MAX + Franzi</b></td><td>9.5/10</td><td>9/10</td><td>9.5/10</td><td>7,5 км официальная 3-peak база; MAX ~7–9 ч, GPX уточнить</td><td>~7/10*</td><td>Верхняя парковка, Reiteralmstraße €18</td><td>Лучший микс ферраты и озёр, если сухо</td></tr>
+        <tr><td><b>🧗 Reiteralm MAX + Franzi</b></td><td>9/10</td><td>9/10</td><td>9.5/10</td><td>7,5 км официальная 3-peak база; MAX ~7–9 ч, GPX уточнить</td><td>~7/10*</td><td>Верхняя парковка, Reiteralmstraße €18</td><td>Лучший микс ферраты и озёр, если сухо</td></tr>
         <tr><td><b>🏔️ Dachstein</b></td><td>11/10 ceiling</td><td>10/10</td><td>11/10</td><td>~5 ч high alpine</td><td>3/10*</td><td>Gondola + glacier</td><td>Не самостоятельно без glacier skills/гида</td></tr>
       </tbody>
     </table></div>
@@ -559,6 +563,6 @@
   </section>
 </main>
 
-<script src="./finalists.js?v=4" defer></script>
+<script src="./finalists.js?v=5" defer></script>
 </body>
 </html>
