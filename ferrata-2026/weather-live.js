@@ -104,7 +104,7 @@ async function refresh(){
     try{const response=await query(batch,day);for(const item of response){for(const index of item.indices){metrics[index]=item.result;successes++}}}
     catch(error){failures+=batch.length;console.warn("Open-Meteo regional batch unavailable:",error)}
   }
-  if(!successes){forecast.active=false;restoreCards();window.FERRATA_REDRAW?.();status.textContent="Не удалось получить прогноз. Прежние оценки — исторические, не используйте их как подтверждение сухой скалы.";return}
+  if(!successes){forecast.active=false;restoreCards();document.getElementById("liveForecastPanel")?.classList.remove("isFresh");const label=document.getElementById("rainLimitLabel");if(label)label.textContent="Осадки 10.10 · архивный снимок 08.10";window.FERRATA_REDRAW?.();status.textContent="Не удалось получить прогноз. Прежние оценки — исторические, не используйте их как подтверждение сухой скалы.";return}
   forecast.active=true;forecast.date=day;forecast.updatedAt=new Date().toISOString();
   forecast.metrics=metrics;updateCards();
   const label=document.getElementById("rainLimitLabel");
@@ -118,5 +118,5 @@ async function refresh(){
  }finally{loading=false;button.disabled=false;button.textContent="↻ Обновить снова"}
 }
 button.addEventListener("click",refresh);
-dateField.addEventListener("change",()=>{if(forecast.active){forecast.active=false;restoreCards();document.getElementById("liveForecastPanel")?.classList.remove("isFresh");status.textContent="Дата изменена. Обнови прогноз: пока прежний снимок нельзя применять к новой дате.";const label=document.getElementById("rainLimitLabel");if(label)label.textContent="Осадки за сутки · старый снимок 08.10";window.FERRATA_REDRAW?.()}});
+dateField.addEventListener("change",()=>{if(forecast.active){forecast.active=false;restoreCards();document.getElementById("liveForecastPanel")?.classList.remove("isFresh");status.textContent="Дата изменена. Обнови прогноз: пока прежний снимок нельзя применять к новой дате.";const label=document.getElementById("rainLimitLabel");if(label)label.textContent="Осадки 10.10 · архивный снимок 08.10";const filterNote=document.getElementById("rainFilterNote");if(filterNote)filterNote.textContent="Дата изменена, свежий прогноз необходимо запросить снова. Данные 08.10 относились к 10 октября и не подходят для нового дня.";window.FERRATA_REDRAW?.()}});
 })();
