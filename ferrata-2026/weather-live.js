@@ -1,6 +1,5 @@
-/* Via Ferrata Atlas: opt-in fresh forecast filtering.
-   Live Open-Meteo model data is separate from historical 08 Oct route annotations.
-   Do not write forecasts to localStorage or turn a route's access status green. */
+/* Via Ferrata Atlas: fresh forecast filtering.
+   Live Open-Meteo model data is separate from route-access status. */
 (function(){
 "use strict";
 const db=window.FERRATA_DB;
@@ -8,6 +7,9 @@ const button=document.getElementById("fetchLiveForecast");
 const dateField=document.getElementById("liveForecastDate");
 const status=document.getElementById("liveForecastStatus");
 if(!db?.routes||!button||!dateField||!status)return;
+const DATE_KEY="ferrataWOW_weather_date_v1";
+const CACHE_KEY="ferrataWOW_live_weather_v2";
+const CACHE_MAX_AGE=3*60*60*1000;
 const forecast={active:false,metrics:[],date:null,updatedAt:null};
 window.FERRATA_LIVE=forecast;
 const cardList=[...document.querySelectorAll("#cards>.card")];
@@ -71,6 +73,9 @@ async function query(chunk,day){
  }finally{clearTimeout(timeout)}
 }
 function formatDate(day){const parts=day.split("-");return parts[2]+"."+parts[1]+"."+parts[0]}
+function readCache(){try{return JSON.parse(localStorage.getItem(CACHE_KEY)||"null")}catch(e){return null}}
+function saveDate(day){try{localStorage.setItem(DATE_KEY,day)}catch(e){}}
+function saveCache(){try{localStorage.setItem(CACHE_KEY,JSON.stringify({date:forecast.date,updatedAt:forecast.updatedAt,metrics:forecast.metrics}))}catch(e){}}
 function restoreCards(){
  cardList.forEach(card=>{
    const index=Number(card.dataset.orig);
@@ -90,11 +95,31 @@ function updateCards(){
    el.title="Open-Meteo "+formatDate(forecast.date)+": 08:00–20:00 "+metric.mm.toFixed(1)+" мм, 10:00–17:00 "+metric.climbMm.toFixed(1)+" мм; предыдущие сутки "+metric.prevMm.toFixed(1)+" мм. Это модель, а не измерение состояния скалы.";
  });
 }
+function showForecastStatus(fromCache){
+ const label=document.getElementById("rainLimitLabel");
+ if(label)label.textContent="Новый прогноз · осадки 08–20, не более";
+ const filterNote=document.getElementById("rainFilterNote");
+ if(filterNote)filterNote.textContent="Фильтр учитывает модельные осадки 08:00–20:00 по району, не мокроту стены и не закрытия. Карточки без свежих данных не считаются сухими.";
+ const moment=new Date(forecast.updatedAt).toLocaleString("ru-RU",{dateStyle:"short",timeStyle:"short"});
+ const count=forecast.metrics.filter(Boolean).length;
+ status.innerHTML="<strong>Прогноз Open-Meteo на "+formatDate(forecast.date)+(fromCache?" восстановлен":" загружен")+" · обновлён "+moment+"</strong> · "+count+" из "+db.routes.length+" маршрутов. Фильтр и сортировка используют эти данные. <a href='"+sourceLink+"' target='_blank' rel='noopener noreferrer'>Сверить с DAV / GeoSphere ↗</a>";
+ document.getElementById("liveForecastPanel")?.classList.add("isFresh");
+ window.FERRATA_REDRAW?.();
+}
+function restoreSaved(){
+ let savedDate="";try{savedDate=localStorage.getItem(DATE_KEY)||""}catch(e){}
+ if(/^\d{4}-\d\d-\d\d$/.test(savedDate))dateField.value=savedDate;
+ const cached=readCache();
+ if(!cached||cached.date!==dateField.value||!Array.isArray(cached.metrics)||!cached.updatedAt)return false;
+ forecast.active=true;forecast.date=cached.date;forecast.updatedAt=cached.updatedAt;forecast.metrics=cached.metrics;
+ updateCards();showForecastStatus(true);return Date.now()-new Date(cached.updatedAt).getTime()<CACHE_MAX_AGE;
+}
 let loading=false;
 async function refresh(){
  if(loading)return;
  const day=dateField.value;
  if(!/^\d{4}-\d\d-\d\d$/.test(day)){status.textContent="Выбери дату прогноза.";return}
+ saveDate(day);
  loading=true;button.disabled=true;button.textContent="⏳ Загружаю прогнозы…";
  status.textContent="Получаем модель для всех горных районов. Старые числа пока не меняются.";
  const available=groups(),metrics=Array(db.routes.length).fill(null);let successes=0,failures=0;
@@ -106,17 +131,12 @@ async function refresh(){
   }
   if(!successes){forecast.active=false;restoreCards();document.getElementById("liveForecastPanel")?.classList.remove("isFresh");const label=document.getElementById("rainLimitLabel");if(label)label.textContent="Осадки 10.10 · архивный снимок 08.10";window.FERRATA_REDRAW?.();status.textContent="Не удалось получить прогноз. Прежние оценки — исторические, не используйте их как подтверждение сухой скалы.";return}
   forecast.active=true;forecast.date=day;forecast.updatedAt=new Date().toISOString();
-  forecast.metrics=metrics;updateCards();
-  const label=document.getElementById("rainLimitLabel");
-  if(label)label.textContent="Новый прогноз · осадки 08–20, не более";
-  const filterNote=document.getElementById("rainFilterNote");
-  if(filterNote)filterNote.textContent="Фильтр учитывает модельные осадки 08:00–20:00 по району, не мокроту стены и не закрытия. Карточки без свежих данных не считаются сухими.";
-  const moment=new Date().toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"});
-  status.innerHTML="<strong>Прогноз Open-Meteo на "+formatDate(day)+" загружен в "+moment+"</strong> · "+successes+" из "+db.routes.length+" маршрутов. Фильтр осадков и сортировка используют свежие данные. "+(failures?"Часть районов не ответила; маршруты без прогноза исключены из погодного фильтра. ":"")+"<a href='"+sourceLink+"' target='_blank' rel='noopener noreferrer'>Сверить с DAV / GeoSphere ↗</a>";
-  document.getElementById("liveForecastPanel")?.classList.add("isFresh");
-  window.FERRATA_REDRAW?.();
+  forecast.metrics=metrics;saveCache();updateCards();showForecastStatus(false);
+  if(failures)status.insertAdjacentText("beforeend"," Часть районов не ответила; маршруты без прогноза исключены из погодного фильтра.");
  }finally{loading=false;button.disabled=false;button.textContent="↻ Обновить снова"}
 }
 button.addEventListener("click",refresh);
-dateField.addEventListener("change",()=>{if(forecast.active){forecast.active=false;restoreCards();document.getElementById("liveForecastPanel")?.classList.remove("isFresh");status.textContent="Дата изменена. Обнови прогноз: пока прежний снимок нельзя применять к новой дате.";const label=document.getElementById("rainLimitLabel");if(label)label.textContent="Осадки 10.10 · архивный снимок 08.10";const filterNote=document.getElementById("rainFilterNote");if(filterNote)filterNote.textContent="Дата изменена, свежий прогноз необходимо запросить снова. Данные 08.10 относились к 10 октября и не подходят для нового дня.";window.FERRATA_REDRAW?.()}});
+dateField.addEventListener("change",()=>{saveDate(dateField.value);forecast.active=false;restoreCards();document.getElementById("liveForecastPanel")?.classList.remove("isFresh");status.textContent="Дата изменена — загружаю прогноз для нового дня…";window.FERRATA_REDRAW?.();refresh()});
+const cacheIsFresh=restoreSaved();
+if(!cacheIsFresh)refresh();
 })();

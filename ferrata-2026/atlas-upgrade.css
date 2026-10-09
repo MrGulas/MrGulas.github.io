@@ -60,7 +60,7 @@
 @media(max-width:680px){.rainScale{grid-template-columns:1fr}.transportRow{grid-template-columns:1fr}.transportPrice{text-align:left}.sourceGallery{grid-template-columns:repeat(2,minmax(0,1fr))}.sourceGallery img{height:105px}.rainVerdict{align-items:flex-start;flex-direction:column;gap:3px}}
 @media(max-width:740px){
  .atlasNav.vipNav{position:relative}
- .vipNav .atlasNavLinks{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+ .vipNav .atlasNavLinks{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
  .vipNav .atlasNavLinks>a{justify-content:center;text-align:center;min-height:40px}
  .vipHeader{padding-top:28px}
  .vipStickyNote{align-items:flex-start;flex-direction:column;gap:4px}

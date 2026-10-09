@@ -15,6 +15,8 @@ var queryGoogle="https://www.google.com/search?tbm=isch&q="+encodeURIComponent(r
 var proxyImage=url=>"https://images.weserv.nl/?url="+encodeURIComponent(url)+"&w=1400&h=900&fit=cover&output=webp";
 var googleMaps="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(r.region+" "+({AT:"Austria",DE:"Germany",SK:"Slovakia",SI:"Slovenia"}[r.country]||"Austria"));
 var hasCoordinates=r.lat!=null&&r.lon!=null;
+var weatherDateKey="ferrataWOW_weather_date_v1";
+var weatherCacheKey=date=>"ferrataWOW_weather_v1:"+r.slug+":"+date;
 var meteo={AT:[["GeoSphere Austria — официальный прогноз","https://www.geosphere.at/de"],["Alpenverein / GeoSphere — горная погода","https://www.alpenverein.de/bergwetter/alpen/"]],DE:[["DWD — официальный прогноз","https://www.dwd.de/DE/wetter/wetter_node.html"],["Alpenverein — горный прогноз","https://www.alpenverein.de/bergwetter/"]],SK:[["SHMÚ — официальный прогноз","https://www.shmu.sk/"]],SI:[["ARSO — официальный прогноз","https://meteo.arso.gov.si/met/en/weather/"]]}; 
 function minutes(a,b){if(a==null||b==null)return "Не уточнено";var hr=t=>t<60?t+" мин":(t/60).toFixed(t%60?1:0)+" ч";return hr(a)+"–"+hr(b)}
 function linkList(items){return items.map(x=>'<a class="detailLink" target="_blank" rel="noopener noreferrer" href="'+esc(x[1])+'">'+esc(x[0])+' <span>↗</span></a>').join("")}
@@ -108,11 +110,16 @@ $("favRoute").addEventListener("click",()=>{if(favs.has(r.id))favs.delete(r.id);
 $("shareRoute").addEventListener("click",async()=>{try{if(navigator.share)await navigator.share({title:r.name,url:location.href});else {await navigator.clipboard.writeText(location.href);$("shareRoute").textContent="✓ Ссылка скопирована";setTimeout(()=>$("shareRoute").textContent="🔗 Поделиться",2000)}}catch(e){if(e.name!=="AbortError")window.prompt("Ссылка",location.href)}});
 async function forecast(){
 var weatherDate=$("weatherDate")?.value||"2026-10-10";
-var load=$("weatherLoading"),out=$("weatherData");load.hidden=false;out.hidden=true;
+try{localStorage.setItem(weatherDateKey,weatherDate)}catch(e){}
+var weatherHeading=document.querySelector("#weather .atlasEyebrow");if(weatherHeading)weatherHeading.textContent="02 — Прогноз на "+new Date(weatherDate+"T12:00:00").toLocaleDateString("ru-RU",{day:"numeric",month:"long",year:"numeric"});
+var load=$("weatherLoading"),out=$("weatherData"),cached=null;
+try{cached=JSON.parse(localStorage.getItem(weatherCacheKey(weatherDate))||"null")}catch(e){}
+if(cached?.html){out.innerHTML=cached.html;out.hidden=false;load.textContent="↻ Проверяю свежий прогноз…"}else{out.hidden=true;load.textContent="⏳ Загружаю прогноз для района…"}
+load.hidden=false;
 if(!hasCoordinates){load.textContent="Для района пока нет точных координат. Используй ссылки на официальные метеослужбы.";return}
 var req=new URLSearchParams({latitude:r.lat,longitude:r.lon,hourly:"temperature_2m,precipitation,precipitation_probability,cloud_cover,snowfall,wind_gusts_10m",timezone:"Europe/Vienna",start_date:weatherDate,end_date:weatherDate});
 try{
-var rr=await fetch("https://api.open-meteo.com/v1/forecast?"+req.toString());if(!rr.ok)throw Error("HTTP "+rr.status);
+var rr=await fetch("https://api.open-meteo.com/v1/forecast?"+req.toString(),{cache:"no-store"});if(!rr.ok)throw Error("HTTP "+rr.status);
 var d=await rr.json();if(d.error)throw Error(d.reason||"API error");
 var hh=d.hourly;if(!hh||!Array.isArray(hh.time))throw Error("Нет почасовых данных");
 var rows=hh.time.map((t,i)=>({hour:+t.slice(11,13),time:t.slice(11,16),t:hh.temperature_2m?.[i],mm:hh.precipitation?.[i],pop:hh.precipitation_probability?.[i],cloud:hh.cloud_cover?.[i],snow:hh.snowfall?.[i],gust:hh.wind_gusts_10m?.[i]})).filter(x=>x.hour>=8&&x.hour<=20);
@@ -122,14 +129,17 @@ var total=win.reduce((s,x)=>s+(+x.mm||0),0),pop=Math.max(...win.map(x=>+x.pop||0
 var cloud=Math.round(win.reduce((s,x)=>s+(+x.cloud||0),0)/win.length),snow=win.reduce((s,x)=>s+(+x.snow||0),0);
 var dec=v=>v==null?"—":Number(v).toFixed(1);
 var rain=window.FERRATA_LOGISTICS?.rainLevel(total)||{key:"unknown",label:dec(total)+" мм",text:"Оцени состояние скалы отдельно."};
-out.innerHTML='<p class="sourceNote">Open-Meteo · координаты района '+esc(r.region)+' · дата '+esc(weatherDate)+'. Сумма для периода 10:00–17:00.</p>'+
+var updatedAt=new Date().toLocaleString("ru-RU",{dateStyle:"short",timeStyle:"short"});
+out.innerHTML='<p class="sourceNote">Open-Meteo · координаты района '+esc(r.region)+' · дата '+esc(weatherDate)+' · обновлено '+esc(updatedAt)+'. Сумма для периода 10:00–17:00.</p>'+
 '<div class="rainVerdict rain-'+esc(rain.key)+'"><b>'+esc(rain.label)+'</b><span>'+esc(rain.text)+'</span></div>'+
 '<div class="wxKpis"><div class="wxKpi"><label>Осадки 10–17</label><strong>'+dec(total)+' мм</strong></div><div class="wxKpi"><label>Макс. вероятность</label><strong>'+pop+'%</strong></div><div class="wxKpi"><label>Средние облака</label><strong>'+cloud+'%</strong></div><div class="wxKpi"><label>Порывы ветра</label><strong>'+gust.toFixed(0)+' км/ч</strong></div></div>'+
 (snow>0?'<div class="warning"><b>❄️ Снег в модели: '+dec(snow)+' см.</b> Горные условия могут быть значительно сложнее.</div>':"")+
 '<div class="hourlyScroll"><table class="hourlyTable"><thead><tr><th>Время</th><th>Осадки</th><th>Шанс</th><th>Облака</th><th>Темп.</th><th>Порывы</th><th>Снег</th></tr></thead><tbody>'+
 rows.map(x=>'<tr><td><b>'+x.time+'</b></td><td>'+dec(x.mm)+' мм<div class="wxBar" style="width:'+Math.round(Math.max(5,Math.min(78,(+x.mm||0)*25)))+'px"></div></td><td class="'+((+x.pop||0)>60?"wxRisk":"")+'">'+(x.pop==null?"—":x.pop+"%")+'</td><td>'+(x.cloud==null?"—":x.cloud+"%")+'</td><td>'+(x.t==null?"—":Math.round(x.t)+"°")+'</td><td>'+(x.gust==null?"—":Math.round(x.gust)+" км/ч")+'</td><td>'+(x.snow?dec(x.snow)+" см":"—")+'</td></tr>').join("")+'</tbody></table></div><p class="sourceNote">Погодная модель — НЕ официальное заключение о состоянии ферраты. На высоте могут быть снег, лёд и более сильный ветер, даже если в таблице сухо. Суточные данные каталога от 08.10 могут отличаться.</p>';
+try{localStorage.setItem(weatherCacheKey(weatherDate),JSON.stringify({savedAt:Date.now(),html:out.innerHTML}))}catch(e){}
 load.hidden=true;out.hidden=false;
-}catch(e){load.textContent="Не удалось загрузить прогноз ("+e.message+"). Используй официальные ссылки ниже.";out.hidden=true}
+}catch(e){load.textContent=cached?.html?"Показан последний сохранённый прогноз. Свежее обновление сейчас недоступно.":"Не удалось загрузить прогноз ("+e.message+"). Используй официальные ссылки ниже.";out.hidden=!cached?.html}
 }
+try{var savedWeatherDate=localStorage.getItem(weatherDateKey);if(savedWeatherDate&&$("weatherDate"))$("weatherDate").value=savedWeatherDate}catch(e){}
 $("refreshWeather").addEventListener("click",forecast);$("weatherDate").addEventListener("change",forecast);forecast();
 })();

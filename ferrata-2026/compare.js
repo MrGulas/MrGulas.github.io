@@ -221,7 +221,9 @@ try{
 }catch(e){el.innerHTML='<span class="matrixMuted">Недоступно: '+esc(e.message)+'. См. официальный прогноз.</span>';const mobile=$("cmpMobileWX-"+r.id);if(mobile)mobile.innerHTML=el.innerHTML}
 }));
 }
-$("compareDate").addEventListener("change",refreshWeather);
+const WEATHER_DATE_KEY="ferrataWOW_weather_date_v1";
+try{const savedDate=localStorage.getItem(WEATHER_DATE_KEY);if(savedDate)$("compareDate").value=savedDate}catch(e){}
+$("compareDate").addEventListener("change",()=>{try{localStorage.setItem(WEATHER_DATE_KEY,$("compareDate").value)}catch(e){}refreshWeather()});
 $("refreshCompareWeather").addEventListener("click",refreshWeather);
 $("clearComparison").addEventListener("click",()=>{if(!confirm("Удалить все маршруты из сравнения? Избранное останется."))return;setIds([]);display()});
 
