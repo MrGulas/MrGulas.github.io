@@ -216,8 +216,8 @@ await check("Fresh catalog forecast changes rain badges and numeric filtering",a
    const lats=url.searchParams.get("latitude").split(",");
    requests.push(lats.length);
    const times=["2026-10-09","2026-10-10"].flatMap(day=>Array.from({length:24},(_,h)=>day+"T"+String(h).padStart(2,"0")+":00"));
-   const payload=lats.map(()=>({hourly:{
-     time:times,precipitation:times.map(t=>t.startsWith("2026-10-10")?0.2:0),
+   const payload=lats.map(lat=>({hourly:{
+     time:times,precipitation:times.map(t=>t.startsWith("2026-10-10")?(Number(lat)<47.1?0.02:0.2):0),
      precipitation_probability:times.map(()=>15),
      temperature_2m:times.map(()=>8),
      wind_gusts_10m:times.map(()=>20),
@@ -226,10 +226,10 @@ await check("Fresh catalog forecast changes rain badges and numeric filtering",a
    }}));
    await req.fulfill({status:200,contentType:"application/json",body:JSON.stringify(lats.length===1?payload[0]:payload)});
  });
- const prev=await page.locator("#cards>.card").first().locator(".mm").innerText();
+ const prev=await page.locator('#cards>.card[data-orig="0"] .mm').innerText();
  await page.locator("#fetchLiveForecast").click();
  await page.waitForFunction(()=>window.FERRATA_LIVE?.active);
- const present=await page.locator("#cards>.card").first().locator(".mm").innerText();
+ const present=await page.locator('#cards>.card[data-orig="0"] .mm').innerText();
  assert.notEqual(prev,present);
  assert.match(present,/08–20/);
  assert.match(await page.locator("#liveForecastStatus").innerText(),/70 из 70/);
@@ -237,7 +237,9 @@ await check("Fresh catalog forecast changes rain badges and numeric filtering",a
  const allVisible=await page.locator("#cards>.card:visible").count();
  await page.locator("#maxRain").fill("1");
  await page.locator("#maxRain").dispatchEvent("input");
- assert.equal(await page.locator("#cards>.card:visible").count(),0,"1 mm must filter out routes forecast at 2.6 mm");
+ assert.ok(await page.locator("#cards>.card:visible").count()<allVisible);
+ assert.equal(await page.locator('#cards>.card[data-orig="0"]').isVisible(),true,"Riegersburg should remain visible at 0.3 mm");
+ assert.equal(await page.locator('#cards>.card[data-orig="1"]').isVisible(),false,"Hochlantsch should be filtered at 2.6 mm");
  await page.locator("#maxRain").fill("6");
  await page.locator("#maxRain").dispatchEvent("input");
  assert.ok(await page.locator("#cards>.card:visible").count()>0);
@@ -245,7 +247,7 @@ await check("Fresh catalog forecast changes rain badges and numeric filtering",a
  await page.locator("#liveForecastDate").fill("2026-10-11");
  await page.locator("#liveForecastDate").dispatchEvent("change");
  assert.equal(await page.evaluate(()=>window.FERRATA_LIVE.active),false);
- const restored=await page.locator("#cards>.card").first().locator(".mm").innerText();
+ const restored=await page.locator('#cards>.card[data-orig="0"] .mm').innerText();
  assert.equal(restored,prev,"Changing the date must restore/archive old labels until refetch");
  const dims=await page.evaluate(()=>({body:document.documentElement.scrollWidth,w:innerWidth}));
  assert.ok(dims.body<=dims.w+3,JSON.stringify(dims));
