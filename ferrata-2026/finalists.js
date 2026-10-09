@@ -12,7 +12,7 @@
   };
   tabs.forEach(btn => btn.addEventListener('click', () => activate(btn.dataset.target)));
   const initial = location.hash.replace('#','');
-  if (['dachstein','reiteralm','giglach'].includes(initial)) activate(initial);
+  if (['dachstein','reiteralm','giglach','stoder'].includes(initial)) activate(initial);
 
   const key = 'ferrata-2026-final-custom-routes';
   const form = document.getElementById('customRouteForm');
