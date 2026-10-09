@@ -12,7 +12,7 @@ const forecast={active:false,metrics:[],date:null,updatedAt:null};
 window.FERRATA_LIVE=forecast;
 const cardList=[...document.querySelectorAll("#cards>.card")];
 const sourceLink='https://www.alpenverein.de/bergwetter/alpen/';
-const initialCardTexts=[...document.querySelectorAll("#cards>.card")].map(card=>({text:card.querySelector(".mm")?.textContent||"",title:card.querySelector(".mm")?.title||""}));
+const initialCardTexts=new Map([...document.querySelectorAll("#cards>.card")].map(card=>[Number(card.dataset.orig),{text:card.querySelector(".mm")?.textContent||"",title:card.querySelector(".mm")?.title||""}]));
 const sum=values=>values.reduce((a,b)=>a+(Number.isFinite(b)?b:0),0);
 const previousDate=day=>{const date=new Date(day+"T12:00:00Z");date.setUTCDate(date.getUTCDate()-1);return date.toISOString().slice(0,10)};
 
@@ -72,15 +72,17 @@ async function query(chunk,day){
 }
 function formatDate(day){const parts=day.split("-");return parts[2]+"."+parts[1]+"."+parts[0]}
 function restoreCards(){
- cardList.forEach((card,index)=>{
+ cardList.forEach(card=>{
+   const index=Number(card.dataset.orig);
    const badge=card.querySelector(".mm");
    if(!badge)return;
-   badge.textContent=initialCardTexts[index]?.text||"";
-   badge.title=initialCardTexts[index]?.title||"";
+   badge.textContent=initialCardTexts.get(index)?.text||"";
+   badge.title=initialCardTexts.get(index)?.title||"";
  });
 }
 function updateCards(){
- cardList.forEach((card,index)=>{
+ cardList.forEach(card=>{
+   const index=Number(card.dataset.orig);
    const el=card.querySelector(".mm");if(!el)return;
    const metric=forecast.metrics[index];
    if(!metric){el.textContent="🌧 Нет свежих данных";el.title="Для этой ферраты почасовой прогноз недоступен; она не считается сухой автоматически.";return}
