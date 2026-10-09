@@ -12,7 +12,7 @@
   };
   tabs.forEach(btn => btn.addEventListener('click', () => activate(btn.dataset.target)));
   const initial = location.hash.replace('#','');
-  if (['dachstein','reiteralm','giglach','stoder'].includes(initial)) activate(initial);
+  if (['rotmandl','dachstein','reiteralm','giglach','stoder'].includes(initial)) activate(initial);
 
   document.querySelectorAll('.photoGrid img').forEach(img => {
     const removeBrokenTile = () => img.closest('figure')?.remove();
