@@ -26,7 +26,7 @@ function metrics(o){
  const win=(day,from,to,key)=>indices(day,from,to).map(i=>h[key]?.[i]).filter(v=>typeof v==="number");
  const peak=a=>a.length?Math.max(...a):null;
  const minimum=a=>a.length?Math.min(...a):null;
- return {rainPrev:total(win(prev,12,23,"precipitation")),rainMorning:total(win(day,8,12,"precipitation")),rainAfternoon:total(win(day,13,18,"precipitation")),rain08to20:total(win(day,8,20,"precipitation")),peakPop:peak(win(day,8,20,"precipitation_probability")),lowTemp:minimum(win(day,8,20,"temperature_2m")),gust:peak(win(day,8,20,"wind_gusts_10m")),snow:total(win(day,8,20,"snowfall"))};
+ return {rainPrev:total(win(prev,0,23,"precipitation")),rainMorning:total(win(day,8,12,"precipitation")),rainAfternoon:total(win(day,13,18,"precipitation")),rain08to20:total(win(day,8,20,"precipitation")),peakPop:peak(win(day,8,20,"precipitation_probability")),lowTemp:minimum(win(day,8,20,"temperature_2m")),gust:peak(win(day,8,20,"wind_gusts_10m")),snow:total(win(day,8,20,"snowfall"))};
 }
 async function fetchArea([name,lat,lon]){
  const params=new URLSearchParams({latitude:String(lat),longitude:String(lon),hourly:fields,timezone:"Europe/Vienna",start_date:prev,end_date:day});
@@ -37,7 +37,7 @@ async function fetchArea([name,lat,lon]){
  return {name,lat,lon,providerElevation:json.elevation,...metrics(json)};
 }
 console.log("VFA WEATHER AUDIT",new Date().toISOString(),"target day",day,"timezone Europe/Vienna");
-console.log("MODEL: Open-Meteo (regional coordinates, NOT the actual via ferrata wall); 09 Oct afternoon may leave rock wet even if 10 Oct shows 0 mm.");
+console.log("MODEL: Open-Meteo (regional coordinates, NOT the actual via ferrata wall); 09 Oct rain may leave rock wet even if 10 Oct shows 0 mm.");
 let success=0;
 for(const area of areas){
  try{
