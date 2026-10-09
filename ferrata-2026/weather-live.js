@@ -22,7 +22,7 @@ function aggregate(data,day){
  const inHours=(hour,from,to)=>hour>=from&&hour<=to;
  const now=t.map((v,i)=>i).filter(i=>t[i]?.slice(0,10)===day&&inHours(Number(t[i].slice(11,13)),8,20));
  const climbing=now.filter(i=>inHours(Number(t[i].slice(11,13)),10,16));
- const yesterday=t.map((v,i)=>i).filter(i=>t[i]?.slice(0,10)===previousDate(day)&&inHours(Number(t[i].slice(11,13)),12,23));
+ const yesterday=t.map((v,i)=>i).filter(i=>t[i]?.slice(0,10)===previousDate(day)&&inHours(Number(t[i].slice(11,13)),0,23));
  if(now.length<10)throw Error("Недостаточно данных на выбранную дату");
  const vals=keys=>keys.map(i=>h.precipitation[i]).filter(v=>typeof v==="number"&&Number.isFinite(v));
  const dayVals=vals(now);
@@ -87,7 +87,7 @@ function updateCards(){
    const metric=forecast.metrics[index];
    if(!metric){el.textContent="🌧 Нет свежих данных";el.title="Для этой ферраты почасовой прогноз недоступен; она не считается сухой автоматически.";return}
    el.textContent="🌦 "+metric.mm.toFixed(1)+" мм · 08–20";
-   el.title="Open-Meteo "+formatDate(forecast.date)+": 08:00–20:00 "+metric.mm.toFixed(1)+" мм, 10:00–17:00 "+metric.climbMm.toFixed(1)+" мм; предыдущий день после 12:00 "+metric.prevMm.toFixed(1)+" мм. Это модель, а не измерение состояния скалы.";
+   el.title="Open-Meteo "+formatDate(forecast.date)+": 08:00–20:00 "+metric.mm.toFixed(1)+" мм, 10:00–17:00 "+metric.climbMm.toFixed(1)+" мм; предыдущие сутки "+metric.prevMm.toFixed(1)+" мм. Это модель, а не измерение состояния скалы.";
  });
 }
 let loading=false;
