@@ -14,6 +14,12 @@
   const initial = location.hash.replace('#','');
   if (['dachstein','reiteralm','giglach','stoder'].includes(initial)) activate(initial);
 
+  document.querySelectorAll('.photoGrid img').forEach(img => {
+    const removeBrokenTile = () => img.closest('figure')?.remove();
+    img.addEventListener('error', removeBrokenTile, {once:true});
+    if (img.complete && !img.naturalWidth) removeBrokenTile();
+  });
+
   const key = 'ferrata-2026-final-custom-routes';
   const form = document.getElementById('customRouteForm');
   const list = document.getElementById('customRoutes');
