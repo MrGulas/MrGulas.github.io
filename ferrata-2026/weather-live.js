@@ -110,7 +110,7 @@ function restoreSaved(){
  let savedDate="";try{savedDate=localStorage.getItem(DATE_KEY)||""}catch(e){}
  if(/^\d{4}-\d\d-\d\d$/.test(savedDate))dateField.value=savedDate;
  const cached=readCache();
- if(!cached||cached.date!==dateField.value||!Array.isArray(cached.metrics)||!cached.updatedAt)return false;
+ if(!cached||cached.date!==dateField.value||!Array.isArray(cached.metrics)||!cached.updatedAt)return null;
  forecast.active=true;forecast.date=cached.date;forecast.updatedAt=cached.updatedAt;forecast.metrics=cached.metrics;
  updateCards();showForecastStatus(true);return Date.now()-new Date(cached.updatedAt).getTime()<CACHE_MAX_AGE;
 }
@@ -138,5 +138,5 @@ async function refresh(){
 button.addEventListener("click",refresh);
 dateField.addEventListener("change",()=>{saveDate(dateField.value);forecast.active=false;restoreCards();document.getElementById("liveForecastPanel")?.classList.remove("isFresh");status.textContent="Дата изменена — загружаю прогноз для нового дня…";window.FERRATA_REDRAW?.();refresh()});
 const cacheIsFresh=restoreSaved();
-if(!cacheIsFresh)refresh();
+if(cacheIsFresh===false)refresh();
 })();
