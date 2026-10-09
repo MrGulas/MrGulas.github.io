@@ -215,9 +215,12 @@ await check("Fresh catalog forecast changes rain badges and numeric filtering",a
    const url=new URL(req.request().url());
    const lats=url.searchParams.get("latitude").split(",");
    requests.push(lats.length);
-   const times=["2026-10-09","2026-10-10"].flatMap(day=>Array.from({length:24},(_,h)=>day+"T"+String(h).padStart(2,"0")+":00"));
+   const targetDay=url.searchParams.get("end_date");
+   const previous=new Date(targetDay+"T12:00:00Z");previous.setUTCDate(previous.getUTCDate()-1);
+   const previousDay=previous.toISOString().slice(0,10);
+   const times=[previousDay,targetDay].flatMap(day=>Array.from({length:24},(_,h)=>day+"T"+String(h).padStart(2,"0")+":00"));
    const payload=lats.map(lat=>({hourly:{
-     time:times,precipitation:times.map(t=>t.startsWith("2026-10-10")?(Number(lat)<47.1?0.02:0.2):0),
+     time:times,precipitation:times.map(t=>t.startsWith(targetDay)?(Number(lat)<47.1?0.02:0.2):0),
      precipitation_probability:times.map(()=>15),
      temperature_2m:times.map(()=>8),
      wind_gusts_10m:times.map(()=>20),
