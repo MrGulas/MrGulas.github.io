@@ -208,6 +208,51 @@ await check("Officially closed Attersee route is marked closed and has no lift",
  await context.close();
 });
 
+await check("Fresh catalog forecast changes rain badges and numeric filtering",async()=>{
+ const {context,page,errors}=await pageAt(390,"/index.html");
+ const requests=[];
+ await page.route(/^https:\/\/api\.open-meteo\.com\/v1\/forecast\?/,async req=>{
+   const url=new URL(req.request().url());
+   const lats=url.searchParams.get("latitude").split(",");
+   requests.push(lats.length);
+   const times=["2026-10-09","2026-10-10"].flatMap(day=>Array.from({length:24},(_,h)=>day+"T"+String(h).padStart(2,"0")+":00"));
+   const payload=lats.map(()=>({hourly:{
+     time:times,precipitation:times.map(t=>t.startsWith("2026-10-10")?0.2:0),
+     precipitation_probability:times.map(()=>15),
+     temperature_2m:times.map(()=>8),
+     wind_gusts_10m:times.map(()=>20),
+     cloud_cover:times.map(()=>40),
+     snowfall:times.map(()=>0)
+   }}));
+   await req.fulfill({status:200,contentType:"application/json",body:JSON.stringify(lats.length===1?payload[0]:payload)});
+ });
+ const prev=await page.locator("#cards>.card").first().locator(".mm").innerText();
+ await page.locator("#fetchLiveForecast").click();
+ await page.waitForFunction(()=>window.FERRATA_LIVE?.active);
+ const present=await page.locator("#cards>.card").first().locator(".mm").innerText();
+ assert.notEqual(prev,present);
+ assert.match(present,/08–20/);
+ assert.match(await page.locator("#liveForecastStatus").innerText(),/70 из 70/);
+ assert.ok(requests.length>2,JSON.stringify(requests));
+ const allVisible=await page.locator("#cards>.card:visible").count();
+ await page.locator("#maxRain").fill("1");
+ await page.locator("#maxRain").dispatchEvent("input");
+ assert.equal(await page.locator("#cards>.card:visible").count(),0,"1 mm must filter out routes forecast at 2.6 mm");
+ await page.locator("#maxRain").fill("6");
+ await page.locator("#maxRain").dispatchEvent("input");
+ assert.ok(await page.locator("#cards>.card:visible").count()>0);
+ assert.ok(allVisible>0);
+ await page.locator("#liveForecastDate").fill("2026-10-11");
+ await page.locator("#liveForecastDate").dispatchEvent("change");
+ assert.equal(await page.evaluate(()=>window.FERRATA_LIVE.active),false);
+ const restored=await page.locator("#cards>.card").first().locator(".mm").innerText();
+ assert.equal(restored,prev,"Changing the date must restore/archive old labels until refetch");
+ const dims=await page.evaluate(()=>({body:document.documentElement.scrollWidth,w:innerWidth}));
+ assert.ok(dims.body<=dims.w+3,JSON.stringify(dims));
+ assert.equal(errors.length,0,JSON.stringify(errors));
+ await context.close();
+});
+
 // Catalog weather accordion is intentionally hidden by vip.css. Forecast behavior
 // is tested through visible route and compare UIs above; catalog refresh no-store
 // is additionally checked in source review, without manufacturing a visible control.
