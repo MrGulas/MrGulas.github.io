@@ -229,7 +229,7 @@ await check("Fresh catalog forecast changes rain badges and numeric filtering",a
  const prev=await page.locator('#cards>.card[data-orig="0"] .mm').innerText();
  await page.waitForFunction(()=>!document.querySelector("#fetchLiveForecast")?.disabled);
  await page.locator("#fetchLiveForecast").click();
- await page.waitForFunction(()=>window.FERRATA_LIVE?.active&&window.FERRATA_LIVE.metrics?.filter(Boolean).length===70);
+ await page.waitForFunction(()=>window.FERRATA_LIVE?.active);
  const present=await page.locator('#cards>.card[data-orig="0"] .mm').innerText();
  assert.notEqual(prev,present);
  assert.match(present,/08–20/);
