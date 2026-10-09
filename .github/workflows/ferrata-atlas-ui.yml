@@ -24,6 +24,9 @@ jobs:
           sleep 2
           node ferrata-2026/tests/atlas-smoke.mjs
 
+      - name: Print regional weather audit for Saturday route decisions
+        run: node ferrata-2026/tests/weather-audit.mjs
+
       - name: Validate live Open-Meteo forecast for route detail and comparison
         run: |
           python3 - <<'PY'
