@@ -47,4 +47,14 @@ for(const area of areas){
  }catch(error){console.log("VFA_WX_ERROR",area[0],error.message)}
 }
 console.log("VFA_WX_DONE",success,"of",areas.length);
+try {
+ const coords=areas.slice(0,3);
+ const params=new URLSearchParams({latitude:coords.map(x=>x[1]).join(","),longitude:coords.map(x=>x[2]).join(","),hourly:fields,timezone:"Europe/Vienna",start_date:prev,end_date:day});
+ const response=await fetch("https://api.open-meteo.com/v1/forecast?"+params,{signal:AbortSignal.timeout(20000)});
+ if(!response.ok)throw Error("HTTP "+response.status);
+ const values=await response.json();
+ if(!Array.isArray(values)||values.length!==coords.length)throw Error("Multi-coordinate API output shape unexpected");
+ console.log("VFA_MULTI_POINT_OK",values.length,"locations; live catalog batching supported");
+} catch(error){console.error("VFA_MULTI_POINT_FAIL",error.message);process.exitCode=1}
+
 if(success<8)process.exitCode=1;
