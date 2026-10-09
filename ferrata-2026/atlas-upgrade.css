@@ -89,3 +89,20 @@
 .newRoutesNotice{max-width:1288px;margin:8px auto 18px;padding:15px 20px;display:flex;align-items:flex-start;gap:16px;border:1px solid rgba(130,212,194,.28);border-radius:16px;background:linear-gradient(110deg,rgba(29,80,74,.8),rgba(18,41,51,.92));color:#d6eee8}
 .newRoutesNotice strong{min-width:270px;color:#b9f8de;font-size:15px}.newRoutesNotice span{font-size:13px;line-height:1.55}
 @media(max-width:680px){.newRoutesNotice{margin:12px 10px 18px;padding:14px;display:block}.newRoutesNotice strong{display:block;min-width:0;margin-bottom:6px}.newRoutesNotice span{display:block}}
+
+/* Live forecast is an optional, explicit upgrade from archived planning values. */
+.liveWeatherInfo{margin:6px 0 12px;color:#ffd8a5;font-size:12px;line-height:1.55}
+.liveForecastPanel{max-width:1252px;margin:16px auto 22px;padding:clamp(18px,2.4vw,28px);border:1px solid rgba(241,193,120,.42);border-radius:22px;background:linear-gradient(120deg,rgba(71,49,27,.76),rgba(16,45,50,.92));box-shadow:0 18px 48px rgba(0,0,0,.17)}
+.liveForecastPanel.isFresh{border-color:rgba(126,225,191,.55);background:linear-gradient(125deg,rgba(27,73,62,.85),rgba(12,40,49,.95))}
+.liveForecastPanel h2{font-size:clamp(19px,2vw,25px);margin:5px 0 5px;color:#ebfff9}
+.liveForecastPanel p{color:#d2dfe0;font-size:13px;line-height:1.65;margin:9px 0}
+.liveForecastPanel .atlasEyebrow{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#a6e0c9}
+.liveForecastActions{display:flex;align-items:flex-end;flex-wrap:wrap;gap:12px;margin:15px 0 10px}
+.liveForecastActions label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:#bfd6da}
+.liveForecastActions input{font:inherit;min-height:45px;border:1px solid #77a79d;background:#173943;color:white;border-radius:12px;padding:8px 12px}
+.liveForecastActions button{min-height:45px;border:1px solid #aaf3d0;border-radius:12px;padding:9px 16px;background:#71dfb6;color:#0d2a24;font-weight:800;font-size:14px;cursor:pointer}
+.liveForecastActions button:disabled{opacity:.65;cursor:wait}
+.liveForecastPanel #liveForecastStatus{padding:12px 14px;background:#071e27aa;border:1px solid #ffffff24;border-radius:12px;font-size:13px}
+.liveForecastPanel a{color:#a9f6d6}
+.liveForecastPanel .liveForecastCaution{font-size:12px;color:#adbdc7}
+@media(max-width:740px){.liveForecastPanel{margin:12px 10px 18px;border-radius:17px}.liveForecastActions{display:grid;grid-template-columns:1fr}.liveForecastActions button{width:100%}}
