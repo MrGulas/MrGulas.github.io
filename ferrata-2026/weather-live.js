@@ -12,10 +12,10 @@ const forecast={active:false,metrics:[],date:null,updatedAt:null};
 window.FERRATA_LIVE=forecast;
 const cardList=[...document.querySelectorAll("#cards>.card")];
 const sourceLink='https://www.alpenverein.de/bergwetter/alpen/';
-const pad=n=>String(n).padStart(2,"0");
-const sum=values=>values.reduce((a,b)=>a+(Number.isFinite(Number(b))?Number(b):0),0);
+const initialCardTexts=[...document.querySelectorAll("#cards>.card")].map(card=>({text:card.querySelector(".mm")?.textContent||"",title:card.querySelector(".mm")?.title||""}));
+const sum=values=>values.reduce((a,b)=>a+(Number.isFinite(b)?b:0),0);
 const previousDate=day=>{const date=new Date(day+"T12:00:00Z");date.setUTCDate(date.getUTCDate()-1);return date.toISOString().slice(0,10)};
-const range=(values,times,predicate)=>values.filter((_,i)=>predicate(times[i]));
+
 function aggregate(data,day){
  const h=data?.hourly, t=h?.time;
  if(!Array.isArray(t)||!Array.isArray(h.precipitation)||h.precipitation.length!==t.length)throw Error("Нет почасовых осадков");
@@ -24,10 +24,10 @@ function aggregate(data,day){
  const climbing=now.filter(i=>inHours(Number(t[i].slice(11,13)),10,16));
  const yesterday=t.map((v,i)=>i).filter(i=>t[i]?.slice(0,10)===previousDate(day)&&inHours(Number(t[i].slice(11,13)),12,23));
  if(now.length<10)throw Error("Недостаточно данных на выбранную дату");
- const vals=keys=>keys.map(i=>Number(h.precipitation[i])).filter(Number.isFinite);
+ const vals=keys=>keys.map(i=>h.precipitation[i]).filter(v=>typeof v==="number"&&Number.isFinite(v));
  const dayVals=vals(now);
  if(dayVals.length<10)throw Error("Прогноз осадков отсутствует");
- const byIdx=(key,indices)=>indices.map(i=>Number(h[key]?.[i])).filter(Number.isFinite);
+ const byIdx=(key,indices)=>indices.map(i=>h[key]?.[i]).filter(v=>typeof v==="number"&&Number.isFinite(v));
  const probability=byIdx("precipitation_probability",climbing);
  const temperature=byIdx("temperature_2m",now);
  const gusts=byIdx("wind_gusts_10m",now);
@@ -71,6 +71,14 @@ async function query(chunk,day){
  }finally{clearTimeout(timeout)}
 }
 function formatDate(day){const parts=day.split("-");return parts[2]+"."+parts[1]+"."+parts[0]}
+function restoreCards(){
+ cardList.forEach((card,index)=>{
+   const badge=card.querySelector(".mm");
+   if(!badge)return;
+   badge.textContent=initialCardTexts[index]?.text||"";
+   badge.title=initialCardTexts[index]?.title||"";
+ });
+}
 function updateCards(){
  cardList.forEach((card,index)=>{
    const el=card.querySelector(".mm");if(!el)return;
@@ -94,7 +102,7 @@ async function refresh(){
     try{const response=await query(batch,day);for(const item of response){for(const index of item.indices){metrics[index]=item.result;successes++}}}
     catch(error){failures+=batch.length;console.warn("Open-Meteo regional batch unavailable:",error)}
   }
-  if(!successes){status.textContent="Не удалось получить прогноз. Прежние оценки — исторические, не используйте их как подтверждение сухой скалы.";return}
+  if(!successes){forecast.active=false;restoreCards();window.FERRATA_REDRAW?.();status.textContent="Не удалось получить прогноз. Прежние оценки — исторические, не используйте их как подтверждение сухой скалы.";return}
   forecast.active=true;forecast.date=day;forecast.updatedAt=new Date().toISOString();
   forecast.metrics=metrics;updateCards();
   const label=document.getElementById("rainLimitLabel");
@@ -108,5 +116,5 @@ async function refresh(){
  }finally{loading=false;button.disabled=false;button.textContent="↻ Обновить снова"}
 }
 button.addEventListener("click",refresh);
-dateField.addEventListener("change",()=>{if(forecast.active){forecast.active=false;status.textContent="Дата изменена. Обнови прогноз: пока прежний снимок нельзя применять к новой дате.";const label=document.getElementById("rainLimitLabel");if(label)label.textContent="Осадки за сутки · старый снимок 08.10";window.FERRATA_REDRAW?.()}});
+dateField.addEventListener("change",()=>{if(forecast.active){forecast.active=false;restoreCards();document.getElementById("liveForecastPanel")?.classList.remove("isFresh");status.textContent="Дата изменена. Обнови прогноз: пока прежний снимок нельзя применять к новой дате.";const label=document.getElementById("rainLimitLabel");if(label)label.textContent="Осадки за сутки · старый снимок 08.10";window.FERRATA_REDRAW?.()}});
 })();
