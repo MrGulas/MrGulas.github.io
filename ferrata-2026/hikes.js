@@ -103,17 +103,38 @@ async function loadWeather(r,force=false){
 
 function setAlpineHero(){
 const area=document.querySelector(".hikeHeroArtwork");if(!area)return;
-const u="https://en.wikipedia.org/w/api.php?"+new URLSearchParams({action:"query",format:"json",prop:"pageimages",titles:"Piz Boè",pithumbsize:"1100",piprop:"thumbnail|name",origin:"*"});
+const u="https://en.wikipedia.org/w/api.php?"+new URLSearchParams({action:"query",format:"json",prop:"pageimages",titles:"Gosausee",pithumbsize:"1100",piprop:"thumbnail|name",origin:"*"});
 fetch(u).then(res=>res.json()).then(d=>{const o=Object.values(d.query?.pages||{})[0];if(!o?.thumbnail?.source)return;
- const img=document.createElement("img");img.src=o.thumbnail.source;img.alt="Piz Boè · Dolomites";img.onerror=()=>img.remove();area.prepend(img);
+ const img=document.createElement("img");img.src=o.thumbnail.source;img.alt="Gosausee · Dachstein";img.onerror=()=>img.remove();area.prepend(img);
  if(o.pageimage){const a=document.createElement("a");a.href="https://commons.wikimedia.org/wiki/File:"+encodeURIComponent(o.pageimage);a.className="heroPhotoLicense";a.target="_blank";a.rel="noopener";a.textContent="📷 Wikimedia · автор и лицензия ↗";area.append(a)}
 }).catch(()=>{});
 }
 
 function alpinePriority(r){if((r.altitude||0)>=3000)return r.risk==="guide"?1:0;if(routeClass(r)==="alpine")return 2;if(routeClass(r)==="guide")return 2;return 3}
-function visibleList(){const country=$("hikeCountry").value,type=$("hikeType").value,level=$("hikeClass").value,onlySaved=$("onlySaved")?.checked||false,sort=$("hikeSort").value;
- const matched=routes.filter(r=>(country==="all"||r.country===country)&&(type==="all"||r.type===type)&&(level==="all"||routeClass(r)===level)&&(!onlySaved||saved.has(r.id)));
- return matched.sort((a,b)=>sort==="alpine"?(alpinePriority(a)-alpinePriority(b)||b.wow-a.wow||((b.altitude||0)-(a.altitude||0))):sort==="cheap"?a.fareMax-b.fareMax:sort==="long"?(b.km||0)-(a.km||0):sort==="easy"?(a.km||999)-(b.km||999):b.wow-a.wow||((b.altitude||0)-(a.altitude||0)));
+const collectionHelp={
+ hiking:"Без обязательного гида: озёра, вершины, скальные ущелья и длинные горные дни. Часть маршрутов требует уверенной работы на тросах и лестницах. Первыми стоят самые быстрые по ориентировочному времени дороги.",
+ high:"Высокогорные трёхтысячники без ледникового перехода в нормальных бесснежных летних условиях. На снегу и льду они могут стать альпинистскими — оценка состояния обязательна.",
+ alpinism:"Ледники, альпинистские восхождения и маршруты с профессиональным гидом или подготовленной связкой. Не выдаём их за пеший хайкинг."
+};
+const params=new URLSearchParams(location.search);
+let currentCollection=["high","alpinism"].includes(params.get("collection"))?params.get("collection"):"hiking";
+function visibleList(){
+ const country=$("hikeCountry").value,type=$("hikeType").value,level=$("hikeClass").value,onlySaved=$("onlySaved")?.checked||false,sort=$("hikeSort").value;
+ const matched=routes.filter(r=>collectionOf(r)===currentCollection&&(country==="all"||r.country===country)&&(type==="all"||r.type===type)&&(level==="all"||routeClass(r)===level)&&(!onlySaved||saved.has(r.id)));
+ const byTravel=(a,b)=>travelHours(a)-travelHours(b)||b.wow-a.wow;
+ return matched.sort((a,b)=>sort==="near"?byTravel(a,b):sort==="alpine"?(alpinePriority(a)-alpinePriority(b)||b.wow-a.wow||(b.altitude||0)-(a.altitude||0)):sort==="cheap"?(a.fareMax??Infinity)-(b.fareMax??Infinity)||byTravel(a,b):sort==="long"?(b.km||0)-(a.km||0):sort==="easy"?(a.km??999)-(b.km??999):b.wow-a.wow||byTravel(a,b));
+}
+function displayCollection(){
+ document.querySelectorAll("[data-collection]").forEach(btn=>{const on=btn.dataset.collection===currentCollection;btn.classList.toggle("active",on);btn.setAttribute("aria-pressed",String(on))});
+ $("collectionExplanation").textContent=collectionHelp[currentCollection];
+ $("catalogTitle").textContent=currentCollection==="hiking"?"Красивые хайки с удобной дорогой из Праги":currentCollection==="high"?"Трёхтысячники без обязательного гида летом":"Ледниковые и альпинистские восхождения";
+}
+function setCollection(value){
+ if(!collectionHelp[value])return;
+ currentCollection=value;$("hikeType").value="all";$("hikeClass").value="all";$("hikeSort").value=value==="hiking"?"near":"alpine";
+ displayCollection();
+ try{const url=new URL(location.href);if(value==="hiking")url.searchParams.delete("collection");else url.searchParams.set("collection",value);history.replaceState(null,"",url.pathname+url.search+url.hash)}catch(e){}
+ render();autoFeatured();
 }
 
 // Photos sourced from Wikipedia pageimages, loaded lazily. Each photo links to its source page for author/license.
@@ -133,16 +154,19 @@ function wikiArt(){
 function showWiki(art,obj){if(art.querySelector("img")||!obj)return;const img=document.createElement("img");img.src=obj.url;img.alt="Гора: "+(art.closest("article")?.querySelector("h3")?.textContent||"");img.loading="lazy";img.onerror=()=>img.remove();art.insertBefore(img,art.firstElementChild);const a=document.createElement("a");a.className="photoLicense";a.href="https://commons.wikimedia.org/wiki/File:"+encodeURIComponent(obj.file||"");a.target="_blank";a.rel="noopener";a.textContent="📷 Wikimedia · автор и лицензия ↗";art.append(a)}
 
 function render(){
- const subset=visibleList();$("visibleCount").textContent=subset.length+" / "+routes.length+" направлений";$("totalRoutes").textContent=routes.length;$("noHikes").hidden=!!subset.length;
+ const subset=visibleList(),totalSection=routes.filter(r=>collectionOf(r)===currentCollection).length;$("visibleCount").textContent=subset.length+" / "+totalSection+" в разделе · "+routes.length+" всего";$("totalRoutes").textContent=routes.length;$("noHikes").hidden=!!subset.length;
  $("hikeCards").innerHTML=subset.map(renderCard).join("");wikiArt();
  document.querySelectorAll(".hikeDetails").forEach(d=>d.addEventListener("toggle",()=>{if(d.open){const r=routes.find(x=>x.id===d.dataset.route);if(r)loadWeather(r)}}));
  document.querySelectorAll("[data-save]").forEach(b=>b.addEventListener("click",()=>{const id=b.dataset.save;if(saved.has(id))saved.delete(id);else saved.add(id);localStorage.setItem(savedKey,JSON.stringify([...saved]));if($("onlySaved").checked)render();else{b.setAttribute("aria-pressed",saved.has(id)?"true":"false");b.textContent=saved.has(id)?"♥ Сохранено":"♡ В избранное";}}));
  document.querySelectorAll("[data-refresh-route]").forEach(b=>b.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();const r=routes.find(x=>x.id===b.dataset.refreshRoute);if(r)loadWeather(r,true)}));
 }
-function updateWeekend(newDate){if(!weekdayValid(newDate))return;dateStart=newDate;localStorage.setItem(settingKey,dateStart);$("weekendStart").value=dateStart;showDates();document.querySelectorAll(".hikeDetails[open]").forEach(d=>{const r=routes.find(x=>x.id===d.dataset.route);if(r)loadWeather(r)});autoFeatured()}
-async function autoFeatured(){const selected=routes.filter(r=>["sulzkogel","rysy","pizboe"].includes(r.id));$("globalWeatherStatus").textContent="⌛ Загружаем прогноз для Sulzkogel, Rysy и Piz Boè…";const d=dateStart;await Promise.all(selected.map(r=>loadWeatherSummary(r)));if(dateStart===d){const results=selected.map(r=>{const v=weatherCache.get(weatherKey(r));const ix=(v?.daily?.time||[]).indexOf(isoPlus(dateStart,1));return {r,mm:ix>=0?v.daily.precipitation_sum[ix]:null}}).filter(x=>x.mm!==null);const offFriday=asDate(dateStart).getUTCDay()!==5?"ℹ️ Дата начала не пятница: логистику на выбранные дни проверь отдельно. ":"";$("globalWeatherStatus").textContent=offFriday+(results.length?"🌦 "+(asDate(dateStart).getUTCDay()===5?"Суббота":"День 2")+" · "+results.map(x=>x.r.region+": "+val(x.mm," мм")+" осадков").join("  |  ")+" · нажми «Подробный план» в карточке для прогноза по часам.":"Погода пока недоступна либо даты дальше горизонта 16 дней. Открывай карточки для повторной загрузки.");}}
+function updateWeekend(newDate){if(!weekdayValid(newDate))return;dateStart=newDate;localStorage.setItem(settingKey,dateStart);$("weekendStart").value=dateStart;showDates();document.querySelectorAll(".hikeCard").forEach(card=>{const a=card.querySelector("a.primaryC");if(a)a.href="./hike.html?id="+encodeURIComponent(card.id.slice(5))+"&weekend="+encodeURIComponent(dateStart)});document.querySelectorAll(".hikeDetails[open]").forEach(d=>{const r=routes.find(x=>x.id===d.dataset.route);if(r)loadWeather(r)});autoFeatured()}
+async function autoFeatured(){const ids=currentCollection==="hiking"?["krkonose-modry-dul","lilienstein-loop","oetschergraben-bahn"]:currentCollection==="high"?["sulzkogel","pizboe","saeuleck"]:["grossglockner","wildspitze","gerlach"];const selected=routes.filter(r=>ids.includes(r.id));$("globalWeatherStatus").textContent="⌛ Получаем Open-Meteo для выбранного раздела…";const d=dateStart,section=currentCollection;await Promise.all(selected.map(r=>loadWeatherSummary(r)));if(dateStart===d&&currentCollection===section){const results=selected.map(r=>{const v=weatherCache.get(weatherKey(r));const ix=(v?.daily?.time||[]).indexOf(isoPlus(dateStart,1));return {r,mm:ix>=0?v.daily.precipitation_sum[ix]:null}}).filter(x=>x.mm!==null);const offFriday=asDate(dateStart).getUTCDay()!==5?"ℹ️ Дата начала не пятница: логистику на выбранные дни проверь отдельно. ":"";$("globalWeatherStatus").textContent=offFriday+(results.length?"🌦 "+(asDate(dateStart).getUTCDay()===5?"Суббота":"День 2")+" · "+results.map(x=>x.r.region+": "+val(x.mm," мм")+" осадков").join("  |  ")+" · нажми «Подробный план» в карточке для прогноза по часам.":"Погода пока недоступна либо даты дальше горизонта 16 дней. Открывай карточки для повторной загрузки.");}}
 async function loadWeatherSummary(r){const key=weatherKey(r);if(weatherCache.has(key))return;const url="https://api.open-meteo.com/v1/forecast?latitude="+r.lat+"&longitude="+r.lon+"&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code&hourly=temperature_2m,precipitation,cloud_cover,wind_speed_10m,weather_code&timezone=Europe%2FPrague&forecast_days=16";try{const res=await fetch(url,{cache:"no-store"});if(res.ok){const data=await res.json();if(!data.error)weatherCache.set(key,data)}}catch(e){}}
 ["hikeCountry","hikeType","hikeClass","hikeSort","onlySaved"].forEach(id=>$(id)?.addEventListener("change",render));
+document.querySelectorAll("[data-collection]").forEach(btn=>btn.addEventListener("click",()=>setCollection(btn.dataset.collection)));
+for(const name of ["hiking","high","alpinism"])$(name+"Count").textContent=routes.filter(r=>collectionOf(r)===name).length;
+if(currentCollection!=="hiking")$("hikeSort").value="alpine";displayCollection();
 $("weekendStart").addEventListener("change",e=>updateWeekend(e.target.value));
 $("prevWeek").addEventListener("click",()=>updateWeekend(isoPlus(dateStart,-7)));
 $("nextWeek").addEventListener("click",()=>updateWeekend(isoPlus(dateStart,7)));
