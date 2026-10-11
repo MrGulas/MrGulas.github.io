@@ -103,12 +103,10 @@ async function loadWeather(r,force=false){
 }
 
 function setAlpineHero(){
-const area=document.querySelector(".hikeHeroArtwork");if(!area)return;
-const u="https://en.wikipedia.org/w/api.php?"+new URLSearchParams({action:"query",format:"json",prop:"pageimages",titles:"Gosausee",pithumbsize:"1100",piprop:"thumbnail|name",origin:"*"});
-fetch(u).then(res=>res.json()).then(d=>{const o=Object.values(d.query?.pages||{})[0];if(!o?.thumbnail?.source)return;
- const img=document.createElement("img");img.src=o.thumbnail.source;img.alt="Gosausee · Dachstein";img.onerror=()=>img.remove();area.prepend(img);
- if(o.pageimage){const a=document.createElement("a");a.href="https://commons.wikimedia.org/wiki/File:"+encodeURIComponent(o.pageimage);a.className="heroPhotoLicense";a.target="_blank";a.rel="noopener";a.textContent="📷 Wikimedia · автор и лицензия ↗";area.append(a)}
-}).catch(()=>{});
+ const area=document.querySelector(".hikeHeroArtwork");if(!area)return;
+ const file="Gosausee mit Dachstein.jpg",img=document.createElement("img");
+ img.src=photoURL(file);img.alt="Vorderer Gosausee и вершины Dachstein";img.onerror=()=>img.remove();area.prepend(img);
+ const a=document.createElement("a");a.href=photoPage(file);a.className="heroPhotoLicense";a.target="_blank";a.rel="noopener";a.textContent="📷 Karl Posch · Wikimedia Commons · CC BY-SA ↗";area.append(a);
 }
 
 function alpinePriority(r){if((r.altitude||0)>=3000)return r.risk==="guide"?1:0;if(routeClass(r)==="alpine")return 2;if(routeClass(r)==="guide")return 2;return 3}
