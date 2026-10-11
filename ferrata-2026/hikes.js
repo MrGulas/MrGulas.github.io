@@ -11,6 +11,7 @@ const commons={
  rozsutec:["Rozsutec.jpg","AvantaR · CC BY-SA 3.0"],
  krivan:["Malá Fatra, Veľký Kriváň z Malého Kriváňa (2).jpg","Palickap · CC BY-SA 4.0"],
  jetrich:["Pohled Mariina skála.jpg","Wikimedia Commons"],
+ "gosausee-zwei-seen":["Gosausee mit Dachstein.jpg","Karl Posch · CC BY-SA"],
  bilaopava:["Bílá Opava vodopád.jpg","Miramella · CC BY-SA"],
  labski:["Pančavský vodopád (01).jpg","ŠJů · Wikimedia Commons"],
  snezne:["Śnieżne Kotły (06).jpg","ŠJů · Wikimedia Commons"],
@@ -40,7 +41,7 @@ const classLabel={hike:"🥾 Пеший маршрут",alpine:"⛰ Сложны
 function renderCard(r){
  const photo=commons[r.id];const art=photo?'<img src="'+esc(photoURL(photo[0]))+'" alt="'+esc(r.tag+" — "+r.region)+'" loading="lazy" referrerpolicy="no-referrer" onerror="this.hidden=true">':'<div class="visualTexture" aria-hidden="true"></div>';
  const credit=photo?'<a class="photoLicense" href="'+esc(photoPage(photo[0]))+'" target="_blank" rel="noopener" title="Автор и лицензия фотографии">📷 '+esc(photo[1])+' ↗</a>':"";
- const warning=r.risk==="guide"?"⚠️ Нужен горный гид":r.risk==="closedHut"?"⚠️ Хижина закрыта":r.risk==="tatra"?"⚠️ Сезон TANAP":r.risk==="alpine"||r.risk==="summerOnly"?"⚠️ Не для снега / льда":r.id==="jetrich"?"⚠️ Часть закрыта":"🚆 Общественный транспорт";
+ const warning=r.risk==="guide"?"⚠️ Нужен горный гид":r.risk==="closedHut"?"⚠️ Хижина закрыта":r.risk==="tatra"?"⚠️ Сезон TANAP":r.risk==="alpine"||r.risk==="summerOnly"?"⚠️ Не для снега / льда":r.id==="jetrich"?"⚠️ Часть закрыта":r.transportStatus==="unverified"?"⚠️ Пересадки проверить":"🚆 Пересадки проверить";
  const n='<span class="'+(isUncertain(r)?"badgeWarn":"badgeGreen")+'">'+warning+'</span>';
  const km=r.km==null?"дистанция: уточнить":r.km.toLocaleString("ru-RU")+" км";
  const dist=r.gain==null?"Набор: уточнить": "+"+r.gain+" м";
@@ -121,7 +122,9 @@ let currentCollection=["high","alpinism"].includes(params.get("collection"))?par
 function visibleList(){
  const country=$("hikeCountry").value,type=$("hikeType").value,level=$("hikeClass").value,onlySaved=$("onlySaved")?.checked||false,sort=$("hikeSort").value;
  const matched=routes.filter(r=>collectionOf(r)===currentCollection&&(country==="all"||r.country===country)&&(type==="all"||r.type===type)&&(level==="all"||routeClass(r)===level)&&(!onlySaved||saved.has(r.id)));
- const byTravel=(a,b)=>travelHours(a)-travelHours(b)||b.wow-a.wow;
+ const travelTier=r=>travelHours(r)<=3.5?0:travelHours(r)<=5?1:travelHours(r)<=7?2:3;
+ const beauty=r=>r.wow+(r.type==="lake"||r.type==="panorama"?.24:0)-travelHours(r)*.04;
+ const byTravel=(a,b)=>travelTier(a)-travelTier(b)||beauty(b)-beauty(a)||travelHours(a)-travelHours(b);
  return matched.sort((a,b)=>sort==="near"?byTravel(a,b):sort==="alpine"?(alpinePriority(a)-alpinePriority(b)||b.wow-a.wow||(b.altitude||0)-(a.altitude||0)):sort==="cheap"?(a.fareMax??Infinity)-(b.fareMax??Infinity)||byTravel(a,b):sort==="long"?(b.km||0)-(a.km||0):sort==="easy"?(a.km??999)-(b.km??999):b.wow-a.wow||byTravel(a,b));
 }
 function displayCollection(){
