@@ -9,3 +9,21 @@
 
 /* Atlas 3000+ editorial hero and mobile high-altitude browsing */
 .hikeHeroArtwork::before{content:'3000+';position:absolute;top:17%;right:7%;font-size:clamp(70px,15vw,190px);font-weight:1000;letter-spacing:-.09em;opacity:.12;color:#e3fcff;line-height:1;pointer-events:none}.hikeHeroArtwork:has(img)::before{opacity:0}.hikeHeroArtwork>img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;filter:saturate(1.04)}.hikeHeroArtwork::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,#07131bea 0%,transparent 65%);pointer-events:none}.heroArtLabel{z-index:3}.heroPhotoLicense{position:absolute;z-index:4;top:13px;right:13px;padding:5px 9px;background:#0a1c26ce;border-radius:7px;color:#effff9!important;font-size:11px}.atlasHikes .cardControls .primaryC{background:#23664f;border-color:#4ba787;color:#d7fff0}.atlasHikes .hikeBadges .badgeWarn{background:#56401f;color:#ffdfb0;border-color:#936e34}.hikeDetails .cardControls{margin-bottom:2px}
+
+/* ATLAS collections: cheap/quick Hiking separate from no-glacier 3000+ and mountaineering */
+.atlasCollections{margin:12px 0 26px;padding:27px;border-radius:24px;border:1px solid #3e6470;background:linear-gradient(120deg,#142f37,#101d2c 66%);box-shadow:0 18px 48px #0003}
+.collectionHead h2{font-size:clamp(27px,3.4vw,41px);margin:5px 0 7px;letter-spacing:-.035em}
+.collectionHead p{color:#b5ccd8;max-width:890px;margin:0 0 18px;font-size:14px}
+.collectionButtons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.collectionButton{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:6px;min-width:0;background:#1b3442;border:1px solid #426477;border-radius:15px;padding:17px;cursor:pointer;text-align:left;color:#deedf2;transition:border-color .15s,background .15s,transform .15s}
+.collectionButton b{font-size:clamp(14px,1.35vw,19px);line-height:1.24}.collectionButton small{font-size:12px;line-height:1.3;color:#bad1dc}
+.collectionButton:hover{transform:translateY(-2px);background:#245062}.collectionButton.active,.collectionButton[aria-pressed=true]{background:linear-gradient(120deg,#1b6559,#22465c);border-color:#75d0a9;box-shadow:inset 0 0 0 1px #85cdb633}
+.collectionButton.active b{color:#deffef}
+.collectionExplanation{margin:15px 0 0;color:#cae6e4;background:#1c3b42;border:1px solid #3b6b65;padding:12px 16px;border-radius:12px;font-size:13px}
+.hikeBadges .badgeHikeCollection{border:1px solid #729f9b!important;background:#1b4d4c!important;color:#d8f9eb!important}
+.rideCost .fareUnknown{font-size:17px!important;color:#e2ecf7!important}
+.rideCost .costNote{display:block;color:#aebdca;font-size:11px;font-style:normal}
+.statsRow .tripQuick{border:1px solid #578588;background:#1c454b;color:#bdf5e3}
+.atlasHikes .hikeFilters{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:980px){.collectionButtons{grid-template-columns:1fr}.collectionButton{padding:15px}.atlasHikes .hikeFilters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){.atlasCollections{padding:17px 15px;margin-top:0}.atlasHikes .hikeFilters{grid-template-columns:1fr}.collectionButton b{font-size:17px}.collectionButton small{font-size:12px}}
