@@ -4,6 +4,7 @@ const DB=window.ATLAS_HIKES;if(!DB||!Array.isArray(DB.routes))return;
 const routes=DB.routes,$=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 const fmtCost=x=>Number(x).toLocaleString("cs-CZ");
+const savedKey="atlas-hiking-favorites";let saved=new Set();try{saved=new Set(JSON.parse(localStorage.getItem(savedKey)||"[]"))}catch(e){};
 const commons={
  rozsutec:["Rozsutec.jpg","AvantaR · CC BY-SA 3.0"],
  krivan:["Malá Fatra, Veľký Kriváň z Malého Kriváňa (2).jpg","Palickap · CC BY-SA 4.0"],
@@ -34,7 +35,7 @@ function renderCard(r){
  const photo=commons[r.id];const art=photo?'<img src="'+esc(photoURL(photo[0]))+'" alt="'+esc(r.tag+" — "+r.region)+'" loading="lazy" referrerpolicy="no-referrer" onerror="this.hidden=true">':'<div class="visualTexture" aria-hidden="true"></div>';
  const credit=photo?'<a class="photoLicense" href="'+esc(photoPage(photo[0]))+'" target="_blank" rel="noopener" title="Автор и лицензия фотографии">📷 '+esc(photo[1])+' ↗</a>':"";
  const n=isUncertain(r)?'<span class="badgeWarn">'+(r.id==="jetrich"?"⚠️ Часть закрыта":"⚠️ Бюджет под вопросом")+'</span>':'<span class="badgeGreen">🚆 Без машины</span>';
- const km=r.km==null?"дистанция по GPX":r.km.toLocaleString("ru-RU")+" км";
+ const km=r.km==null?"дистанция: уточнить":r.km.toLocaleString("ru-RU")+" км";
  const dist=r.gain==null?"Набор: уточнить": "+"+r.gain+" м";
  const google=transitLink(r);
  return '<article class="hikeCard" id="hike-'+r.id+'"><div class="cardVisual">'+art+credit+'<div class="visualTitle"><span>'+esc(flags[r.country]+" "+r.region.toUpperCase())+'</span><b>'+esc(r.tag)+'</b></div></div><div class="cardBody">'+
@@ -42,7 +43,7 @@ function renderCard(r){
  '<h3>'+esc(r.title)+'</h3><p class="hikeOneLine">'+esc(r.why)+'</p>'+
  '<div class="statsRow"><span>🥾 '+esc(km)+'</span><span>↗ '+esc(dist)+'</span><span>⏱ '+esc(r.hours)+'</span><span>🚌 '+esc(r.travelTime)+'</span></div>'+
  '<div class="rideCost"><div><small>ОРИЕНТИР ПО ПРОЕЗДУ ТУДА-ОБРАТНО / 1 ЧЕЛ.</small><strong>'+fmtCost(r.fareMin)+'–'+fmtCost(r.fareMax)+' Kč</strong></div><em>🛏 2 ночи<br>отдельно</em></div>'+
- '<div class="cardControls"><a class="primaryC" href="'+esc(r.source)+'" target="_blank" rel="noopener">'+(r.id==="jetrich"?"⚠️ Статус троп / закрытия ↗":"🥾 Официальный маршрут / GPX ↗")+'</a><a href="'+esc(google)+'" target="_blank" rel="noopener">🚆 Как доехать ↗</a><a href="'+esc(areaMap(r))+'" target="_blank" rel="noopener">🗺 Карта</a></div>'+
+ '<div class="cardControls"><button type="button" class="saveHike" data-save="'+r.id+'" aria-pressed="'+saved.has(r.id)+'">'+(saved.has(r.id)?"♥ Сохранено":"♡ В избранное")+'</button><a class="primaryC" href="'+esc(r.source)+'" target="_blank" rel="noopener">'+(r.id==="jetrich"?"⚠️ Статус троп / закрытия ↗":"🥾 Официальный маршрут / GPX ↗")+'</a><a href="'+esc(google)+'" target="_blank" rel="noopener">🚆 Как доехать ↗</a><a href="'+esc(areaMap(r))+'" target="_blank" rel="noopener">🗺 Карта</a></div>'+
  '<details class="hikeDetails" data-route="'+r.id+'"><summary>Подробный план поездки и погода ↓</summary>'+
  '<div class="detailSection"><b>🚆 Пятница · дорога из Праги</b><p>'+esc(r.transit)+' Оценка пути '+esc(r.travelTime)+'. Ночевать удобнее всего в районе <b>'+esc(r.gateway)+'</b>. Последний местный автобус по вечерам не гарантирован: сначала проверить стыковки на IDOS.</p></div>'+
  '<div class="detailSection"><b>🏔 Суббота · главный трек</b><p>'+esc(r.saturday)+'</p></div>'+
@@ -92,20 +93,21 @@ async function loadWeather(r,force=false){
  const task=(async()=>{try{const resp=await fetch(url,{cache:"no-store"});if(!resp.ok)throw Error("HTTP "+resp.status);const data=await resp.json();if(data.error)throw Error(data.reason||"API");weatherCache.set(key,data);if(dateStart===key.split(":")[1])renderWeather(r,data);}catch(e){if(dateStart===key.split(":")[1])el.innerHTML='<p class="wxError">Не удалось загрузить прогноз: '+esc(e.message)+'. Попробуй ещё раз, либо проверь официальный прогноз региона.</p>';}finally{pending.delete(key)}})();
  pending.set(key,task);return task;
 }
-function visibleList(){const q=$("hikeSearch").value.trim().toLocaleLowerCase("ru"),country=$("hikeCountry").value,type=$("hikeType").value,budget=$("underBudget").checked,sort=$("hikeSort").value;
- const matched=routes.filter(r=>(!q||[r.title,r.region,r.tag,r.why,r.gateway,r.saturday].join(" ").toLocaleLowerCase("ru").includes(q))&&(country==="all"||r.country===country)&&(type==="all"||r.type===type)&&(!budget||r.fareMax<=2000));
+function visibleList(){const q=$("hikeSearch").value.trim().toLocaleLowerCase("ru"),country=$("hikeCountry").value,type=$("hikeType").value,budget=$("underBudget").checked,onlySaved=$("onlySaved").checked,sort=$("hikeSort").value;
+ const matched=routes.filter(r=>(!q||[r.title,r.region,r.tag,r.why,r.gateway,r.saturday].join(" ").toLocaleLowerCase("ru").includes(q))&&(country==="all"||r.country===country)&&(type==="all"||r.type===type)&&(!budget||r.fareMax<=2000)&&(!onlySaved||saved.has(r.id)));
  return matched.sort((a,b)=>sort==="cheap"?a.fareMax-b.fareMax:sort==="long"?(b.km||0)-(a.km||0):sort==="easy"?(a.km||999)-(b.km||999):b.wow-a.wow);
 }
 function render(){
  const subset=visibleList();$("visibleCount").textContent=subset.length+" / "+routes.length+" направлений";$("totalRoutes").textContent=routes.length;$("noHikes").hidden=!!subset.length;
  $("hikeCards").innerHTML=subset.map(renderCard).join("");
  document.querySelectorAll(".hikeDetails").forEach(d=>d.addEventListener("toggle",()=>{if(d.open){const r=routes.find(x=>x.id===d.dataset.route);if(r)loadWeather(r)}}));
+ document.querySelectorAll("[data-save]").forEach(b=>b.addEventListener("click",()=>{const id=b.dataset.save;if(saved.has(id))saved.delete(id);else saved.add(id);localStorage.setItem(savedKey,JSON.stringify([...saved]));if($("onlySaved").checked)render();else{b.setAttribute("aria-pressed",saved.has(id)?"true":"false");b.textContent=saved.has(id)?"♥ Сохранено":"♡ В избранное";}}));
  document.querySelectorAll("[data-refresh-route]").forEach(b=>b.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();const r=routes.find(x=>x.id===b.dataset.refreshRoute);if(r)loadWeather(r,true)}));
 }
 function updateWeekend(newDate){if(!weekdayValid(newDate))return;dateStart=newDate;localStorage.setItem(settingKey,dateStart);$("weekendStart").value=dateStart;showDates();document.querySelectorAll(".hikeDetails[open]").forEach(d=>{const r=routes.find(x=>x.id===d.dataset.route);if(r)loadWeather(r)});autoFeatured()}
 async function autoFeatured(){const selected=routes.filter(r=>["snezka","poland","hockstein"].includes(r.id));$("globalWeatherStatus").textContent="⌛ Загружаем актуальный прогноз для трёх самых живописных районов…";const d=dateStart;await Promise.all(selected.map(r=>loadWeatherSummary(r)));if(dateStart===d){const results=selected.map(r=>{const v=weatherCache.get(weatherKey(r));const ix=(v?.daily?.time||[]).indexOf(isoPlus(dateStart,1));return {r,mm:ix>=0?v.daily.precipitation_sum[ix]:null}}).filter(x=>x.mm!==null);$("globalWeatherStatus").textContent=results.length?"🌦 Суббота · "+results.map(x=>x.r.region+": "+val(x.mm," мм")+" осадков").join("  |  ")+" · нажми «Подробный план» в карточке для прогноза по часам.":"Погода пока недоступна либо даты дальше горизонта 16 дней. Открывай карточки для повторной загрузки.";}}
 async function loadWeatherSummary(r){const key=weatherKey(r);if(weatherCache.has(key))return;const url="https://api.open-meteo.com/v1/forecast?latitude="+r.lat+"&longitude="+r.lon+"&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code&hourly=temperature_2m,precipitation,cloud_cover,wind_speed_10m,weather_code&timezone=Europe%2FPrague&forecast_days=16";try{const res=await fetch(url,{cache:"no-store"});if(res.ok){const data=await res.json();if(!data.error)weatherCache.set(key,data)}}catch(e){}}
-["hikeSearch","hikeCountry","hikeType","hikeSort","underBudget"].forEach(id=>$(id).addEventListener(id==="hikeSearch"?"input":"change",render));
+["hikeSearch","hikeCountry","hikeType","hikeSort","underBudget","onlySaved"].forEach(id=>$(id).addEventListener(id==="hikeSearch"?"input":"change",render));
 $("weekendStart").addEventListener("change",e=>updateWeekend(e.target.value));
 $("prevWeek").addEventListener("click",()=>updateWeekend(isoPlus(dateStart,-7)));
 $("nextWeek").addEventListener("click",()=>updateWeekend(isoPlus(dateStart,7)));
