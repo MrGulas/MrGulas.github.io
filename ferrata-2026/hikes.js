@@ -5,6 +5,10 @@ const routes=DB.routes,$=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 const fmtCost=x=>Number(x).toLocaleString("cs-CZ");
 const commons={
+ rozsutec:["Rozsutec.jpg","AvantaR · CC BY-SA 3.0"],
+ krivan:["Malá Fatra, Veľký Kriváň z Malého Kriváňa (2).jpg","Palickap · CC BY-SA 4.0"],
+ jetrich:["Pohled Mariina skála.jpg","Wikimedia Commons"],
+ bilaopava:["Bílá Opava vodopád.jpg","Miramella · CC BY-SA"],
  snezka:["Sněžka a Obří důl.jpg","Ivo Lukačovič · CC BY-SA 2.5"],
  labski:["Pančavský vodopád (01).jpg","ŠJů · Wikimedia Commons"],
  snezne:["Śnieżne Kotły (06).jpg","ŠJů · Wikimedia Commons"],
@@ -38,14 +42,14 @@ function renderCard(r){
  '<h3>'+esc(r.title)+'</h3><p class="hikeOneLine">'+esc(r.why)+'</p>'+
  '<div class="statsRow"><span>🥾 '+esc(km)+'</span><span>↗ '+esc(dist)+'</span><span>⏱ '+esc(r.hours)+'</span><span>🚌 '+esc(r.travelTime)+'</span></div>'+
  '<div class="rideCost"><div><small>ОРИЕНТИР ПО ПРОЕЗДУ ТУДА-ОБРАТНО / 1 ЧЕЛ.</small><strong>'+fmtCost(r.fareMin)+'–'+fmtCost(r.fareMax)+' Kč</strong></div><em>🛏 2 ночи<br>отдельно</em></div>'+
- '<div class="cardControls"><a class="primaryC" href="'+esc(r.source)+'" target="_blank" rel="noopener">🥾 Официальный маршрут / GPX ↗</a><a href="'+esc(google)+'" target="_blank" rel="noopener">🚆 Как доехать ↗</a><a href="'+esc(areaMap(r))+'" target="_blank" rel="noopener">🗺 Карта</a></div>'+
+ '<div class="cardControls"><a class="primaryC" href="'+esc(r.source)+'" target="_blank" rel="noopener">'+(r.id==="jetrich"?"⚠️ Статус троп / закрытия ↗":"🥾 Официальный маршрут / GPX ↗")+'</a><a href="'+esc(google)+'" target="_blank" rel="noopener">🚆 Как доехать ↗</a><a href="'+esc(areaMap(r))+'" target="_blank" rel="noopener">🗺 Карта</a></div>'+
  '<details class="hikeDetails" data-route="'+r.id+'"><summary>Подробный план поездки и погода ↓</summary>'+
  '<div class="detailSection"><b>🚆 Пятница · дорога из Праги</b><p>'+esc(r.transit)+' Оценка пути '+esc(r.travelTime)+'. Ночевать удобнее всего в районе <b>'+esc(r.gateway)+'</b>. Последний местный автобус по вечерам не гарантирован: сначала проверить стыковки на IDOS.</p></div>'+
  '<div class="detailSection"><b>🏔 Суббота · главный трек</b><p>'+esc(r.saturday)+'</p></div>'+
  '<div class="detailSection"><b>🌤 Воскресенье · бонус и возвращение</b><p>'+esc(r.sunday)+'</p></div>'+
  '<div class="detailSection"><b>⚠️ Сложность, сезон и ограничения</b><p class="hikeRisk">'+esc(r.caution)+'</p></div>'+
  '<div class="detailSection"><b>💸 Бюджет и билеты</b><p>Только ориентир на транспорт: '+fmtCost(r.fareMin)+'–'+fmtCost(r.fareMax)+' Kč/чел. туда-обратно, а не подтверждённый билет. Жильё и питание не включены. <a href="https://idos.cz/vlakyautobusymhdvse/spojeni/" target="_blank" rel="noopener">Поиск стыковок IDOS ↗</a> · <a href="https://www.cd.cz/spojeni-a-jizdenka/" target="_blank" rel="noopener">Покупка/цены ČD ↗</a></p></div>'+
- '<div class="detailSection"><b>🗺 Трек и карта</b><p><a href="'+esc(r.source)+'" target="_blank" rel="noopener">Официальное описание и GPX, если доступен на странице ↗</a> · <a href="'+esc(areaMap(r))+'" target="_blank" rel="noopener">Открыть район в Mapy.com ↗</a>. Отметка на обзорной карте не заменяет GPS-трек.</p></div>'+
+ '<div class="detailSection"><b>🗺 Трек и карта</b><p><a href="'+esc(r.id==="jetrich"?"https://www.ceskesvycarsko.cz/tip-na-vylet/za-jetrichovickymi-vyhlidkami/":r.source)+'" target="_blank" rel="noopener">Официальное описание и GPX, если доступен на странице ↗</a> · <a href="'+esc(areaMap(r))+'" target="_blank" rel="noopener">Открыть район в Mapy.com ↗</a>. Отметка на обзорной карте не заменяет GPS-трек.</p></div>'+
  '<div class="wxPanel" id="wx-'+r.id+'"><div class="wxHead"><strong>🌦 Погода на выбранные пятницу — воскресенье</strong><button type="button" data-refresh-route="'+r.id+'">↻</button></div><div class="wxContent" data-weather-content="'+r.id+'">Нажми «↻» или открой детали: загрузим прогноз Open-Meteo.</div></div>'+
  '</details></div></article>';
 }
@@ -59,7 +63,7 @@ let dateStart=localStorage.getItem(settingKey)||"2026-10-16";if(!weekdayValid(da
 $("weekendStart").value=dateStart;
 function showDates(){
  $("fridayDate").textContent=nice(dateStart);$("saturdayDate").textContent=nice(isoPlus(dateStart,1));$("sundayDate").textContent=nice(isoPlus(dateStart,2));
- const d=asDate(dateStart).getDay();document.querySelectorAll(".threeDays article>span").forEach((s,i)=>{s.childNodes[0].textContent=["ДЕНЬ 1","ДЕНЬ 2","ДЕНЬ 3"][i]+" · "});
+ const d=asDate(dateStart).getDay();document.querySelectorAll(".threeDays article>span").forEach((s,i)=>{s.childNodes[0].textContent=(d===5?["ПЯТНИЦА","СУББОТА","ВОСКРЕСЕНЬЕ"]:["ДЕНЬ 1","ДЕНЬ 2","ДЕНЬ 3"])[i]+" · "});
  if(d!==5)$("globalWeatherStatus").textContent="ℹ️ Выбрана не пятница. Прогноз строится на выбранную дату и следующие два дня; план ниже рассчитан на пятницу–воскресенье.";
 }
 let currentRequest=0;const weatherCache=new Map();const pending=new Map();
