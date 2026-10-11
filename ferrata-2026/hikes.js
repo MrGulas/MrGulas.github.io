@@ -10,7 +10,6 @@ const commons={
  krivan:["Malá Fatra, Veľký Kriváň z Malého Kriváňa (2).jpg","Palickap · CC BY-SA 4.0"],
  jetrich:["Pohled Mariina skála.jpg","Wikimedia Commons"],
  bilaopava:["Bílá Opava vodopád.jpg","Miramella · CC BY-SA"],
- snezka:["Sněžka a Obří důl.jpg","Ivo Lukačovič · CC BY-SA 2.5"],
  labski:["Pančavský vodopád (01).jpg","ŠJů · Wikimedia Commons"],
  snezne:["Śnieżne Kotły (06).jpg","ŠJů · Wikimedia Commons"],
  poland:["Sniezne Kotly 01.jpg","Jojo · Public domain"],
@@ -94,6 +93,16 @@ async function loadWeather(r,force=false){
  const task=(async()=>{try{const resp=await fetch(url,{cache:"no-store"});if(!resp.ok)throw Error("HTTP "+resp.status);const data=await resp.json();if(data.error)throw Error(data.reason||"API");weatherCache.set(key,data);if(dateStart===key.split(":")[1])renderWeather(r,data);}catch(e){if(dateStart===key.split(":")[1])el.innerHTML='<p class="wxError">Не удалось загрузить прогноз: '+esc(e.message)+'. Попробуй ещё раз, либо проверь официальный прогноз региона.</p>';}finally{pending.delete(key)}})();
  pending.set(key,task);return task;
 }
+
+function setAlpineHero(){
+const area=document.querySelector(".hikeHeroArtwork");if(!area)return;
+const u="https://en.wikipedia.org/w/api.php?"+new URLSearchParams({action:"query",format:"json",prop:"pageimages",titles:"Piz Boè",pithumbsize:"1100",piprop:"thumbnail|name",origin:"*"});
+fetch(u).then(res=>res.json()).then(d=>{const o=Object.values(d.query?.pages||{})[0];if(!o?.thumbnail?.source)return;
+ const img=document.createElement("img");img.src=o.thumbnail.source;img.alt="Piz Boè · Dolomites";img.onerror=()=>img.remove();area.prepend(img);
+ if(o.pageimage){const a=document.createElement("a");a.href="https://commons.wikimedia.org/wiki/File:"+encodeURIComponent(o.pageimage);a.className="heroPhotoLicense";a.target="_blank";a.rel="noopener";a.textContent="📷 Wikimedia · автор и лицензия ↗";area.append(a)}
+}).catch(()=>{});
+}
+
 function visibleList(){const country=$("hikeCountry").value,type=$("hikeType").value,onlySaved=$("onlySaved")?.checked||false,sort=$("hikeSort").value;
  const matched=routes.filter(r=>(country==="all"||r.country===country)&&(type==="all"||r.type===type)&&(!onlySaved||saved.has(r.id)));
  return matched.sort((a,b)=>sort==="cheap"?a.fareMax-b.fareMax:sort==="long"?(b.km||0)-(a.km||0):sort==="easy"?(a.km||999)-(b.km||999):b.wow-a.wow||((b.altitude||0)-(a.altitude||0)));
@@ -130,5 +139,5 @@ $("weekendStart").addEventListener("change",e=>updateWeekend(e.target.value));
 $("prevWeek").addEventListener("click",()=>updateWeekend(isoPlus(dateStart,-7)));
 $("nextWeek").addEventListener("click",()=>updateWeekend(isoPlus(dateStart,7)));
 $("refreshHikeWeather").addEventListener("click",async()=>{const btn=$("refreshHikeWeather");btn.disabled=true;btn.textContent="⌛ Обновляем…";weatherCache.clear();const open=Array.from(document.querySelectorAll(".hikeDetails[open]")).map(d=>routes.find(r=>r.id===d.dataset.route)).filter(Boolean);await Promise.all(open.map(r=>loadWeather(r,true)));await autoFeatured();btn.disabled=false;btn.textContent="↻ Обновить погоду"});
-showDates();render();autoFeatured();
+showDates();render();autoFeatured();setAlpineHero();
 })();
