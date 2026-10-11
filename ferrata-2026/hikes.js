@@ -24,7 +24,11 @@ const commons={
  trosky:["Hruboskalsko Český ráj 1.jpg","Wikimedia Commons"],
  sumavalakes:["Černé jezero (8).jpg","Huhulenik · Wikimedia Commons"],
  plesne:["Plešné jezero.jpg","Prochaine · Public domain"],
- mumlava:["Mumlavský vodopád 1.JPG","Wikimedia Commons"]
+ mumlava:["Mumlavský vodopád 1.JPG","Wikimedia Commons"],
+ "schoberstein-attersee":["Mahdlgupf 360° Panorama.jpg","H. Raab · CC BY-SA 4.0"],
+ "hinterstoder-schiederweiher":["Hinterstoder Schiederweiher-3187.jpg","Isiwal · CC BY-SA 4.0"],
+ "grunberg-laudachsee":["Laudachsee-Katzenstein-Traunstein.jpg","H. Raab · CC BY-SA 4.0"],
+ "langbathseen":["Vorderer Langbathsee Höllengebirge 202021.jpg","Tigerente · CC BY-SA 4.0"]
 };
 const typeName={panorama:"Горные панорамы",rocks:"Скалы и ущелья",lake:"Озёра и водопады",extreme:"Сложный альпийский рельеф",tatra:"Высокие Татры","3000":"3000+ · без ледника летом",glacier:"Альпинизм · нужен гид"};
 const flags={CZ:"🇨🇿",DE:"🇩🇪",PL:"🇵🇱",SK:"🇸🇰",AT:"🇦🇹",IT:"🇮🇹",SI:"🇸🇮"};
