@@ -3,7 +3,9 @@
 const DB=window.ATLAS_HIKES;if(!DB||!Array.isArray(DB.routes))return;
 const routes=DB.routes,$=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
-const fmtCost=x=>Number(x).toLocaleString("cs-CZ");
+const fmtCost=x=>x==null?"Уточнить":Number(x).toLocaleString("cs-CZ");
+const fareText=r=>r.fareMin==null||r.fareMax==null?"Уточнить билеты":fmtCost(r.fareMin)+"–"+fmtCost(r.fareMax)+" Kč";
+const sourceLabel=r=>r.sourceLevel==="regional"?"Обзор региона ↗":r.sourceLevel==="community"?"Сторонний маршрут ↗":"Описание маршрута ↗";
 const savedKey="atlas-hiking-favorites";let saved=new Set();try{saved=new Set(JSON.parse(localStorage.getItem(savedKey)||"[]"))}catch(e){};
 const commons={
  rozsutec:["Rozsutec.jpg","AvantaR · CC BY-SA 3.0"],
@@ -30,7 +32,10 @@ function photoPage(filename){return "https://commons.wikimedia.org/wiki/File:"+e
 function transitLink(r){return "https://www.google.com/maps/dir/?api=1&origin="+encodeURIComponent("Praha, Czechia")+"&destination="+encodeURIComponent(r.gateway+", "+({CZ:"Czechia",DE:"Germany",PL:"Poland",SK:"Slovakia",AT:"Austria",IT:"Italy",SI:"Slovenia"}[r.country]))+"&travelmode=transit"}
 function areaMap(r){return "https://mapy.com/turisticka?x="+r.lon+"&y="+r.lat+"&z=12"}
 function isUncertain(r){return ["guide","alpine","closedHut","summerOnly","tatra"].includes(r.risk)||r.id==="jetrich"}
-function routeClass(r){if(r.risk==="guide")return "guide";if(r.type==="3000"||["alpine","closedHut"].includes(r.risk)||r.type==="tatra"&&/T4|цепи|скал/i.test(r.level||""))return "alpine";return "hike"}
+function routeClass(r){if(r.risk==="guide")return "guide";if(r.type==="3000"||["alpine","closedHut"].includes(r.risk)||r.type==="tatra"&&/T4|цепи|скал/i.test(r.level||"")||/лестниц|техническ/i.test(r.level||""))return "alpine";return "hike"}
+function collectionOf(r){if(r.risk==="guide"||r.type==="glacier")return "alpinism";if(r.type==="3000"||(r.altitude||0)>=3000)return "high";return "hiking"}
+const collectionLabel={hiking:"Hiking",high:"3000+ без гида летом",alpinism:"Альпинизм / гид"};
+function travelHours(r){if(Number.isFinite(r.travelHours))return r.travelHours;const m=String(r.travelTime||"").match(/\d+(?:[.,]\d+)?/);return m?Number(m[0].replace(",",".")):99}
 const classLabel={hike:"🥾 Пеший маршрут",alpine:"⛰ Сложный альпийский",guide:"🧗 Альпинизм / гид"};
 function renderCard(r){
  const photo=commons[r.id];const art=photo?'<img src="'+esc(photoURL(photo[0]))+'" alt="'+esc(r.tag+" — "+r.region)+'" loading="lazy" referrerpolicy="no-referrer" onerror="this.hidden=true">':'<div class="visualTexture" aria-hidden="true"></div>';
@@ -39,20 +44,20 @@ function renderCard(r){
  const n='<span class="'+(isUncertain(r)?"badgeWarn":"badgeGreen")+'">'+warning+'</span>';
  const km=r.km==null?"дистанция: уточнить":r.km.toLocaleString("ru-RU")+" км";
  const dist=r.gain==null?"Набор: уточнить": "+"+r.gain+" м";
- const google=transitLink(r);
+ const google=transitLink(r),fee=fareText(r),longTransfer=travelHours(r)>7;
  return '<article class="hikeCard" id="hike-'+r.id+'"><div class="cardVisual">'+art+credit+'<div class="visualTitle"><span>'+esc(flags[r.country]+" "+r.region.toUpperCase())+'</span><b>'+esc(r.tag)+'</b></div></div><div class="cardBody">'+
- '<div class="hikeBadges"><span>✨ WOW '+r.wow.toFixed(1)+'/10</span><span>'+esc(typeName[r.type]||"Горный поход")+'</span><span>'+esc(classLabel[routeClass(r)])+'</span>'+n+'</div>'+
+ '<div class="hikeBadges"><span>✨ WOW '+r.wow.toFixed(1)+'/10</span><span class="badgeHikeCollection">'+esc(collectionLabel[collectionOf(r)])+'</span><span>'+esc(classLabel[routeClass(r)])+'</span>'+n+'</div>'+
  '<h3>'+esc(r.title)+'</h3><p class="hikeOneLine">'+esc(r.why)+'</p>'+
  '<div class="statsRow"><span>🥾 '+esc(km)+'</span><span>↗ '+esc(dist)+'</span><span>⏱ '+esc(r.hours)+'</span><span>⛰ '+esc(r.altitude? r.altitude+" м":"гора")+'</span><span>🚌 '+esc(r.travelTime)+'</span></div>'+
- '<div class="rideCost"><div><small>ОРИЕНТИР ПО ПРОЕЗДУ ТУДА-ОБРАТНО / 1 ЧЕЛ.</small><strong>'+fmtCost(r.fareMin)+'–'+fmtCost(r.fareMax)+' Kč</strong></div><em>🛏 2 ночи<br>отдельно</em></div>'+
- '<div class="cardControls"><a class="primaryC" href="./hike.html?id='+encodeURIComponent(r.id)+'&weekend='+encodeURIComponent(dateStart)+'">✦ Открыть маршрут →</a><button type="button" class="saveHike" data-save="'+r.id+'" aria-pressed="'+saved.has(r.id)+'">'+(saved.has(r.id)?"♥ Сохранено":"♡ В избранное")+'</button><a href="'+esc(r.source)+'" target="_blank" rel="noopener">🥾 Описание маршрута ↗</a><a href="'+esc(google)+'" target="_blank" rel="noopener">🚆 Как доехать ↗</a></div>'+
+ '<div class="rideCost"><div><small>БИЛЕТЫ ИЗ ПРАГИ И ОБРАТНО / 1 ЧЕЛ.</small><strong'+(r.fareMin==null?' class="fareUnknown"':'')+'>'+esc(fee)+'</strong><em class="costNote">'+(r.fareMin==null?'Тариф не запрашивался — проверить билеты':'Непроверенная оценка, не тариф')+'</em></div><em>'+(longTransfer?'⚠️ Долгий<br>переезд':'🛏 Ночёвки<br>отдельно')+'</em></div>'+
+ '<div class="cardControls"><a class="primaryC" href="./hike.html?id='+encodeURIComponent(r.id)+'&weekend='+encodeURIComponent(dateStart)+'">✦ Открыть маршрут →</a><button type="button" class="saveHike" data-save="'+r.id+'" aria-pressed="'+saved.has(r.id)+'">'+(saved.has(r.id)?"♥ Сохранено":"♡ В избранное")+'</button><a href="'+esc(r.source)+'" target="_blank" rel="noopener"'+esc(sourceLabel(r))+'</a><a href="'+esc(google)+'" target="_blank" rel="noopener">🚆 Как доехать ↗</a></div>'+
  '<details class="hikeDetails" data-route="'+r.id+'"><summary>Подробный план поездки и погода ↓</summary>'+
  '<div class="detailSection"><b>🚆 Пятница · дорога из Праги</b><p>'+esc(r.transit)+' Оценка пути '+esc(r.travelTime)+'. Ночевать удобнее всего в районе <b>'+esc(r.gateway)+'</b>. Последний местный автобус по вечерам не гарантирован: сначала проверить стыковки на IDOS.</p></div>'+
  '<div class="detailSection"><b>🏔 Суббота · главный трек</b><p>'+esc(r.saturday)+'</p></div>'+
  '<div class="detailSection"><b>🌤 Воскресенье · бонус и возвращение</b><p>'+esc(r.sunday)+'</p></div>'+
  '<div class="detailSection"><b>⚠️ Сложность, сезон и ограничения</b><p class="hikeRisk">'+esc(r.caution)+'</p><p>Сезон: '+esc(r.season||"Проверять по маршруту")+'. Сложность: '+esc(r.level||"горный хайк")+'.</p></div>'+
- '<div class="detailSection"><b>💸 Бюджет и билеты</b><p>Только ориентир на транспорт: '+fmtCost(r.fareMin)+'–'+fmtCost(r.fareMax)+' Kč/чел. туда-обратно, а не подтверждённый билет. Жильё и питание не включены. <a href="https://idos.cz/vlakyautobusymhdvse/spojeni/" target="_blank" rel="noopener">Поиск стыковок IDOS ↗</a> · <a href="https://www.cd.cz/spojeni-a-jizdenka/" target="_blank" rel="noopener">Покупка/цены ČD ↗</a></p></div>'+
- '<div class="detailSection"><b>🗺 Трек и карта</b><p><a href="'+esc(r.id==="jetrich"?"https://www.ceskesvycarsko.cz/tip-na-vylet/za-jetrichovickymi-vyhlidkami/":r.source)+'" target="_blank" rel="noopener">Официальное описание и GPX, если доступен на странице ↗</a> · <a href="'+esc(areaMap(r))+'" target="_blank" rel="noopener">Открыть район в Mapy.com ↗</a>. Отметка на обзорной карте не заменяет GPS-трек.</p></div>'+
+ '<div class="detailSection"><b>💸 Бюджет и билеты</b><p>Билеты из Праги и обратно: '+esc(fee)+' на человека. Тариф не подтверждён, жильё и еда отдельно. Жильё и питание не включены. <a href="https://idos.cz/vlakyautobusymhdvse/spojeni/" target="_blank" rel="noopener">Поиск стыковок IDOS ↗</a> · <a href="https://www.cd.cz/spojeni-a-jizdenka/" target="_blank" rel="noopener">Покупка/цены ČD ↗</a></p></div>'+
+ '<div class="detailSection"><b>🗺 Трек и карта</b><p><a href="'+esc(r.id==="jetrich"?"https://www.ceskesvycarsko.cz/tip-na-vylet/za-jetrichovickymi-vyhlidkami/":r.source)+'" target="_blank" rel="noopener"'+esc(sourceLabel(r))+'</a> · <a href="'+esc(areaMap(r))+'" target="_blank" rel="noopener">Открыть район в Mapy.com ↗</a>. Отметка на обзорной карте не заменяет GPS-трек.</p></div>'+
  '<div class="wxPanel" id="wx-'+r.id+'"><div class="wxHead"><strong>🌦 Погода на выбранные пятницу — воскресенье</strong><button type="button" data-refresh-route="'+r.id+'">↻</button></div><div class="wxContent" data-weather-content="'+r.id+'">Нажми «↻» или открой детали: загрузим прогноз Open-Meteo.</div></div>'+
  '</details></div></article>';
 }
