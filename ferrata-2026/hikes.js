@@ -24,31 +24,32 @@ const commons={
  plesne:["Plešné jezero.jpg","Prochaine · Public domain"],
  mumlava:["Mumlavský vodopád 1.JPG","Wikimedia Commons"]
 };
-const typeName={panorama:"Горные панорамы",rocks:"Скалы и ущелья",lake:"Озёра и водопады",extreme:"Сложный альпийский рельеф"};
-const flags={CZ:"🇨🇿",DE:"🇩🇪",PL:"🇵🇱",SK:"🇸🇰"};
+const typeName={panorama:"Горные панорамы",rocks:"Скалы и ущелья",lake:"Озёра и водопады",extreme:"Сложный альпийский рельеф",tatra:"Высокие Татры","3000":"3000+ · без ледника летом",glacier:"Альпинизм · нужен гид"};
+const flags={CZ:"🇨🇿",DE:"🇩🇪",PL:"🇵🇱",SK:"🇸🇰",AT:"🇦🇹",IT:"🇮🇹",SI:"🇸🇮"};
 function photoURL(filename){return "https://commons.wikimedia.org/wiki/Special:FilePath/"+encodeURIComponent(filename)+"?width=1000"}
 function photoPage(filename){return "https://commons.wikimedia.org/wiki/File:"+encodeURIComponent(filename).replaceAll("%20","_")}
-function transitLink(r){return "https://www.google.com/maps/dir/?api=1&origin="+encodeURIComponent("Praha, Czechia")+"&destination="+encodeURIComponent(r.gateway+", "+({CZ:"Czechia",DE:"Germany",PL:"Poland",SK:"Slovakia"}[r.country]))+"&travelmode=transit"}
+function transitLink(r){return "https://www.google.com/maps/dir/?api=1&origin="+encodeURIComponent("Praha, Czechia")+"&destination="+encodeURIComponent(r.gateway+", "+({CZ:"Czechia",DE:"Germany",PL:"Poland",SK:"Slovakia",AT:"Austria",IT:"Italy",SI:"Slovenia"}[r.country]))+"&travelmode=transit"}
 function areaMap(r){return "https://mapy.com/turisticka?x="+r.lon+"&y="+r.lat+"&z=12"}
-function isUncertain(r){return r.id==="jetrich"||r.fareMax>2000}
+function isUncertain(r){return ["guide","alpine","closedHut","summerOnly","tatra"].includes(r.risk)||r.id==="jetrich"}
 function renderCard(r){
  const photo=commons[r.id];const art=photo?'<img src="'+esc(photoURL(photo[0]))+'" alt="'+esc(r.tag+" — "+r.region)+'" loading="lazy" referrerpolicy="no-referrer" onerror="this.hidden=true">':'<div class="visualTexture" aria-hidden="true"></div>';
  const credit=photo?'<a class="photoLicense" href="'+esc(photoPage(photo[0]))+'" target="_blank" rel="noopener" title="Автор и лицензия фотографии">📷 '+esc(photo[1])+' ↗</a>':"";
- const n=isUncertain(r)?'<span class="badgeWarn">'+(r.id==="jetrich"?"⚠️ Часть закрыта":"⚠️ Бюджет под вопросом")+'</span>':'<span class="badgeGreen">🚆 Без машины</span>';
+ const warning=r.risk==="guide"?"⚠️ Нужен горный гид":r.risk==="closedHut"?"⚠️ Хижина закрыта":r.risk==="tatra"?"⚠️ Сезон TANAP":r.risk==="alpine"||r.risk==="summerOnly"?"⚠️ Не для снега / льда":r.id==="jetrich"?"⚠️ Часть закрыта":"🚆 Общественный транспорт";
+ const n='<span class="'+(isUncertain(r)?"badgeWarn":"badgeGreen")+'">'+warning+'</span>';
  const km=r.km==null?"дистанция: уточнить":r.km.toLocaleString("ru-RU")+" км";
  const dist=r.gain==null?"Набор: уточнить": "+"+r.gain+" м";
  const google=transitLink(r);
  return '<article class="hikeCard" id="hike-'+r.id+'"><div class="cardVisual">'+art+credit+'<div class="visualTitle"><span>'+esc(flags[r.country]+" "+r.region.toUpperCase())+'</span><b>'+esc(r.tag)+'</b></div></div><div class="cardBody">'+
- '<div class="hikeBadges"><span>✨ WOW '+r.wow.toFixed(1)+'/10</span><span>'+esc(typeName[r.type])+'</span>'+n+'</div>'+
+ '<div class="hikeBadges"><span>✨ WOW '+r.wow.toFixed(1)+'/10</span><span>'+esc(typeName[r.type]||"Горный поход")+'</span>'+n+'</div>'+
  '<h3>'+esc(r.title)+'</h3><p class="hikeOneLine">'+esc(r.why)+'</p>'+
- '<div class="statsRow"><span>🥾 '+esc(km)+'</span><span>↗ '+esc(dist)+'</span><span>⏱ '+esc(r.hours)+'</span><span>🚌 '+esc(r.travelTime)+'</span></div>'+
+ '<div class="statsRow"><span>🥾 '+esc(km)+'</span><span>↗ '+esc(dist)+'</span><span>⏱ '+esc(r.hours)+'</span><span>⛰ '+esc(r.altitude? r.altitude+" м":"гора")+'</span><span>🚌 '+esc(r.travelTime)+'</span></div>'+
  '<div class="rideCost"><div><small>ОРИЕНТИР ПО ПРОЕЗДУ ТУДА-ОБРАТНО / 1 ЧЕЛ.</small><strong>'+fmtCost(r.fareMin)+'–'+fmtCost(r.fareMax)+' Kč</strong></div><em>🛏 2 ночи<br>отдельно</em></div>'+
- '<div class="cardControls"><button type="button" class="saveHike" data-save="'+r.id+'" aria-pressed="'+saved.has(r.id)+'">'+(saved.has(r.id)?"♥ Сохранено":"♡ В избранное")+'</button><a class="primaryC" href="'+esc(r.source)+'" target="_blank" rel="noopener">'+(r.id==="jetrich"?"⚠️ Статус троп / закрытия ↗":"🥾 Официальный маршрут / GPX ↗")+'</a><a href="'+esc(google)+'" target="_blank" rel="noopener">🚆 Как доехать ↗</a><a href="'+esc(areaMap(r))+'" target="_blank" rel="noopener">🗺 Карта</a></div>'+
+ '<div class="cardControls"><a class="primaryC" href="./hike.html?id='+encodeURIComponent(r.id)+'">✦ Открыть маршрут →</a><button type="button" class="saveHike" data-save="'+r.id+'" aria-pressed="'+saved.has(r.id)+'">'+(saved.has(r.id)?"♥ Сохранено":"♡ В избранное")+'</button><a href="'+esc(r.source)+'" target="_blank" rel="noopener">🥾 Источник / GPX ↗</a><a href="'+esc(google)+'" target="_blank" rel="noopener">🚆 Как доехать ↗</a></div>'+
  '<details class="hikeDetails" data-route="'+r.id+'"><summary>Подробный план поездки и погода ↓</summary>'+
  '<div class="detailSection"><b>🚆 Пятница · дорога из Праги</b><p>'+esc(r.transit)+' Оценка пути '+esc(r.travelTime)+'. Ночевать удобнее всего в районе <b>'+esc(r.gateway)+'</b>. Последний местный автобус по вечерам не гарантирован: сначала проверить стыковки на IDOS.</p></div>'+
  '<div class="detailSection"><b>🏔 Суббота · главный трек</b><p>'+esc(r.saturday)+'</p></div>'+
  '<div class="detailSection"><b>🌤 Воскресенье · бонус и возвращение</b><p>'+esc(r.sunday)+'</p></div>'+
- '<div class="detailSection"><b>⚠️ Сложность, сезон и ограничения</b><p class="hikeRisk">'+esc(r.caution)+'</p></div>'+
+ '<div class="detailSection"><b>⚠️ Сложность, сезон и ограничения</b><p class="hikeRisk">'+esc(r.caution)+'</p><p>Сезон: '+esc(r.season||"Проверять по маршруту")+'. Сложность: '+esc(r.level||"горный хайк")+'.</p></div>'+
  '<div class="detailSection"><b>💸 Бюджет и билеты</b><p>Только ориентир на транспорт: '+fmtCost(r.fareMin)+'–'+fmtCost(r.fareMax)+' Kč/чел. туда-обратно, а не подтверждённый билет. Жильё и питание не включены. <a href="https://idos.cz/vlakyautobusymhdvse/spojeni/" target="_blank" rel="noopener">Поиск стыковок IDOS ↗</a> · <a href="https://www.cd.cz/spojeni-a-jizdenka/" target="_blank" rel="noopener">Покупка/цены ČD ↗</a></p></div>'+
  '<div class="detailSection"><b>🗺 Трек и карта</b><p><a href="'+esc(r.id==="jetrich"?"https://www.ceskesvycarsko.cz/tip-na-vylet/za-jetrichovickymi-vyhlidkami/":r.source)+'" target="_blank" rel="noopener">Официальное описание и GPX, если доступен на странице ↗</a> · <a href="'+esc(areaMap(r))+'" target="_blank" rel="noopener">Открыть район в Mapy.com ↗</a>. Отметка на обзорной карте не заменяет GPS-трек.</p></div>'+
  '<div class="wxPanel" id="wx-'+r.id+'"><div class="wxHead"><strong>🌦 Погода на выбранные пятницу — воскресенье</strong><button type="button" data-refresh-route="'+r.id+'">↻</button></div><div class="wxContent" data-weather-content="'+r.id+'">Нажми «↻» или открой детали: загрузим прогноз Open-Meteo.</div></div>'+
@@ -60,7 +61,7 @@ function isoPlus(s,days){const d=asDate(s);d.setDate(d.getDate()+days);return da
 function nice(s){return asDate(s).toLocaleDateString("ru-RU",{day:"2-digit",month:"2-digit",timeZone:"Europe/Prague"})}
 function weekdayValid(s){return /^\d{4}-\d{2}-\d{2}$/.test(s)}
 const settingKey="atlas-hiking-weekend-start";
-let dateStart=localStorage.getItem(settingKey)||"2026-10-16";if(!weekdayValid(dateStart))dateStart="2026-10-16";
+let dateStart=new URLSearchParams(location.search).get("weekend")||localStorage.getItem(settingKey)||"2026-10-16";if(!weekdayValid(dateStart))dateStart="2026-10-16";
 $("weekendStart").value=dateStart;
 function showDates(){
  $("fridayDate").textContent=nice(dateStart);$("saturdayDate").textContent=nice(isoPlus(dateStart,1));$("sundayDate").textContent=nice(isoPlus(dateStart,2));
@@ -93,21 +94,38 @@ async function loadWeather(r,force=false){
  const task=(async()=>{try{const resp=await fetch(url,{cache:"no-store"});if(!resp.ok)throw Error("HTTP "+resp.status);const data=await resp.json();if(data.error)throw Error(data.reason||"API");weatherCache.set(key,data);if(dateStart===key.split(":")[1])renderWeather(r,data);}catch(e){if(dateStart===key.split(":")[1])el.innerHTML='<p class="wxError">Не удалось загрузить прогноз: '+esc(e.message)+'. Попробуй ещё раз, либо проверь официальный прогноз региона.</p>';}finally{pending.delete(key)}})();
  pending.set(key,task);return task;
 }
-function visibleList(){const q=$("hikeSearch").value.trim().toLocaleLowerCase("ru"),country=$("hikeCountry").value,type=$("hikeType").value,budget=$("underBudget").checked,onlySaved=$("onlySaved").checked,sort=$("hikeSort").value;
- const matched=routes.filter(r=>(!q||[r.title,r.region,r.tag,r.why,r.gateway,r.saturday].join(" ").toLocaleLowerCase("ru").includes(q))&&(country==="all"||r.country===country)&&(type==="all"||r.type===type)&&(!budget||r.fareMax<=2000)&&(!onlySaved||saved.has(r.id)));
- return matched.sort((a,b)=>sort==="cheap"?a.fareMax-b.fareMax:sort==="long"?(b.km||0)-(a.km||0):sort==="easy"?(a.km||999)-(b.km||999):b.wow-a.wow);
+function visibleList(){const country=$("hikeCountry").value,type=$("hikeType").value,onlySaved=$("onlySaved")?.checked||false,sort=$("hikeSort").value;
+ const matched=routes.filter(r=>(country==="all"||r.country===country)&&(type==="all"||r.type===type)&&(!onlySaved||saved.has(r.id)));
+ return matched.sort((a,b)=>sort==="cheap"?a.fareMax-b.fareMax:sort==="long"?(b.km||0)-(a.km||0):sort==="easy"?(a.km||999)-(b.km||999):b.wow-a.wow||((b.altitude||0)-(a.altitude||0)));
 }
+
+// Photos sourced from Wikipedia pageimages, loaded lazily. Each photo links to its source page for author/license.
+const cachedImages=new Map();
+function wikiArt(){
+ const cards=[...document.querySelectorAll(".hikeCard")];
+ if(!("IntersectionObserver" in window))return;
+ const observer=new IntersectionObserver(entries=>{for(const e of entries){if(!e.isIntersecting)continue;observer.unobserve(e.target);
+  const card=e.target, id=card.id.slice(5),r=routes.find(x=>x.id===id);
+  if(!r||!r.imagePage||commons[id])continue;
+  const art=card.querySelector(".cardVisual");if(!art)continue;
+  if(cachedImages.has(r.imagePage)){const obj=cachedImages.get(r.imagePage);if(obj)showWiki(art,obj);continue}
+  const u="https://en.wikipedia.org/w/api.php?"+new URLSearchParams({action:"query",format:"json",prop:"pageimages",titles:r.imagePage,pithumbsize:"920",piprop:"thumbnail|name",origin:"*"});
+  fetch(u).then(res=>res.json()).then(data=>{const p=Object.values(data.query?.pages||{})[0];const obj=p?.thumbnail?{url:p.thumbnail.source,file:p.pageimage}:null;cachedImages.set(r.imagePage,obj);if(obj)showWiki(art,obj)}).catch(()=>{});
+ }},{rootMargin:"180px"});cards.forEach(c=>observer.observe(c));
+}
+function showWiki(art,obj){if(art.querySelector("img")||!obj)return;const img=document.createElement("img");img.src=obj.url;img.alt="Гора: "+(art.closest("article")?.querySelector("h3")?.textContent||"");img.loading="lazy";img.onerror=()=>img.remove();art.insertBefore(img,art.firstElementChild);const a=document.createElement("a");a.className="photoLicense";a.href="https://commons.wikimedia.org/wiki/File:"+encodeURIComponent(obj.file||"");a.target="_blank";a.rel="noopener";a.textContent="📷 Wikimedia · автор и лицензия ↗";art.append(a)}
+
 function render(){
  const subset=visibleList();$("visibleCount").textContent=subset.length+" / "+routes.length+" направлений";$("totalRoutes").textContent=routes.length;$("noHikes").hidden=!!subset.length;
- $("hikeCards").innerHTML=subset.map(renderCard).join("");
+ $("hikeCards").innerHTML=subset.map(renderCard).join("");wikiArt();
  document.querySelectorAll(".hikeDetails").forEach(d=>d.addEventListener("toggle",()=>{if(d.open){const r=routes.find(x=>x.id===d.dataset.route);if(r)loadWeather(r)}}));
  document.querySelectorAll("[data-save]").forEach(b=>b.addEventListener("click",()=>{const id=b.dataset.save;if(saved.has(id))saved.delete(id);else saved.add(id);localStorage.setItem(savedKey,JSON.stringify([...saved]));if($("onlySaved").checked)render();else{b.setAttribute("aria-pressed",saved.has(id)?"true":"false");b.textContent=saved.has(id)?"♥ Сохранено":"♡ В избранное";}}));
  document.querySelectorAll("[data-refresh-route]").forEach(b=>b.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();const r=routes.find(x=>x.id===b.dataset.refreshRoute);if(r)loadWeather(r,true)}));
 }
 function updateWeekend(newDate){if(!weekdayValid(newDate))return;dateStart=newDate;localStorage.setItem(settingKey,dateStart);$("weekendStart").value=dateStart;showDates();document.querySelectorAll(".hikeDetails[open]").forEach(d=>{const r=routes.find(x=>x.id===d.dataset.route);if(r)loadWeather(r)});autoFeatured()}
-async function autoFeatured(){const selected=routes.filter(r=>["snezka","poland","hockstein"].includes(r.id));$("globalWeatherStatus").textContent="⌛ Загружаем актуальный прогноз для трёх самых живописных районов…";const d=dateStart;await Promise.all(selected.map(r=>loadWeatherSummary(r)));if(dateStart===d){const results=selected.map(r=>{const v=weatherCache.get(weatherKey(r));const ix=(v?.daily?.time||[]).indexOf(isoPlus(dateStart,1));return {r,mm:ix>=0?v.daily.precipitation_sum[ix]:null}}).filter(x=>x.mm!==null);$("globalWeatherStatus").textContent=results.length?"🌦 Суббота · "+results.map(x=>x.r.region+": "+val(x.mm," мм")+" осадков").join("  |  ")+" · нажми «Подробный план» в карточке для прогноза по часам.":"Погода пока недоступна либо даты дальше горизонта 16 дней. Открывай карточки для повторной загрузки.";}}
+async function autoFeatured(){const selected=routes.filter(r=>["sulzkogel","rysy","pizboe"].includes(r.id));$("globalWeatherStatus").textContent="⌛ Загружаем прогноз для Sulzkogel, Rysy и Piz Boè…";const d=dateStart;await Promise.all(selected.map(r=>loadWeatherSummary(r)));if(dateStart===d){const results=selected.map(r=>{const v=weatherCache.get(weatherKey(r));const ix=(v?.daily?.time||[]).indexOf(isoPlus(dateStart,1));return {r,mm:ix>=0?v.daily.precipitation_sum[ix]:null}}).filter(x=>x.mm!==null);$("globalWeatherStatus").textContent=results.length?"🌦 Суббота · "+results.map(x=>x.r.region+": "+val(x.mm," мм")+" осадков").join("  |  ")+" · нажми «Подробный план» в карточке для прогноза по часам.":"Погода пока недоступна либо даты дальше горизонта 16 дней. Открывай карточки для повторной загрузки.";}}
 async function loadWeatherSummary(r){const key=weatherKey(r);if(weatherCache.has(key))return;const url="https://api.open-meteo.com/v1/forecast?latitude="+r.lat+"&longitude="+r.lon+"&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code&hourly=temperature_2m,precipitation,cloud_cover,wind_speed_10m,weather_code&timezone=Europe%2FPrague&forecast_days=16";try{const res=await fetch(url,{cache:"no-store"});if(res.ok){const data=await res.json();if(!data.error)weatherCache.set(key,data)}}catch(e){}}
-["hikeSearch","hikeCountry","hikeType","hikeSort","underBudget","onlySaved"].forEach(id=>$(id).addEventListener(id==="hikeSearch"?"input":"change",render));
+["hikeCountry","hikeType","hikeSort","onlySaved"].forEach(id=>$(id)?.addEventListener("change",render));
 $("weekendStart").addEventListener("change",e=>updateWeekend(e.target.value));
 $("prevWeek").addEventListener("click",()=>updateWeekend(isoPlus(dateStart,-7)));
 $("nextWeek").addEventListener("click",()=>updateWeekend(isoPlus(dateStart,7)));
