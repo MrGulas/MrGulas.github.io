@@ -109,7 +109,7 @@ function setAlpineHero(){
  const a=document.createElement("a");a.href=photoPage(file);a.className="heroPhotoLicense";a.target="_blank";a.rel="noopener";a.textContent="📷 Karl Posch · Wikimedia Commons · CC BY-SA ↗";area.append(a);
 }
 
-function alpinePriority(r){if((r.altitude||0)>=3000)return r.risk==="guide"?1:0;if(routeClass(r)==="alpine")return 2;if(routeClass(r)==="guide")return 2;return 3}
+function alpinePriority(r){if(collectionOf(r)==="high")return r.risk==="summerOnly"?0:r.risk==="alpine"?1:r.risk==="closedHut"?2:3;if(collectionOf(r)==="alpinism")return 4;return routeClass(r)==="alpine"?5:6}
 const collectionHelp={
  hiking:"Без обязательного гида: озёра, вершины, скальные ущелья и длинные горные дни. Часть маршрутов требует уверенной работы на тросах и лестницах. Первыми стоят самые быстрые по ориентировочному времени дороги.",
  high:"Высокогорные трёхтысячники без ледникового перехода в нормальных бесснежных летних условиях. На снегу и льду они могут стать альпинистскими — оценка состояния обязательна.",
@@ -123,7 +123,7 @@ function visibleList(){
  const travelTier=r=>travelHours(r)<=3.5?0:travelHours(r)<=5?1:travelHours(r)<=7?2:3;
  const beauty=r=>r.wow+(r.type==="lake"||r.type==="panorama"?.24:0)-travelHours(r)*.04;
  const byTravel=(a,b)=>travelTier(a)-travelTier(b)||beauty(b)-beauty(a)||travelHours(a)-travelHours(b);
- return matched.sort((a,b)=>sort==="near"?byTravel(a,b):sort==="alpine"?(alpinePriority(a)-alpinePriority(b)||b.wow-a.wow||(b.altitude||0)-(a.altitude||0)):sort==="cheap"?(a.fareMax??Infinity)-(b.fareMax??Infinity)||byTravel(a,b):sort==="long"?(b.km||0)-(a.km||0):sort==="easy"?(a.km??999)-(b.km??999):b.wow-a.wow||byTravel(a,b));
+ return matched.sort((a,b)=>sort==="near"?byTravel(a,b):sort==="alpine"?(alpinePriority(a)-alpinePriority(b)||travelHours(a)-travelHours(b)||b.wow-a.wow||(b.altitude||0)-(a.altitude||0)):sort==="cheap"?(a.fareMax??Infinity)-(b.fareMax??Infinity)||byTravel(a,b):sort==="long"?(b.km||0)-(a.km||0):sort==="easy"?(a.km??999)-(b.km??999):b.wow-a.wow||byTravel(a,b));
 }
 function displayCollection(){
  document.querySelectorAll("[data-collection]").forEach(btn=>{const on=btn.dataset.collection===currentCollection;btn.classList.toggle("active",on);btn.setAttribute("aria-pressed",String(on))});
