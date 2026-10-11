@@ -45,15 +45,15 @@ function renderCard(r){
  const n='<span class="'+(isUncertain(r)?"badgeWarn":"badgeGreen")+'">'+warning+'</span>';
  const km=r.km==null?"дистанция: уточнить":r.km.toLocaleString("ru-RU")+" км";
  const dist=r.gain==null?"Набор: уточнить": "+"+r.gain+" м";
- const google=transitLink(r),fee=fareText(r),longTransfer=travelHours(r)>7;
+ const google=transitLink(r),fee=fareText(r),longTransfer=travelHours(r)>7,needsShuttle=r.transportAccess==="shuttle_required";
  return '<article class="hikeCard" id="hike-'+r.id+'"><div class="cardVisual">'+art+credit+'<div class="visualTitle"><span>'+esc(flags[r.country]+" "+r.region.toUpperCase())+'</span><b>'+esc(r.tag)+'</b></div></div><div class="cardBody">'+
- '<div class="hikeBadges"><span>✨ WOW '+r.wow.toFixed(1)+'/10</span><span class="badgeHikeCollection">'+esc(collectionLabel[collectionOf(r)])+'</span><span>'+esc(classLabel[routeClass(r)])+'</span>'+n+'</div>'+
+ '<div class="hikeBadges"><span>✨ WOW '+r.wow.toFixed(1)+'/10</span><span class="badgeHikeCollection">'+esc(collectionLabel[collectionOf(r)])+'</span><span>'+esc(classLabel[routeClass(r)])+'</span>'+n+(needsShuttle?'<span class="badgeWarn">⚠️ Заказной шаттл</span>':'')+'</div>'+
  '<h3>'+esc(r.title)+'</h3><p class="hikeOneLine">'+esc(r.why)+'</p>'+
  '<div class="statsRow"><span>🥾 '+esc(km)+'</span><span>↗ '+esc(dist)+'</span><span>⏱ '+esc(r.hours)+'</span><span>⛰ '+esc(r.altitude? r.altitude+" м":"гора")+'</span><span>🚌 '+esc(r.travelTime)+'</span></div>'+
  '<div class="rideCost"><div><small>БИЛЕТЫ ИЗ ПРАГИ И ОБРАТНО / 1 ЧЕЛ.</small><strong'+(r.fareMin==null?' class="fareUnknown"':'')+'>'+esc(fee)+'</strong><em class="costNote">'+(r.fareMin==null?'Тариф не запрашивался — проверить билеты':'Непроверенная оценка, не тариф')+'</em></div><em>'+(longTransfer?'⚠️ Долгий<br>переезд':'🛏 Ночёвки<br>отдельно')+'</em></div>'+
  '<div class="cardControls"><a class="primaryC" href="./hike.html?id='+encodeURIComponent(r.id)+'&weekend='+encodeURIComponent(dateStart)+'">✦ Открыть маршрут →</a><button type="button" class="saveHike" data-save="'+r.id+'" aria-pressed="'+saved.has(r.id)+'">'+(saved.has(r.id)?"♥ Сохранено":"♡ В избранное")+'</button><a href="'+esc(r.source)+'" target="_blank" rel="noopener"'+esc(sourceLabel(r))+'</a><a href="'+esc(google)+'" target="_blank" rel="noopener">🚆 Как доехать ↗</a></div>'+
  '<details class="hikeDetails" data-route="'+r.id+'"><summary>Подробный план поездки и погода ↓</summary>'+
- '<div class="detailSection"><b>🚆 Пятница · дорога из Праги</b><p>'+esc(r.transit)+' Оценка пути '+esc(r.travelTime)+'. Ночевать удобнее всего в районе <b>'+esc(r.gateway)+'</b>. Последний местный автобус по вечерам не гарантирован: сначала проверить стыковки на IDOS.</p></div>'+
+ '<div class="detailSection"><b>🚆 Пятница · дорога из Праги</b><p>'+esc(r.transit)+' Оценка пути '+esc(r.travelTime)+'. Ночевать удобнее всего в районе <b>'+esc(r.gateway)+'</b>. Последний местный автобус по вечерам не гарантирован: сначала проверить стыковки на IDOS.</p>'+(r.accessNote?'<p class="hikeRisk">'+esc(r.accessNote)+'</p>':'')+'</div>'+
  '<div class="detailSection"><b>🏔 Суббота · главный трек</b><p>'+esc(r.saturday)+'</p></div>'+
  '<div class="detailSection"><b>🌤 Воскресенье · бонус и возвращение</b><p>'+esc(r.sunday)+'</p></div>'+
  '<div class="detailSection"><b>⚠️ Сложность, сезон и ограничения</b><p class="hikeRisk">'+esc(r.caution)+'</p><p>Сезон: '+esc(r.season||"Проверять по маршруту")+'. Сложность: '+esc(r.level||"горный хайк")+'.</p></div>'+
@@ -122,10 +122,12 @@ function visibleList(){
  const matched=routes.filter(r=>collectionOf(r)===currentCollection&&(country==="all"||r.country===country)&&(type==="all"||r.type===type)&&(level==="all"||routeClass(r)===level)&&(!onlySaved||saved.has(r.id)));
  const travelTier=r=>travelHours(r)<=3.5?0:travelHours(r)<=5?1:travelHours(r)<=7?2:3;
  const beauty=r=>r.wow+(r.type==="lake"||r.type==="panorama"?.24:0)-travelHours(r)*.04;
- const byTravel=(a,b)=>travelTier(a)-travelTier(b)||beauty(b)-beauty(a)||travelHours(a)-travelHours(b);
+ const byTravel=(a,b)=>(a.transportAccess==="shuttle_required"?2:0)-(b.transportAccess==="shuttle_required"?2:0)||travelTier(a)-travelTier(b)||beauty(b)-beauty(a)||travelHours(a)-travelHours(b);
  return matched.sort((a,b)=>sort==="near"?byTravel(a,b):sort==="alpine"?(alpinePriority(a)-alpinePriority(b)||travelHours(a)-travelHours(b)||b.wow-a.wow||(b.altitude||0)-(a.altitude||0)):sort==="cheap"?(a.fareMax??Infinity)-(b.fareMax??Infinity)||byTravel(a,b):sort==="long"?(b.km||0)-(a.km||0):sort==="easy"?(a.km??999)-(b.km??999):b.wow-a.wow||byTravel(a,b));
 }
 function displayCollection(){
+ const availableTypes=new Set(routes.filter(r=>collectionOf(r)===currentCollection).map(r=>r.type));for(const opt of $("hikeType").options||[]){if(opt.value==="all")continue;opt.hidden=!availableTypes.has(opt.value);opt.disabled=opt.hidden;}
+ const availableLevels=new Set(routes.filter(r=>collectionOf(r)===currentCollection).map(r=>routeClass(r)));for(const opt of $("hikeClass").options||[]){if(opt.value==="all")continue;opt.hidden=!availableLevels.has(opt.value);opt.disabled=opt.hidden;}
  document.querySelectorAll("[data-collection]").forEach(btn=>{const on=btn.dataset.collection===currentCollection;btn.classList.toggle("active",on);btn.setAttribute("aria-pressed",String(on))});
  $("collectionExplanation").textContent=collectionHelp[currentCollection];
  $("catalogTitle").textContent=currentCollection==="hiking"?"Красивые хайки с удобной дорогой из Праги":currentCollection==="high"?"Трёхтысячники без обязательного гида летом":"Ледниковые и альпинистские восхождения";
